@@ -3,7 +3,7 @@ import logging
 from googlesearch import search
 from pyrogram import filters
 from SafoneAPI import SafoneAPI
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_message(filters.command(["google", "gle"]))
