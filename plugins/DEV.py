@@ -6,7 +6,7 @@ from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from strings.filters import command
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_message(command(["/source", "سۆرس"]))
