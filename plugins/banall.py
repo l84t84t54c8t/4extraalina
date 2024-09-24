@@ -2,8 +2,8 @@ import asyncio
 
 from pyrogram import filters
 from pyrogram.errors import FloodWait
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 
 BOT_ID = app.id
 
