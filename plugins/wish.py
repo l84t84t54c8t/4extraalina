@@ -1,9 +1,9 @@
 import random
 
 import requests
+from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from AlinaMusic import app
 
 SUPPORT_CHAT = "MGIMT"
 
