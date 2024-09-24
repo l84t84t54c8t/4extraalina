@@ -9,7 +9,7 @@ from pyrogram.types import (
     Message,
 )
 from strings.filters import command
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 def content(msg: Message) -> [None, str]:
