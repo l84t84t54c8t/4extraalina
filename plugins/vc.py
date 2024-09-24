@@ -1,6 +1,9 @@
 import logging
 import uuid
 
+from AlinaMusic import app
+from AlinaMusic.utils.alina_ban import admin_filter
+from AlinaMusic.utils.database import get_assistant
 from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.raw import base
@@ -11,9 +14,6 @@ from pyrogram.raw.functions.phone import (
     GetGroupParticipants,
 )
 from pyrogram.types import Message
-from AlinaMusic import app
-from AlinaMusic.utils.alina_ban import admin_filter
-from AlinaMusic.utils.database import get_assistant
 
 
 @app.on_message(

@@ -1,3 +1,4 @@
+from AlinaMusic import app as app
 from pyrogram import enums, filters, idle
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -6,7 +7,6 @@ from pyrogram.types import (
     InlineQueryResultPhoto,
     InputTextMessageContent,
 )
-from AlinaMusic import app as app
 
 ######################
 LOG = -1002038090920  #

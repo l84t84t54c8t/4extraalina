@@ -1,8 +1,8 @@
 import requests
+from AlinaMusic import app
 from pyrogram import filters
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from AlinaMusic import app
 
 
 def download_website(url):

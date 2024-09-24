@@ -1,10 +1,10 @@
 import os
 
 import speech_recognition as sr
+from AlinaMusic import app
 from pydub import AudioSegment
 from pyrogram import filters
 from pyrogram.types import Message
-from AlinaMusic import app
 
 # --------------------------------------
 
