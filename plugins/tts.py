@@ -2,7 +2,7 @@ import io
 
 from gtts import gTTS
 from pyrogram import filters
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_message(filters.command("tts"))
