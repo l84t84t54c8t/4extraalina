@@ -1,7 +1,7 @@
 import phonenumbers
+from AlinaMusic import app
 from phonenumbers import carrier, geocoder, phonenumberutil, timezone
 from pyrogram import filters
-from AlinaMusic import app
 
 
 @app.on_message(filters.command("tinfo"))
