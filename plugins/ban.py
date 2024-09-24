@@ -1,33 +1,32 @@
 import asyncio
 from contextlib import suppress
-
-from pyrogram import Client, filters
-from pyrogram.errors import UserNotParticipant, ChatAdminRequired, UserAlreadyParticipant, InviteHashExpired
-from pyrogram.enums import ChatMembersFilter, ChatMemberStatus, ChatType
-from pyrogram.types import (
-    CallbackQuery,
-    ChatPermissions,
-    ChatPrivileges,
-    Message,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
 from string import ascii_lowercase
 from typing import Dict, Union
 
 from AlinaMusic import app
-from AlinaMusic.misc import SUDOERS
 from AlinaMusic.core.mongo import mongodb
-from utils.error import capture_err
-from AlinaMusic.utils.keyboard import ikb
-from AlinaMusic.utils.database import save_filter
+from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.functions import (
     extract_user,
     extract_user_and_reason,
     time_converter,
 )
-from utils.permissions import adminsOnly, member_permissions
+from AlinaMusic.utils.keyboard import ikb
 from config import BANNED_USERS
+from pyrogram import filters
+from pyrogram.enums import ChatMembersFilter, ChatMemberStatus, ChatType
+from pyrogram.errors import ChatAdminRequired, InviteHashExpired, UserNotParticipant
+from pyrogram.types import (
+    CallbackQuery,
+    ChatPermissions,
+    ChatPrivileges,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
+
+from utils.error import capture_err
+from utils.permissions import adminsOnly, member_permissions
 
 warnsdb = mongodb.warns
 
@@ -117,7 +116,11 @@ async def remove_warns(chat_id: int, name: str) -> bool:
     return False
 
 
-@app.on_message(filters.command(["/kick", "/skick", "دەرکردن", "دەرکردنی کاتی"], "") & ~filters.private & ~BANNED_USERS)
+@app.on_message(
+    filters.command(["/kick", "/skick", "دەرکردن", "دەرکردنی کاتی"], "")
+    & ~filters.private
+    & ~BANNED_USERS
+)
 @adminsOnly("can_restrict_members")
 async def kickFunc(_, message: Message):
     user_id, reason = await extract_user_and_reason(message)
@@ -133,9 +136,7 @@ async def kickFunc(_, message: Message):
             chat_id=message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS
         )
     ]:
-        return await message.reply_text(
-            "**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**"
-        )
+        return await message.reply_text("**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**")
     mention = (await app.get_users(user_id)).mention
     msg = f"""
 **بەکارهێنەر : {mention}**
@@ -154,6 +155,7 @@ async def kickFunc(_, message: Message):
 
 
 # Ban members
+
 
 @app.on_message(
     filters.command(["دەرم بکە", "/kickme", "/banme"], "")
@@ -178,8 +180,11 @@ async def fire_user(_, message: Message):
     await message.reply_text("**یەللە بۆ دەرەوە**")
     await app.ban_chat_member(message.chat.id, message.from_user.id)
 
+
 @app.on_message(
-    filters.command(["/ban", "/sban", "/tban", "باند", "باندی کاتی"], "") & ~filters.private & ~BANNED_USERS
+    filters.command(["/ban", "/sban", "/tban", "باند", "باندی کاتی"], "")
+    & ~filters.private
+    & ~BANNED_USERS
 )
 @adminsOnly("can_restrict_members")
 async def banFunc(_, message: Message):
@@ -197,9 +202,7 @@ async def banFunc(_, message: Message):
             chat_id=message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS
         )
     ]:
-        return await message.reply_text(
-            "**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**"
-        )
+        return await message.reply_text("**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**")
 
     try:
         mention = (await app.get_users(user_id)).mention
@@ -247,7 +250,11 @@ async def banFunc(_, message: Message):
 # Unban members
 
 
-@app.on_message(filters.command(["/unban", "لادانی دەرکردن", "لادانی باند"], "") & ~filters.private & ~BANNED_USERS)
+@app.on_message(
+    filters.command(["/unban", "لادانی دەرکردن", "لادانی باند"], "")
+    & ~filters.private
+    & ~BANNED_USERS
+)
 @adminsOnly("can_restrict_members")
 async def unban_func(_, message: Message):
     # we don't need reasons for unban, also, we
@@ -268,8 +275,6 @@ async def unban_func(_, message: Message):
     if replied_message:
         message = replied_message
     await message.reply_text(f"**بەکارهێنەر : {umention}\nباندی لادرا**")
-
-
 
 
 @app.on_message(
@@ -310,8 +315,15 @@ async def promoteFunc(_, message: Message):
         await message.reply_text(
             f"**بەکارهێنەر : {umention}\nکرا بە فوول ئەدمین\nلەلایەن {from_user_mention} **",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("پشکنینی ڕۆڵی ئەدمین", callback_data=f"check_powers_{user_id}")]]
-            )
+                [
+                    [
+                        InlineKeyboardButton(
+                            "پشکنینی ڕۆڵی ئەدمین",
+                            callback_data=f"check_powers_{user_id}",
+                        )
+                    ]
+                ]
+            ),
         )
     else:
         await message.chat.promote_member(
@@ -330,16 +342,26 @@ async def promoteFunc(_, message: Message):
         await message.reply_text(
             f"**بەکارهێنەر : {umention}\nکرا بە ئەدمین\nلەلایەن {from_user_mention} **",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("پشکنینی ڕۆڵی ئەدمین", callback_data=f"check_powers_{user_id}")]]
-            )
+                [
+                    [
+                        InlineKeyboardButton(
+                            "پشکنینی ڕۆڵی ئەدمین",
+                            callback_data=f"check_powers_{user_id}",
+                        )
+                    ]
+                ]
+            ),
         )
+
 
 # Handle callback to check and toggle admin powers
 @app.on_callback_query(filters.regex(r"^check_powers_(\d+)"))
 async def check_powers_callback(_, query: CallbackQuery):
     user_id = int(query.data.split("_")[2])
     bot = (await app.get_chat_member(query.message.chat.id, app.id)).privileges
-    user_privileges = (await app.get_chat_member(query.message.chat.id, user_id)).privileges
+    user_privileges = (
+        await app.get_chat_member(query.message.chat.id, user_id)
+    ).privileges
 
     if not bot or not bot.can_promote_members:
         return await query.answer("**من ڕۆڵی پێویستم نییە**", show_alert=True)
@@ -354,16 +376,23 @@ async def check_powers_callback(_, query: CallbackQuery):
             ("can_pin_messages", "Pin Messages"),
             ("can_promote_members", "Promote Members"),
             ("can_manage_chat", "Manage Chat"),
-            ("can_manage_video_chats", "Manage Video Chats")
+            ("can_manage_video_chats", "Manage Video Chats"),
         ]:
             state = "✅ ڕێپێدراو" if getattr(privs, priv, False) else "❌ ڕێپێنەدراو"
-            buttons.append([InlineKeyboardButton(f"{name}: {state}", callback_data=f"toggle_{priv}_{user_id}")])
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        f"{name}: {state}", callback_data=f"toggle_{priv}_{user_id}"
+                    )
+                ]
+            )
         buttons.append([InlineKeyboardButton("Back", callback_data="back")])
         buttons.append([InlineKeyboardButton("Close", callback_data="close")])
         return buttons
 
     await query.message.edit_caption(
-        caption="**ڕۆڵی ئەدمین :\n**" + "\n".join(
+        caption="**ڕۆڵی ئەدمین :\n**"
+        + "\n".join(
             f"{name}: {'✅ ڕێپێدراو' if getattr(user_privileges, priv, False) else '❌ ڕێپێنەدراو'}"
             for priv, name in [
                 ("can_change_info", "Change Info"),
@@ -376,8 +405,9 @@ async def check_powers_callback(_, query: CallbackQuery):
                 ("can_manage_video_chats", "Manage Video Chats"),
             ]
         ),
-        reply_markup=InlineKeyboardMarkup(generate_privilege_buttons(user_privileges))
+        reply_markup=InlineKeyboardMarkup(generate_privilege_buttons(user_privileges)),
     )
+
 
 # Toggle admin power
 @app.on_callback_query(filters.regex(r"^toggle_(.+)_(\d+)"))
@@ -389,7 +419,9 @@ async def toggle_power_callback(_, query: CallbackQuery):
         return await query.answer("ئەم رؤلەم نییە کە بیدەم بە کەسیتر", show_alert=True)
 
     # Get current user privileges
-    current_privs = (await app.get_chat_member(query.message.chat.id, user_id)).privileges
+    current_privs = (
+        await app.get_chat_member(query.message.chat.id, user_id)
+    ).privileges
 
     # Toggle the selected power
     new_privs = ChatPrivileges(
@@ -400,27 +432,26 @@ async def toggle_power_callback(_, query: CallbackQuery):
         can_pin_messages=current_privs.can_pin_messages,
         can_promote_members=current_privs.can_promote_members,
         can_manage_chat=current_privs.can_manage_chat,
-        can_manage_video_chats=current_privs.can_manage_video_chats
+        can_manage_video_chats=current_privs.can_manage_video_chats,
     )
     setattr(new_privs, power, not getattr(current_privs, power))
 
     # Apply the new privileges
-    await query.message.chat.promote_member(
-        user_id=user_id,
-        privileges=new_privs
-    )
+    await query.message.chat.promote_member(user_id=user_id, privileges=new_privs)
 
     await query.answer(
         f"{'ڕێپێدراو' if getattr(new_privs, power) else 'ڕێپێنەدراو'} {power.replace('_', ' ').capitalize()}",
-        show_alert=True
+        show_alert=True,
     )
 
     # Update the buttons and caption
     await check_powers_callback(_, query)
 
+
 @app.on_callback_query(filters.regex(r"^close"))
 async def close_callback(_, query: CallbackQuery):
     await query.message.delete()
+
 
 @app.on_callback_query(filters.regex(r"^back"))
 async def back_callback(_, query: CallbackQuery):
@@ -485,7 +516,9 @@ async def deleteFunc(_, message: Message):
     await message.delete()
 
 
-@app.on_message(filters.command(["/demote", "لادانی ئەدمین"], "") & ~filters.private & ~BANNED_USERS)
+@app.on_message(
+    filters.command(["/demote", "لادانی ئەدمین"], "") & ~filters.private & ~BANNED_USERS
+)
 @adminsOnly("can_promote_members")
 async def demote(_, message: Message):
     user_id = await extract_user(message)
@@ -714,7 +747,6 @@ async def check_warns(_, message: Message):
     return await message.reply_text(f"{mention} ʜᴀs {warns}/3 ᴡᴀʀɴɪɴɢs")
 
 
-
 @app.on_message(filters.command("unbanme"))
 async def unbanme(client, message):
     try:
@@ -728,12 +760,14 @@ async def unbanme(client, message):
         try:
             # Try to unban the user from the group
             await client.unban_chat_member(group_id, message.from_user.id)
-            
+
             # Check if the user is already a participant in the group
             try:
                 member = await client.get_chat_member(group_id, message.from_user.id)
                 if member.status == "member":
-                    await message.reply_text(f"You are already unbanned in that group. You can join now by clicking here: {await get_group_link(client, group_id)}")
+                    await message.reply_text(
+                        f"You are already unbanned in that group. You can join now by clicking here: {await get_group_link(client, group_id)}"
+                    )
                     return
             except UserNotParticipant:
                 pass  # The user is not a participant, proceed to unban
@@ -741,13 +775,20 @@ async def unbanme(client, message):
             # Send unban success message
             try:
                 group_link = await get_group_link(client, group_id)
-                await message.reply_text(f"I unbanned you in the group. You can join now by clicking here: {group_link}")
+                await message.reply_text(
+                    f"I unbanned you in the group. You can join now by clicking here: {group_link}"
+                )
             except InviteHashExpired:
-                await message.reply_text(f"I unbanned you in the group, but I couldn't provide a link to the group.")
+                await message.reply_text(
+                    f"I unbanned you in the group, but I couldn't provide a link to the group."
+                )
         except ChatAdminRequired:
-            await message.reply_text("I am not an admin in that group, so I cannot unban you.")
+            await message.reply_text(
+                "I am not an admin in that group, so I cannot unban you."
+            )
     except Exception as e:
         await message.reply_text(f"An error occurred: {e}")
+
 
 async def get_group_link(client, group_id):
     # Try to get the group link or username
