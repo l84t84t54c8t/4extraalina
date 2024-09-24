@@ -1,10 +1,10 @@
 from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from strings.filters import command
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.alina_ban import admin_filter
-from YukkiMusic.utils.database import add_served_chat
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.alina_ban import admin_filter
+from AlinaMusic.utils.database import add_served_chat
 
 # ------------------------------------------------------------------------------- #
 
