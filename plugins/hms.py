@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.types import *
-from YukkiMusic import app
+from AlinaMusic import app
 
 hmses = {}
 
