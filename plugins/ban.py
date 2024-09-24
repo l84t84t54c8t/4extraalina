@@ -414,12 +414,12 @@ async def check_powers_callback(_, query: CallbackQuery):
 async def toggle_power_callback(_, query: CallbackQuery):
     print(f"Received callback data: {query.data}")  # Add logging to check the data
     power, user_id_str = query.data.split("_")[1], query.data.split("_")[2]
-    
+
     try:
         user_id = int(user_id_str)  # Attempt to convert to int
     except ValueError:
         return await query.answer("Invalid user ID.", show_alert=True)
-    
+
     if not bot or not getattr(bot, power, False):
         return await query.answer("ئەم رؤلەم نییە کە بیدەم بە کەسیتر", show_alert=True)
 
