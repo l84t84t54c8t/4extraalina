@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 class Fonts:
