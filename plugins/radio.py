@@ -21,17 +21,17 @@ from pyrogram.errors import (
 )
 from pyrogram.types import Message
 from strings import get_string
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.database import (
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import (
     get_assistant,
     get_cmode,
     get_lang,
     get_playmode,
     get_playtype,
 )
-from YukkiMusic.utils.logger import play_logs
-from YukkiMusic.utils.stream.stream import stream
+from AlinaMusic.utils.logger import play_logs
+from AlinaMusic.utils.stream.stream import stream
 
 RADIO_STATION = {
     "Air Bilaspur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio110/playlist.m3u8",
