@@ -66,7 +66,7 @@ async def joinch(message):
         cch = await get_channel(message._client.me.username)
         ch = cch.replace("https://t.me/", "")
         try:
-            await message get_chat_member(ch, message.from_user.id)
+            await app.get_chat_member(ch, message.from_user.id)
         except UserNotParticipant:
             try:
                 await message.reply(
