@@ -5,7 +5,7 @@ import pyfiglet
 from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 def figle(text):
