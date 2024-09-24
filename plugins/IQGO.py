@@ -1,11 +1,11 @@
 import random
 
+from AlinaMusic import app
 from config import OWNER_ID
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from strings.filters import command
-from AlinaMusic import app
 
 
 @app.on_message(command(["گۆرانی"]))
