@@ -1,8 +1,8 @@
 import io
 
+from AlinaMusic import app
 from gtts import gTTS
 from pyrogram import filters
-from AlinaMusic import app
 
 
 @app.on_message(filters.command("tts"))
