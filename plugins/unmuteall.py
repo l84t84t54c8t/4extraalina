@@ -1,7 +1,7 @@
 from pyrogram import enums, filters
 from pyrogram.types import ChatPermissions
-from YukkiMusic import app
-from YukkiMusic.utils.alina_ban import admin_filter
+from AlinaMusic import app
+from AlinaMusic.utils.alina_ban import admin_filter
 
 
 @app.on_message(
