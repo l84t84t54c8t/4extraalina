@@ -8,6 +8,7 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from strings.filters import command
 
+from utils import joinch
 
 @app.on_message(command(["/source", "سۆرس"]))
 async def huhh(client: Client, message: Message):
