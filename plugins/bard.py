@@ -1,7 +1,7 @@
 import requests
+from AlinaMusic import app
 from pyrogram import filters
 from SafoneAPI import SafoneAPI
-from AlinaMusic import app
 
 
 @app.on_message(filters.command(["bard"]))
