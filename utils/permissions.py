@@ -56,9 +56,9 @@ async def unauthorised(
 ):
     chatID = message.chat.id
     if bot_lacking_permission:
-        text = "**👮🏻 | ببورە، تۆ مافی ئەدمینیت نییە\n👮🏻 | تەنیا ئەدمینەکان دەتوانن فەرمان جێبەجێ بکەن !**"
+        text = "**👮🏻 | ببورە، تۆ ڕؤڵت نییە\n👮🏻 | پێویستە ڕؤلی __{permission}__ هەبێت!**"
     else:
-        text = "**👮🏻 | ببورە، تۆ مافی ئەدمینیت نییە\n👮🏻 | تەنیا ئەدمینەکان دەتوانن فەرمان جێبەجێ بکەن !**"
+        text = "**👮🏻 | ببورە، تۆ ڕؤڵت نییە\n👮🏻 | پێویستە ڕؤلی __{permission}__ هەبێت!**"
     try:
         await message.reply_text(text)
     except ChatWriteForbidden:
