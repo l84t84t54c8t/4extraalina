@@ -96,7 +96,7 @@ async def joinch(message):
                             InlineKeyboardButton("جۆینی کەناڵ بکە ◗⋮◖", url=f"{cch}"),
                         ],
                     ]
-                )
+                ),
             )
             return True
         except Exception as a:
