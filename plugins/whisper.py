@@ -6,7 +6,7 @@ from pyrogram.types import (
     InlineQueryResultPhoto,
     InputTextMessageContent,
 )
-from YukkiMusic import app as app
+from AlinaMusic import app as app
 
 ######################
 LOG = -1002038090920  #
