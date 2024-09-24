@@ -5,20 +5,20 @@ from re import findall
 from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from YukkiMusic import app
-from YukkiMusic.utils.database import (
+from AlinaMusic import app
+from AlinaMusic.utils.database import (
     delete_note,
     deleteall_notes,
     get_note,
     get_note_names,
     save_note,
 )
-from YukkiMusic.utils.functions import (
+from AlinaMusic.utils.functions import (
     check_format,
     extract_text_and_keyb,
     get_data_and_name,
 )
-from YukkiMusic.utils.keyboard import ikb
+from AlinaMusic.utils.keyboard import ikb
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
