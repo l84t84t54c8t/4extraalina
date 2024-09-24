@@ -1,8 +1,8 @@
 from pyrogram import filters
 from pyrogram.errors import ChatAdminRequired, RPCError, UserNotParticipant
 from pyrogram.types import ChatPrivileges, Message
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 
 
 @app.on_message(filters.command("promoteme") & SUDOERS)
