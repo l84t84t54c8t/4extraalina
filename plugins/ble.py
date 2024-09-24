@@ -1,5 +1,5 @@
 from pyrogram import filters
-from YukkiMusic import app
+from AlinaMusic import app
 
 SLEEP = 0.1
 
