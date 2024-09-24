@@ -1,10 +1,10 @@
 import time
 from asyncio import sleep
 
+from AlinaMusic import app
 from pyrogram import enums, filters
 from pyrogram.types import Message
 from strings.filters import command
-from AlinaMusic import app
 
 
 @app.on_message(
