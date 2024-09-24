@@ -2,9 +2,9 @@ import random
 import time
 
 import requests
+from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.enums import ChatAction, PollType
-from AlinaMusic import app
 
 last_command_time = {}
 

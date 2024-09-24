@@ -1,7 +1,7 @@
 import requests
+from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from AlinaMusic import app
 
 
 def get_pypi_info(package_name):
