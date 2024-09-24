@@ -1,6 +1,6 @@
 import requests
 from pyrogram import filters
-from YukkiMusic import app
+from AlinaMusic import app
 
 waifu_api_url = "https://api.waifu.im/search"
 
