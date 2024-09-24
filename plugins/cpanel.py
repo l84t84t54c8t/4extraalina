@@ -14,7 +14,7 @@ async def set_botch(client: Client, message):
             message.chat.id, "**لینکی کەناڵی نوێ بنێرە**", filters=filters.text
         )
         channel = NAME.text
-        await set_channel(app.username, channel)
+        await set_channel(bot_username, channel)
         await message.reply_text("**بە سەرکەوتوویی کەناڵی بۆت گۆڕا -🖱️**")
         return
 
