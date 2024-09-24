@@ -12,9 +12,6 @@ from utils import joinch
 
 @app.on_message(command(["/source", "سۆرس"]))
 async def huhh(client: Client, message: Message):
-  try:
-    if await joinch(message):
-            return
     await message.reply_photo(
         photo=f"https://graph.org/file/b4ace5c5aec2901efed59.jpg",
         caption=f"""**[⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝘼𝙇𝙄𝙉𝘼 - 🧑🏻‍💻🖤 گەشەپێدەران](t.me/MGIMT)**\n••┉┉┉┉┉••🝢••┉┉┉┉┉••\n**بەخێربێی ئەزیزم{message.from_user.mention} بۆ بەشی گەشەپێدەرانی بۆت🕷️•**\n**بۆ هەبوونی هەرکێشە و پرسیارێك پەیوەندی بە گەشەپێدەر بکە لەڕێگای دووگمەکانی خوارەوە♥•**""",
@@ -251,6 +248,9 @@ async def sticker_image(client: Client, message: Message):
 
 @app.on_message(command(["ناوم", "ناو"]) & filters.group)
 async def vgdg(client: Client, message: Message):
+  try:
+    if await joinch(message):
+            return
     await message.reply_text(f"""•⎆┊** ناوت 🔥♥**»»  {message.from_user.mention()}""")
 
 
