@@ -1,12 +1,12 @@
 import json
 
 import requests
+from AlinaMusic import app
+from AlinaMusic.core.call import Alina
 from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton as ikb
 from pyrogram.types import InlineKeyboardMarkup as ikm
-from AlinaMusic import app
-from AlinaMusic.core.call import Alina
 
 
 @app.on_message(filters.command(["قورئان", "قورئانی پیرۆز", "/quran"], ""))
