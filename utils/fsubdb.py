@@ -17,7 +17,7 @@ must = {}
 async def get_group(chat_id):
     name = GROUP.get(chat_id)
     if not name:
-        bot = groupdb.find_one({"chat_id": chat_id})
+        bot = await groupdb.find_one({"chat_id": chat_id})
         if not bot:
             return GROUPOWNER
         GROUP[chat_id] = bot["group"]
@@ -34,7 +34,7 @@ async def set_group(chat_id: str, group: str):
 async def get_channel(chat_id):
     name = CHANNEL.get(chat_id)
     if not name:
-        bot = channeldb.find_one({"chat_id": chat_id})
+        bot = await channeldb.find_one({"chat_id": chat_id})
         if not bot:
             return CHANNELOWNER
         CHANNEL[chat_id] = bot["channel"]
