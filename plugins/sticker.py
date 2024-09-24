@@ -17,7 +17,7 @@ from pyrogram.errors import (
 )
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from YukkiMusic import app
+from AlinaMusic import app
 
 from utils.error import capture_err
 
