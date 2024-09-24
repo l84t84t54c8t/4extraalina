@@ -1,10 +1,10 @@
 import random
 import re
 
+from AlinaMusic import app
 from pyrogram import Client
 from pyrogram.types import Message
 from strings.filters import command
-from AlinaMusic import app
 
 
 @app.on_message(command("ز"))
