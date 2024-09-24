@@ -1,0 +1,17 @@
+bing-image-urls
+gTTS
+googlesearch-python
+pyfiglet
+lexica-api
+MukeshAPI
+telegraph
+uuid
+git+https://github.com/Vivekkumar-IN/TheApi@main
+mpv
+wget
+gpytranslate
+phonenumbers
+pydub
+SpeechRecognition
+nekos.py
+SafoneAPI
