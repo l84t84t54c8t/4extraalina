@@ -15,6 +15,7 @@ from AlinaMusic.utils.keyboard import ikb
 from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus, ChatType
+from pyrogram.errors import ChatAdminRequired, InviteHashExpired, UserNotParticipant
 from pyrogram.types import CallbackQuery, ChatPermissions, ChatPrivileges, Message
 
 from utils.error import capture_err
@@ -610,12 +611,6 @@ async def check_warns(_, message: Message):
         return await message.reply_text(f"{mention} ʜᴀs ɴᴏ ᴡᴀʀɴɪɴɢs.")
     return await message.reply_text(f"{mention} ʜᴀs {warns}/3 ᴡᴀʀɴɪɴɢs")
 
-
-from pyrogram import filters
-from pyrogram.errors import ChatAdminRequired, InviteHashExpired, UserNotParticipant
-
-# Create a bot instance
-from YukkiMusic import app
 
 
 @app.on_message(filters.command("unbanme"))
