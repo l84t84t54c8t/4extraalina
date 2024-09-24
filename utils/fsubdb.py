@@ -23,7 +23,7 @@ async def get_group(chat_id):
     return name
 
 
-async def set_group(chat_id: dict, group: str):
+async def set_group(chat_id: str, group: str):
     GROUP[chat_id] = group
     groupdb.update_one({"chat_id": chat_id}, {"$set": {"group": group}}, upsert=True)
 
@@ -40,7 +40,7 @@ async def get_channel(chat_id):
     return name
 
 
-async def set_channel(chat_id: dict, channel: str):
+async def set_channel(chat_id: str, channel: str):
     CHANNEL[chat_id] = channel
     channeldb.update_one(
         {"chat_id": chat_id}, {"$set": {"channel": channel}}, upsert=True
@@ -58,7 +58,7 @@ async def must_join(chat_id):
     return name
 
 
-async def set_must(chat_id: dict, m: str):
+async def set_must(chat_id: str, m: str):
     if m == "• ناچالاککردنی جۆینی ناچاری •":
         ii = "off"
     else:
@@ -68,10 +68,10 @@ async def set_must(chat_id: dict, m: str):
 
 
 async def joinch(message):
-    ii = await must_join(message._client.me.username)
+    ii = await must_join(message.app.username)
     if ii == "off":
         return
-    cch = await get_channel(message._client.me.username)
+    cch = await get_channel(message.app.username)
     ch = cch.replace("https://t.me/", "")
     try:
         await app.get_chat_member(ch, message.from_user.id)
