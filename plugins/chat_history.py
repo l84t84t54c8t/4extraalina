@@ -4,9 +4,9 @@ from datetime import datetime
 from pyrogram import filters
 from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.database import get_assistant
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import get_assistant
 
 last_checked_time = None
 
