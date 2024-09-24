@@ -2,8 +2,8 @@ from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from config import CHANNEL as CHANNELOWNER
 from config import GROUP as GROUPOWNER
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.errors import UserNotParticipant
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 channeldb = mongodb.ch
 CHANNEL = {}
