@@ -2,7 +2,7 @@ import asyncio
 import json
 
 from pyrogram import Client, enums, filters, types
-from YukkiMusic import app
+from AlinaMusic import app
 
 ON_TYPES = {True: "✅", False: "❌"}
 Temp = {}
