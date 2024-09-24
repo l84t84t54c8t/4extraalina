@@ -2,8 +2,8 @@ import asyncio
 from datetime import datetime
 
 from strings.filters import command
-from YukkiMusic import app
-from YukkiMusic.utils.database import get_assistant
+from AlinaMusic import app
+from AlinaMusic.utils.database import get_assistant
 
 # Assuming Userbot is defined elsewhere
 
