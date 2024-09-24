@@ -248,7 +248,6 @@ async def sticker_image(client: Client, message: Message):
 
 @app.on_message(command(["ناوم", "ناو"]) & filters.group)
 async def vgdg(client: Client, message: Message):
-  try:
     if await joinch(message):
             return
     await message.reply_text(f"""•⎆┊** ناوت 🔥♥**»»  {message.from_user.mention()}""")
