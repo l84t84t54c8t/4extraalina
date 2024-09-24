@@ -3,7 +3,7 @@ import asyncio
 from pyrogram import enums, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import FloodWait
-from YukkiMusic import app
+from AlinaMusic import app
 
 # ------------------------------------------------------------------------------- #
 
