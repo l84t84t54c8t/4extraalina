@@ -70,16 +70,23 @@ async def set_must(chat_id: str, m: str):
 
 
 async def joinch(message):
-    # Access the username from message.from_user, not message._app.username
-    ii = await must_join(message.from_user.username)
+    # Fetch bot's username using the Pyrogram app instance
+    me = await app.get_me()  # This returns the bot's information
+    username = me.username  # Extract the bot's username
+
+    ii = await must_join(username)  # Use the bot's username in must_join
     if ii == "off":
         return
-    cch = await get_channel(message.from_user.username)  # Corrected here as well
+
+    cch = await get_channel(username)  # Use the bot's username to get the channel
     ch = cch.replace("https://t.me/", "")
+
     try:
+        # Check if the user is a participant in the channel
         await app.get_chat_member(ch, message.from_user.id)
     except UserNotParticipant:
         try:
+            # If the user isn't a participant, send a message with a link to the channel
             await message.reply(
                 f"**◗⋮◖ پێویستە جۆینی کەناڵ بکەیت\n\n◗⋮◖ کەناڵی بۆت : « {cch} »**",
                 disable_web_page_preview=True,
@@ -89,7 +96,7 @@ async def joinch(message):
                             InlineKeyboardButton("جۆینی کەناڵ بکە ◗⋮◖", url=f"{cch}"),
                         ],
                     ]
-                ),
+                )
             )
             return True
         except Exception as a:
