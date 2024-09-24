@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_message(filters.forwarded)
