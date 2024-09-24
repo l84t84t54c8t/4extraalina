@@ -1,8 +1,8 @@
 import requests
+from AlinaMusic import app
 from MukeshAPI import api
 from pyrogram import filters
 from pyrogram.enums import ChatAction
-from AlinaMusic import app
 
 
 @app.on_message(filters.command(["gemini"]))
