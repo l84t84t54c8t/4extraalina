@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from pyrogram import enums
 from pyrogram.types import *
 from strings.filters import command
-from YukkiMusic import app as Hiroko
+from AlinaMusic import app as Hiroko
 
 # Function to get font and resize text
 get_font = lambda font_size, font_path: ImageFont.truetype(font_path, font_size)
