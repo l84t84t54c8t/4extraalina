@@ -2,9 +2,6 @@ import datetime
 from inspect import getfullargspec
 from re import findall
 
-from config import BANNED_USERS
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from AlinaMusic import app
 from AlinaMusic.utils.database import (
     delete_note,
@@ -19,6 +16,9 @@ from AlinaMusic.utils.functions import (
     get_data_and_name,
 )
 from AlinaMusic.utils.keyboard import ikb
+from config import BANNED_USERS
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
