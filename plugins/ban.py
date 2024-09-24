@@ -7,15 +7,15 @@ from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus, ChatType
 from pyrogram.types import CallbackQuery, ChatPermissions, ChatPrivileges, Message
-from YukkiMusic import app
-from YukkiMusic.core.mongo import mongodb
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.functions import (
+from AlinaMusic import app
+from AlinaMusic.core.mongo import mongodb
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.functions import (
     extract_user,
     extract_user_and_reason,
     time_converter,
 )
-from YukkiMusic.utils.keyboard import ikb
+from AlinaMusic.utils.keyboard import ikb
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
