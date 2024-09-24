@@ -115,7 +115,9 @@ def keyboard(user_id: int):
 
 
 # /up_admin WIth Group .
-@app.on_message(filters.regex("^/upadmin$") & filters.group & filters.reply & is_admin())
+@app.on_message(
+    filters.regex("^/upadmin$") & filters.group & filters.reply & is_admin()
+)
 async def ON_RPLY(app: Client, Message: types.Message):
     chat_id, message_id, user_id = Message.chat.id, Message.id, Message.from_user.id
     member_up_id = Message.reply_to_message.from_user.id
