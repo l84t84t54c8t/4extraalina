@@ -2,7 +2,7 @@ import os
 
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_chat_member_updated(filters=lambda _, response: response.new_chat_member)
