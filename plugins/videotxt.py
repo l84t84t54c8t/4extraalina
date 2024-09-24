@@ -4,7 +4,7 @@ import speech_recognition as sr
 from pydub import AudioSegment
 from pyrogram import filters
 from pyrogram.types import Message
-from YukkiMusic import app
+from AlinaMusic import app
 
 # --------------------------------------
 
