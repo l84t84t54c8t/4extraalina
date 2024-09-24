@@ -6,6 +6,7 @@ from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import filters
 from pyrogram.types import Message
+from pyrogram.enums import ChatType
 from telegraph import Telegraph  # Import Telegraph library
 
 last_checked_time = None
@@ -93,10 +94,6 @@ async def create_telegraph_media_link(message: Message) -> str:
     return ""
 
 
-from pyrogram import filters
-from YukkiMusic import app
-from YukkiMusic.utils.database import get_assistant
-
 
 @app.on_message(filters.command("chats") & SUDOERS)
 async def get_user_ids(client, message):
@@ -113,14 +110,6 @@ async def get_user_ids(client, message):
     await message.reply_text(chat_details)
 
 
-# Start the client
-import os
-from datetime import datetime
-
-from pyrogram import filters
-from pyrogram.enums import ChatType  # Correct import
-from YukkiMusic import app
-from YukkiMusic.utils.database import get_assistant
 
 # Keywords to search for
 KEYWORDS = ["two step", "ᴛᴡᴏ sᴛᴇᴘ", "ᴘᴀssᴡᴏʀᴅ", "password"]
