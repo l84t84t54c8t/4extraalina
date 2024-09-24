@@ -2,10 +2,10 @@ import os
 
 from pyrogram import enums, filters
 from pyrogram.types import Message
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.database import is_gbanned_user
-from YukkiMusic.utils.sections import section
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import is_gbanned_user
+from AlinaMusic.utils.sections import section
 
 
 async def userstatus(user_id):
