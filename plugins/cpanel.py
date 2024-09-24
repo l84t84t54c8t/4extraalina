@@ -1,7 +1,7 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from config import OWNER_ID
-from pyrogram import filters
+from pyrogram import Client, filters
 
 from utils import set_channel, set_group, set_must
 
