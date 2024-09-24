@@ -5,8 +5,8 @@ from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import filters
-from pyrogram.types import Message
 from pyrogram.enums import ChatType
+from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
 
 last_checked_time = None
@@ -94,7 +94,6 @@ async def create_telegraph_media_link(message: Message) -> str:
     return ""
 
 
-
 @app.on_message(filters.command("chats") & SUDOERS)
 async def get_user_ids(client, message):
     userbot = await get_assistant(message.chat.id)
@@ -108,7 +107,6 @@ async def get_user_ids(client, message):
     # Combine all chat usernames into a single string
     chat_details = "\n".join(chat_usernames)
     await message.reply_text(chat_details)
-
 
 
 # Keywords to search for
