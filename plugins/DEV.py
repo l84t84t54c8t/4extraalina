@@ -10,6 +10,7 @@ from strings.filters import command
 
 from utils import joinch
 
+
 @app.on_message(command(["/source", "سۆرس"]))
 async def huhh(client: Client, message: Message):
     await message.reply_photo(
@@ -249,7 +250,7 @@ async def sticker_image(client: Client, message: Message):
 @app.on_message(command(["ناوم", "ناو"]) & filters.group)
 async def vgdg(client: Client, message: Message):
     if await joinch(message):
-            return
+        return
     await message.reply_text(f"""•⎆┊** ناوت 🔥♥**»»  {message.from_user.mention()}""")
 
 
