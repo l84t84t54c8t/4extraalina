@@ -1,4 +1,5 @@
 import requests
+from AlinaMusic import app
 from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.types import (
@@ -8,7 +9,6 @@ from pyrogram.types import (
     InputMediaPhoto,
     Message,
 )
-from AlinaMusic import app
 
 close_keyboard = InlineKeyboardMarkup(
     [

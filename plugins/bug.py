@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from AlinaMusic import app
 from config import OWNER_ID as owner_id
 from pyrogram import filters
 from pyrogram.types import (
@@ -9,7 +10,6 @@ from pyrogram.types import (
     Message,
 )
 from strings.filters import command
-from AlinaMusic import app
 
 
 def content(msg: Message) -> [None, str]:
