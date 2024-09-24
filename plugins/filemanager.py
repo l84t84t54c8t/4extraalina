@@ -7,8 +7,8 @@ from os.path import exists, isdir
 
 from pyrogram import filters
 from pyrogram.types import Message
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 
 from utils.error import capture_err
 
