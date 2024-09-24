@@ -52,7 +52,7 @@ async def set_channel(chat_id: str, channel: str):
 async def must_join(chat_id):
     name = must.get(chat_id)
     if not name:
-        bot = mustdb.find_one({"chat_id": chat_id})
+        bot = await mustdb.find_one({"chat_id": chat_id})  # Ensure awaiting here
         if not bot:
             return "off"
         must[chat_id] = bot["getmust"]
