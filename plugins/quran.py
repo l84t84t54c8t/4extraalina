@@ -5,8 +5,8 @@ from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton as ikb
 from pyrogram.types import InlineKeyboardMarkup as ikm
-from YukkiMusic import app
-from YukkiMusic.core.call import Yukki
+from AlinaMusic import app
+from AlinaMusic.core.call import Alina
 
 
 @app.on_message(filters.command(["قورئان", "قورئانی پیرۆز", "/quran"], ""))
@@ -135,7 +135,7 @@ async def show_quran(c, cq):
     i = int(data[2])
     quran = json.loads(open("utils/quran.json").read())["s"]
     try:
-        await Yukki.join_call(
+        await Alina.join_call(
             cq.message.chat.id,
             cq.message.chat.id,
             quran[number]["sounds"][i]["url"],
@@ -164,7 +164,7 @@ async def show_quran(c, cq):
             )
         )
     except:
-        await Yukki.skip_stream(cq.message.chat.id, quran[number]["sounds"][i]["url"])
+        await Alina.skip_stream(cq.message.chat.id, quran[number]["sounds"][i]["url"])
         await cq.edit_message_reply_markup(
             ikm(
                 [
