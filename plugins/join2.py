@@ -2,7 +2,7 @@ from config import MUST_JOIN2
 from pyrogram import Client, filters
 from pyrogram.errors import ChatAdminRequired, ChatWriteForbidden, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_message(filters.incoming & filters.private, group=-2)
