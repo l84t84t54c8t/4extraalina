@@ -289,7 +289,7 @@ async def promoteFunc(_, message: Message):
     bot = (await app.get_chat_member(message.chat.id, app.id)).privileges
 
     if user_id == app.id:
-        return await message.reply_text("**ناتوانم خۆم دەربکەم بەڕێزم**")
+        return await message.reply_text("**ناتوانم خۆم بکەم بە ئەدمین بەڕێزم**")
     if not bot:
         return await message.reply_text("**من ئەدمین نیم بەرێزم**")
     if not bot.can_promote_members:
