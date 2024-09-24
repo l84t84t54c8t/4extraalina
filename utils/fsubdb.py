@@ -68,10 +68,11 @@ async def set_must(chat_id: str, m: str):
 
 
 async def joinch(message):
-    ii = await must_join(message._app.username)
+    # Access the username from message.from_user, not message._app.username
+    ii = await must_join(message.from_user.username)
     if ii == "off":
         return
-    cch = await get_channel(message._app.username)
+    cch = await get_channel(message.from_user.username)  # Corrected here as well
     ch = cch.replace("https://t.me/", "")
     try:
         await app.get_chat_member(ch, message.from_user.id)
