@@ -1,6 +1,6 @@
 from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from YukkiMusic import app
+from AlinaMusic import app
 
 
 @app.on_callback_query(filters.regex(r"^unpin"))
