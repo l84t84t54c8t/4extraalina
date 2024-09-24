@@ -1,6 +1,6 @@
 from pyrogram import filters
 from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
+from AlinaMusic.misc import SUDOERS
 
 
 # /eco command handler
