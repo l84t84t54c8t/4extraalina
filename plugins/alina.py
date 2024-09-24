@@ -2,9 +2,9 @@ import random
 
 from pyrogram import *
 from pyrogram.types import *
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.alina_ban import admin_filter
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.alina_ban import admin_filter
 
 Yumikoo_text = [
     "hey please don't disturb me.",
