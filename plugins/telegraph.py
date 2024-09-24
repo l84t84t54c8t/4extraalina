@@ -1,9 +1,9 @@
 import os
 
+from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from TheApi import api
-from AlinaMusic import app
 
 
 @app.on_message(filters.command(["tgm", "tgt", "telegraph", "tl"]))

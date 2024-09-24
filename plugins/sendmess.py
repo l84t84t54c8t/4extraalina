@@ -1,8 +1,8 @@
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.errors import RPCError
 from pyrogram.types import Message
-from AlinaMusic import app
-from AlinaMusic.misc import SUDOERS
 
 
 @app.on_message(filters.command("send") & SUDOERS)
