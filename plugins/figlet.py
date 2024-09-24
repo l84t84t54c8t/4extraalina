@@ -2,10 +2,10 @@ import asyncio
 from random import choice
 
 import pyfiglet
+from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
-from AlinaMusic import app
 
 
 def figle(text):
