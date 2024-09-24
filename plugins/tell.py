@@ -1,6 +1,6 @@
 from pyrogram import filters
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 
 
 # vc on
