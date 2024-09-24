@@ -11,9 +11,9 @@ from pyrogram.raw.functions.phone import (
     GetGroupParticipants,
 )
 from pyrogram.types import Message
-from YukkiMusic import app
-from YukkiMusic.utils.alina_ban import admin_filter
-from YukkiMusic.utils.database import get_assistant
+from AlinaMusic import app
+from AlinaMusic.utils.alina_ban import admin_filter
+from AlinaMusic.utils.database import get_assistant
 
 
 @app.on_message(
