@@ -1,12 +1,12 @@
 import os
 import random
 
+from AlinaMusic import app
 from config import BANNED_USERS, OWNER_ID
 from PIL import Image, ImageDraw
 from pyrogram import filters
 from pyrogram.enums import ChatAction, ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from AlinaMusic import app
 
 
 @app.on_message(
