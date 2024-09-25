@@ -369,14 +369,14 @@ async def check_powers_callback(_, query: CallbackQuery):
     def generate_privilege_buttons(privs):
         buttons = []
         for priv, name in [
-            ("can_change_info", "Change Info"),
-            ("can_invite_users", "Invite Users"),
-            ("can_delete_messages", "Delete Messages"),
-            ("can_restrict_members", "Restrict Members"),
-            ("can_pin_messages", "Pin Messages"),
-            ("can_promote_members", "Promote Members"),
-            ("can_manage_chat", "Manage Chat"),
-            ("can_manage_video_chats", "Manage Video Chats"),
+            ("can_change_info", "گۆرینی زانیاری"),
+            ("can_invite_users", "بانگهێشت کردن"),
+            ("can_delete_messages", "سڕینەوەی نامە"),
+            ("can_restrict_members", "باند و میوت"),
+            ("can_pin_messages", "هەڵواسینی نامە"),
+            ("can_promote_members", "زیادکردنی ئەدمین"),
+            ("can_manage_chat", "کۆنتڕۆلکردنی گرووپ"),
+            ("can_manage_video_chats", "کۆنتڕۆلکردنی تێل"),
         ]:
             state = "✅ ڕێپێدراو" if getattr(privs, priv, False) else "❌ ڕێپێنەدراو"
             buttons.append(
@@ -386,8 +386,8 @@ async def check_powers_callback(_, query: CallbackQuery):
                     )
                 ]
             )
-        buttons.append([InlineKeyboardButton("Back", callback_data="back")])
-        buttons.append([InlineKeyboardButton("Close", callback_data="close")])
+        buttons.append([InlineKeyboardButton("گەڕانەوە", callback_data="back")])
+        buttons.append([InlineKeyboardButton("داخستن", callback_data="close")])
         return buttons
 
     await query.message.edit_caption(
@@ -395,14 +395,14 @@ async def check_powers_callback(_, query: CallbackQuery):
         + "\n".join(
             f"{name}: {'✅ ڕێپێدراو' if getattr(user_privileges, priv, False) else '❌ ڕێپێنەدراو'}"
             for priv, name in [
-                ("can_change_info", "Change Info"),
-                ("can_invite_users", "Invite Users"),
-                ("can_delete_messages", "Delete Messages"),
-                ("can_restrict_members", "Restrict Members"),
-                ("can_pin_messages", "Pin Messages"),
-                ("can_promote_members", "Promote Members"),
-                ("can_manage_chat", "Manage Chat"),
-                ("can_manage_video_chats", "Manage Video Chats"),
+                ("can_change_info", "گۆرینی زانیاری"),
+                ("can_invite_users", "بانگهێشت کردن"),
+                ("can_delete_messages", "سڕینەوەی نامە"),
+                ("can_restrict_members", "باند و میوت"),
+                ("can_pin_messages", "هەڵواسینی نامە"),
+                ("can_promote_members", "زیادکردنی ئەدمین"),
+                ("can_manage_chat", "کۆنتڕۆلکردنی گرووپ"),
+                ("can_manage_video_chats", "کۆنتڕۆلکردنی تێل"),
             ]
         ),
         reply_markup=InlineKeyboardMarkup(generate_privilege_buttons(user_privileges)),
@@ -460,7 +460,7 @@ async def close_callback(_, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex(r"^back"))
 async def back_callback(_, query: CallbackQuery):
-    await query.message.edit_caption("کردار هەڵوەشایەوە")
+    await query.message.edit_caption("**هەڵوەشایەوە ❌**")
 
 
 # Demote Member
