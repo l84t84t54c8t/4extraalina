@@ -11,15 +11,15 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import get_assistant
 from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors.exceptions.bad_request_400 import UserAlreadyParticipant
-from pyrogram.types import ChatJoinRequest
-from pyrogram.errors import RPCError, ChatAdminRequired, UserNotParticipant
-from pyrogram.types import ChatPrivileges, Message
+from pyrogram.types import ChatJoinRequest, ChatPrivileges
+
 from utils.permissions import adminsOnly, member_permissions
-from AlinaMusic.utils.database import get_assistant
+
 approvaldb = mongodb.autoapprove
 
 
@@ -148,17 +148,17 @@ async def approve_all(client, message):
         if not approval_tasks.get(chat_id):
             await message.reply_text("**پڕۆسەی پەسەندکردن هەڵوەشایەوە**")
             break
-        
+
         try:
-            await app.promote_chat_member(chat_id,
-                                          userbot.id, 
-                                          privileges=ChatPrivileges(
-                                              can_change_info=True, 
-                                              can_invite_users=True,
-                                          ),
-                                          )
-                
-                
+            await app.promote_chat_member(
+                chat_id,
+                userbot.id,
+                privileges=ChatPrivileges(
+                    can_change_info=True,
+                    can_invite_users=True,
+                ),
+            )
+
             # Approving one user at a time
             await userbot.approve_chat_join_request(chat_id, user.from_user.id)
             await message.reply_text(
@@ -167,7 +167,9 @@ async def approve_all(client, message):
             )
             await sleep(2)  # Delay to simulate step-by-step approval
         except Exception as e:
-            await message.reply_text(f"**شکست لە پەسەندکردن :\nڕۆڵی ئەدمینی زیاترم پێبدە**")
+            await message.reply_text(
+                f"**شکست لە پەسەندکردن :\nڕۆڵی ئەدمینی زیاترم پێبدە**"
+            )
             continue
 
     if approval_tasks.get(chat_id):
