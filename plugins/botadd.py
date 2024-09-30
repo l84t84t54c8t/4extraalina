@@ -89,11 +89,18 @@ async def on_left_chat_member(_, message: Message):
                 if message.chat.username
                 else "گرووپی تایبەت"
             )
+            # Check if the group has a photo
+                if chat.photo:
+                    photo_file = await client.download_media(chat.photo.big_file_id)
+                else:
+                    # Select a random photo from the list if no group photo exists
+                    photo_file = random.choice(photo)
+                    
             chat_id = message.chat.id
             left = f"<b>✫ #دەرکردنی_بۆت ✫\n\nناوی گرووپ : {title}\n\nئایدی گرووپ : {chat_id}\n\nدەرکرا لەلایەن : {remove_by}\n\nبۆتی : @{app.username}</b>"
             await app.send_photo(
                 LOG_GROUP_ID,
-                photo=random.choice(photo),
+                photo=photo_file,
                 caption=left,
                 reply_markup=InlineKeyboardMarkup(
                     [
