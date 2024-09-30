@@ -21,7 +21,7 @@ async def must_join_channel(app: Client, msg: Message):
                     link = chat_info.invite_link
 
                 await msg.reply(
-                    f"**• Sorry . . {msg.from_user.mention}\n• You must first join the channel to use me\n• Channel: « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی کەناڵ بکەیت بۆ بەکارهێنانم\n• کەناڵ: « @{MUST_JOIN2} »**",
+                    f"**• Sorry . . {msg.from_user.mention}\n• You must first join the group to use me\n• Group: « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی گرووپ بکەیت بۆ بەکارهێنانم\n• گرووپ : « @{MUST_JOIN2} »**",
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
