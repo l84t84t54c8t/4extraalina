@@ -25,7 +25,7 @@ async def must_join_channel(app: Client, msg: Message):
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton("𓆩⌁ 𝗦𝗢𝗨𝗥𝗖𝞝 𝙄𝙌 ⌁𓆪", url=link),
+                                InlineKeyboardButton("𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=link),
                             ]
                         ]
                     ),
