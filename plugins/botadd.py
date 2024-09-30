@@ -91,7 +91,7 @@ async def on_left_chat_member(_, message: Message):
             )
             # Check if the group has a photo
                 if chat.photo:
-                    photo_file = await client.download_media(chat.photo.big_file_id)
+                    photo_file = await app.download_media(chat.photo.big_file_id)
                 else:
                     # Select a random photo from the list if no group photo exists
                     photo_file = random.choice(photo)
