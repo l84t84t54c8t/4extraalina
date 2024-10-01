@@ -26,6 +26,7 @@ photo = [
     "https://graph.org/file/774380facd73524f27d26.jpg",
 ]
 
+
 @app.on_message(filters.new_chat_members, group=-10)
 async def join_watcher(_, message):
     try:
@@ -69,6 +70,7 @@ async def join_watcher(_, message):
     except Exception as e:
         print(f"Error: {e}")
 
+
 @app.on_message(filters.left_chat_member, group=-12)
 async def on_left_chat_member(_, message: Message):
     try:
@@ -83,18 +85,14 @@ async def on_left_chat_member(_, message: Message):
             )
             chat = message.chat  # Retrieve the chat object here
             title = chat.title
-            username = (
-                f"@{chat.username}"
-                if chat.username
-                else "گرووپی تایبەت"
-            )
+            username = f"@{chat.username}" if chat.username else "گرووپی تایبەت"
             # Check if the group has a photo
             if chat.photo:
                 photo_file = await app.download_media(chat.photo.big_file_id)
             else:
                 # Select a random photo from the list if no group photo exists
                 photo_file = random.choice(photo)
-                    
+
             chat_id = chat.id
             left = f"<b>✫ #دەرکردنی_بۆت ✫\n\nناوی گرووپ : {title}\n\nئایدی گرووپ : {chat_id}\n\nدەرکرا لەلایەن : {remove_by}\n\nبۆتی : @{app.username}</b>"
             await app.send_photo(

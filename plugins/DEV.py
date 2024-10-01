@@ -9,7 +9,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from strings.filters import command
 
 
-
 @app.on_message(command(["/source", "سۆرس"]))
 async def huhh(client: Client, message: Message):
     await message.reply_photo(
