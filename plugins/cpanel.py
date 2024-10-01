@@ -2,7 +2,7 @@ from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import Client, filters
 
-from utils import set_channel, set_group, set_must
+from AlinaMusic.utils.database import set_channel, set_group, set_must
 
 
 @app.on_message(
