@@ -52,18 +52,23 @@ async def get_locked_features(chat_id: int):
 @app.on_message(filters.command("lock") & filters.group)
 async def lock_features(client, message):
     user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
-    
-    if user_status.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
+
+    if user_status.status not in [
+        enums.ChatMemberStatus.OWNER,
+        enums.ChatMemberStatus.ADMINISTRATOR,
+    ]:
         await message.reply_text("Only admins can lock features.")
         return
 
     # Command format: /lock <feature>
     if len(message.command) < 2:
-        await message.reply_text("Please specify what you want to lock (e.g., /lock messages, /lock media, /lock forwarded, /lock all).")
+        await message.reply_text(
+            "Please specify what you want to lock (e.g., /lock messages, /lock media, /lock forwarded, /lock all)."
+        )
         return
 
     feature_to_lock = message.command[1].lower()
-    
+
     # Fetch current chat details
     chat = await client.get_chat(message.chat.id)
     current_permissions = chat.permissions
@@ -118,7 +123,7 @@ async def lock_features(client, message):
             can_add_web_page_previews=False,
             can_send_custom_emojis=False,
             can_send_voice_notes=False,
-            can_send_video_notes=False
+            can_send_video_notes=False,
         )
     elif feature_to_lock == "forwarded":
         # Lock forwarded messages in the database
@@ -126,7 +131,9 @@ async def lock_features(client, message):
         await message.reply_text("Locked forwarded messages successfully.")
         return
     else:
-        await message.reply_text(f"Unknown lock feature: {feature_to_lock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all.")
+        await message.reply_text(
+            f"Unknown lock feature: {feature_to_lock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all."
+        )
         return
 
     try:
@@ -142,17 +149,22 @@ async def lock_features(client, message):
 async def unlock_features(client, message):
     user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
 
-    if user_status.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
+    if user_status.status not in [
+        enums.ChatMemberStatus.OWNER,
+        enums.ChatMemberStatus.ADMINISTRATOR,
+    ]:
         await message.reply_text("Only admins can unlock features.")
         return
 
     # Command format: /unlock <feature>
     if len(message.command) < 2:
-        await message.reply_text("Please specify what you want to unlock (e.g., /unlock messages, /unlock media, /unlock forwarded, /unlock all).")
+        await message.reply_text(
+            "Please specify what you want to unlock (e.g., /unlock messages, /unlock media, /unlock forwarded, /unlock all)."
+        )
         return
 
     feature_to_unlock = message.command[1].lower()
-    
+
     # Fetch current chat details
     chat = await client.get_chat(message.chat.id)
     current_permissions = chat.permissions
@@ -208,7 +220,7 @@ async def unlock_features(client, message):
             can_add_web_page_previews=True,
             can_send_custom_emojis=True,
             can_send_voice_notes=True,
-            can_send_video_notes=True
+            can_send_video_notes=True,
         )
     elif feature_to_unlock == "forwarded":
         # Unlock forwarded messages in the database
@@ -216,7 +228,9 @@ async def unlock_features(client, message):
         await message.reply_text("Unlocked forwarded messages successfully.")
         return
     else:
-        await message.reply_text(f"Unknown unlock feature: {feature_to_unlock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all.")
+        await message.reply_text(
+            f"Unknown unlock feature: {feature_to_unlock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all."
+        )
         return
 
     try:
