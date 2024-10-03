@@ -49,7 +49,7 @@ async def get_locked_features(chat_id: int):
 
 
 # Fetch current chat permissions
-async def get_current_permissions(client, chat_id):
+async def get_current_permissions(_, chat_id):
     chat = await app.get_chat(chat_id)
     return chat.permissions
 
