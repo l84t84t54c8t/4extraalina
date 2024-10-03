@@ -8,7 +8,7 @@ from strings.filters import command
 
 # Initialize
 
-
+"""
 @app.on_message(filters.command("group_info") & SUDOERS)
 async def group_info(_, message):
     # Fetch the served groups from the MongoDB
@@ -57,6 +57,64 @@ async def group_info(_, message):
     else:
         await message.reply("No valid group information found.")
 
+"""
+
+@app.on_message(filters.command("group"))  # Replace YOUR_USER_ID
+async def group_info(_, message):
+    try:
+        # Step 1: Fetch the served groups from the MongoDB
+        served_chats = await get_served_chats()
+
+        if not served_chats:
+            await message.reply("No groups found in the database.")
+            return
+
+        # Step 2: Initialize an empty list to store group details
+        groups_info = []
+
+        # Step 3: Loop through all the chats and fetch details
+        for chat_data in served_chats:
+            chat_id = chat_data["chat_id"]
+            try:
+                # Fetch the full chat information from Pyrogram API
+                chat = await app.get_chat(chat_id)
+                members_count = await app.get_chat_members_count(chat_id)
+                description = chat.description or "No description"
+                invite_link = "Not available"  # Default value
+
+                # Try generating an invite link if the bot has the rights
+                try:
+                    invite_link = await app.export_chat_invite_link(chat_id)
+                except Exception as e:
+                    invite_link = "Invite link not available (Bot lacks permissions)"
+
+                # Add group details to the list
+                group_details = (
+                    f"**Group Name:** {chat.title}\n"
+                    f"**Group ID:** {chat.id}\n"
+                    f"**Members:** {members_count}\n"
+                    f"**Description:** {description}\n"
+                    f"**Invite Link:** {invite_link}\n"
+                    f"**Type:** {chat.type}\n"
+                    f"**Username:** @{chat.username if chat.username else 'No username'}\n"
+                    f"**Creation Date:** {chat.date}\n\n"
+                )
+
+                groups_info.append(group_details)
+
+            except Exception as e:
+                # Log or display any error that occurs when fetching the group info
+                await message.reply(f"Failed to fetch info for chat ID {chat_id}: {str(e)}")
+
+        # Step 4: Reply with all the group info gathered
+        if groups_info:
+            await message.reply("**Group Information:**\n\n" + "\n".join(groups_info))
+        else:
+            await message.reply("No valid group information found.")
+
+    except Exception as e:
+        # Top-level error catch
+        await message.reply(f"An error occurred: {str(e)}")
 
 # ------------------------------------------------------------------------------- #
 
