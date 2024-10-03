@@ -1,5 +1,6 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
+from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.types import ChatPermissions
 
@@ -51,7 +52,7 @@ async def get_locked_features(chat_id: int):
 # Lock Command (Only admins or the owner can lock features)
 @app.on_message(filters.command("lock") & filters.group)
 async def lock_features(client, message):
-    if message.from_user.id != OWNER_ID and not await client.get_chat_member(
+    if message.from_user.id != SUDOERS and not await client.get_chat_member(
         message.chat.id, message.from_user.id
     ).status in ["administrator", "creator"]:
         await message.reply_text("Only admins can lock features.")
@@ -126,7 +127,7 @@ async def lock_features(client, message):
 # Unlock Command (Only admins or the owner can unlock features)
 @app.on_message(filters.command("unlock") & filters.group)
 async def unlock_features(client, message):
-    if message.from_user.id != OWNER_ID and not await client.get_chat_member(
+    if message.from_user.id != SUDOERS and not await client.get_chat_member(
         message.chat.id, message.from_user.id
     ).status in ["administrator", "creator"]:
         await message.reply_text("Only admins can unlock features.")
