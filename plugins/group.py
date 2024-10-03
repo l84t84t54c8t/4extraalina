@@ -59,69 +59,42 @@ async def group_info(_, message):
 
 """
 
+@app.on_message(
+    filters.command(["/chats", "/groups", "/group", "گرووپەکان"], "")
+)
+async def list_chats(_, message):
+    raju = await message.reply("Getting List Of Chats...")
+    chats = await get_served_chats()  # Fetching chats from your MongoDB
 
-@app.on_message(filters.command("group"))  # Replace YOUR_USER_ID
-async def group_info(_, message):
+    out = "Chats Saved In DB Are:\n\n"
+    
+    for chat_data in chats:
+        chat_id = chat_data["chat_id"]
+        try:
+            # Fetch the full chat information from Pyrogram API
+            chat = await app.get_chat(chat_id)
+            members_count = await app.get_chat_members_count(chat_id)
+            description = chat.description or "No description"
+            invite_link = chat.invite_link or "Not available"
+
+            # Add chat info to output
+            out += f"**Title:** `{chat.title}`\n"
+            out += f"**- ID:** `{chat_id}`\n"
+            out += f"**- Members:** {members_count}\n"
+            out += f"**- Description:** {description}\n"
+            out += f"**- Invite Link:** {invite_link}\n\n"
+
+        except Exception as e:
+            out += f"**Title:** `Unknown`\n**- ID:** `{chat_id}`\n**- Error:** {str(e)}\n\n"
+    
     try:
-        # Step 1: Fetch the served groups from the MongoDB
-        served_chats = await get_served_chats()
-
-        if not served_chats:
-            await message.reply("No groups found in the database.")
-            return
-
-        # Step 2: Initialize an empty list to store group details
-        groups_info = []
-
-        # Step 3: Loop through all the chats and fetch details
-        for chat_data in served_chats:
-            chat_id = chat_data["chat_id"]
-            try:
-                # Fetch the full chat information from Pyrogram API
-                chat = await app.get_chat(chat_id)
-
-                # Skip channels and private supergroups
-                if chat.type not in ["group", "supergroup"]:
-                    continue  # Ignore channels, only proceed with groups
-
-                members_count = await app.get_chat_members_count(chat_id)
-                description = chat.description or "No description"
-                invite_link = "Not available"  # Default value
-
-                # Try generating an invite link if the bot has the rights
-                try:
-                    invite_link = await app.export_chat_invite_link(chat_id)
-                except Exception as e:
-                    invite_link = "Invite link not available (Bot lacks permissions)"
-
-                # Add group details to the list
-                group_details = (
-                    f"**Group Name:** {chat.title}\n"
-                    f"**Group ID:** {chat.id}\n"
-                    f"**Members:** {members_count}\n"
-                    f"**Description:** {description}\n"
-                    f"**Invite Link:** {invite_link}\n"
-                    f"**Type:** {chat.type}\n"
-                    f"**Username:** @{chat.username if chat.username else 'No username'}\n"
-                )
-
-                groups_info.append(group_details)
-
-            except Exception as e:
-                # Log or display any error that occurs when fetching the group info
-                await message.reply(
-                    f"Failed to fetch info for chat ID {chat_id}: {str(e)}"
-                )
-
-        # Step 4: Reply with all the group info gathered
-        if groups_info:
-            await message.reply("**Group Information:**\n\n" + "\n".join(groups_info))
-        else:
-            await message.reply("No valid group information found.")
-
-    except Exception as e:
-        # Top-level error catch
-        await message.reply(f"An error occurred: {str(e)}")
+        # Try to send the list in the message
+        await raju.edit_text(out)
+    except MessageTooLong:
+        # If the message is too long, write the output to a file
+        with open("chats.txt", "w+") as outfile:
+            outfile.write(out)
+        await message.reply_document("chats.txt", caption="List Of Chats")
 
 
 # ------------------------------------------------------------------------------- #
