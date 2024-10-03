@@ -1,11 +1,60 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.alina_ban import admin_filter
-from AlinaMusic.utils.database import add_served_chat
+from AlinaMusic.utils.database import add_served_chat, get_served_chats
 from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from strings.filters import command
 
+# Initialize
+
+@app.on_message(filters.command("group_info") & SUDOERS) 
+async def group_info(_, message):
+    # Fetch the served groups from the MongoDB
+    served_chats = await get_served_chats()
+    
+    if not served_chats:
+        await message.reply("No groups found in the database.")
+        return
+
+    groups_info = []
+
+    for chat_data in served_chats:
+        chat_id = chat_data["chat_id"]
+        try:
+            # Fetch the full chat information from Pyrogram API
+            chat = await app.get_chat(chat_id)
+            members_count = await app.get_chat_members_count(chat_id)
+            description = chat.description or "No description"
+            invite_link = "Not available"  # Default in case of no admin rights
+            
+            # Attempt to generate invite link (admin permissions required)
+            try:
+                invite_link = await app.export_chat_invite_link(chat_id)
+            except:
+                pass
+
+            group_details = (
+                f"**ناوی گرووپ : {chat.title}**\n"
+                f"**ئایدی گرووپ : {chat.id}**\n"
+                f"**ئەندامەکان : {members_count}**\n"
+                f"**بایۆ : {description}**\n"
+                f"**لینکی گرووپ : {invite_link}**\n"
+                f"**جۆری گرووپ : {chat.type}**\n"
+                f"**یوزەری گرووپ: @{chat.username if chat.username else 'No username'}**\n"
+                f"**بەرواری درووستکردن : {chat.date}**\n\n"
+            )
+
+            groups_info.append(group_details)
+
+        except Exception as e:
+            groups_info.append(f"Failed to fetch info for chat ID {chat_id}: {str(e)}")
+
+    # Send the compiled information
+    if groups_info:
+        await message.reply("**Group Information:**\n\n" + "\n".join(groups_info))
+    else:
+        await message.reply("No valid group information found.")
 # ------------------------------------------------------------------------------- #
 
 
