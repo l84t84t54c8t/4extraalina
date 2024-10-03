@@ -59,7 +59,6 @@ async def group_info(_, message):
 
 """
 
-
 @app.on_message(filters.command("group"))  # Replace YOUR_USER_ID
 async def group_info(_, message):
     try:
@@ -79,6 +78,11 @@ async def group_info(_, message):
             try:
                 # Fetch the full chat information from Pyrogram API
                 chat = await app.get_chat(chat_id)
+
+                # Skip channels and private supergroups
+                if chat.type not in ["group", "supergroup"]:
+                    continue  # Ignore channels, only proceed with groups
+
                 members_count = await app.get_chat_members_count(chat_id)
                 description = chat.description or "No description"
                 invite_link = "Not available"  # Default value
@@ -104,9 +108,7 @@ async def group_info(_, message):
 
             except Exception as e:
                 # Log or display any error that occurs when fetching the group info
-                await message.reply(
-                    f"Failed to fetch info for chat ID {chat_id}: {str(e)}"
-                )
+                await message.reply(f"Failed to fetch info for chat ID {chat_id}: {str(e)}")
 
         # Step 4: Reply with all the group info gathered
         if groups_info:
@@ -117,6 +119,7 @@ async def group_info(_, message):
     except Exception as e:
         # Top-level error catch
         await message.reply(f"An error occurred: {str(e)}")
+
 
 
 # ------------------------------------------------------------------------------- #
