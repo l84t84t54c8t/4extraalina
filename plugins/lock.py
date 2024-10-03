@@ -51,8 +51,8 @@ async def get_locked_features(chat_id: int):
 # Lock Command (Only admins or the owner can lock features)
 # Lock Command (Only admins or the owner can lock features)
 @app.on_message(filters.command("lock") & filters.group)
-async def lock_features(client, message):
-    user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
+async def lock_features(_, message):
+    user_status = await app.get_chat_member(message.chat.id, message.from_user.id)
 
     if user_status.status not in [
         enums.ChatMemberStatus.OWNER,
@@ -71,7 +71,7 @@ async def lock_features(client, message):
     feature_to_lock = message.command[1].lower()
 
     # Fetch current permissions
-    current_permissions = await client.get_chat_permissions(message.chat.id)
+    current_permissions = await app.get_chat_permissions(message.chat.id)
 
     # Define the locking logic for each feature
     if feature_to_lock == "messages":
@@ -124,7 +124,7 @@ async def lock_features(client, message):
 
     try:
         # Apply the new permissions to the group
-        await client.set_chat_permissions(message.chat.id, permissions=permissions)
+        await app.set_chat_permissions(message.chat.id, permissions=permissions)
         await message.reply_text(f"Locked {feature_to_lock} successfully.")
     except Exception as e:
         await message.reply_text(f"Failed to lock {feature_to_lock}: {str(e)}")
@@ -132,8 +132,8 @@ async def lock_features(client, message):
 
 # Unlock Command (Only admins or the owner can unlock features)
 @app.on_message(filters.command("unlock") & filters.group)
-async def unlock_features(client, message):
-    user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
+async def unlock_features(_, message):
+    user_status = await app.get_chat_member(message.chat.id, message.from_user.id)
 
     if user_status.status not in [
         enums.ChatMemberStatus.OWNER,
@@ -152,7 +152,7 @@ async def unlock_features(client, message):
     feature_to_unlock = message.command[1].lower()
 
     # Fetch current permissions
-    current_permissions = await client.get_chat_permissions(message.chat.id)
+    current_permissions = await app.get_chat_permissions(message.chat.id)
 
     # Define the unlocking logic for each feature
     if feature_to_unlock == "messages":
@@ -205,7 +205,7 @@ async def unlock_features(client, message):
 
     try:
         # Apply the new permissions to the group
-        await client.set_chat_permissions(message.chat.id, permissions=permissions)
+        await app.set_chat_permissions(message.chat.id, permissions=permissions)
         await message.reply_text(f"Unlocked {feature_to_unlock} successfully.")
     except Exception as e:
         await message.reply_text(f"Failed to unlock {feature_to_unlock}: {str(e)}")
@@ -213,7 +213,7 @@ async def unlock_features(client, message):
 
 # Command to show lock status in the group
 @app.on_message(filters.command("lockstatus") & filters.group)
-async def lock_status(client, message):
+async def lock_status(_, message):
     locked_features = await get_locked_features(message.chat.id)
 
     if not locked_features:
@@ -224,7 +224,7 @@ async def lock_status(client, message):
 
 # Forwarded message handler (to enforce the lock on forwarded messages)
 @app.on_message(filters.forwarded & filters.group)
-async def forwarded_message_handler(client, message):
+async def forwarded_message_handler(_, message):
     # Check if forwarded messages are locked in this chat by querying MongoDB
     if await is_locked(message.chat.id, "forwarded"):
         try:
