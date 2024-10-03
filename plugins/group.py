@@ -75,13 +75,14 @@ async def list_chats(_, message):
             members_count = await app.get_chat_members_count(chat_id)
             description = chat.description or "No description"
             invite_link = chat.invite_link or "Not available"
+            username = chat.username or "Not available"
 
-            # Add chat info to output
-            out += f"**Title:** `{chat.title}`\n"
+
+            # Add chat info to outpu
             out += f"**- ID:** `{chat_id}`\n"
             out += f"**- Members:** {members_count}\n"
-            out += f"**- Description:** {description}\n"
             out += f"**- Invite Link:** {invite_link}\n\n"
+            out += f"**- Username:** @{username}\n\n"
 
         except Exception as e:
             out += f"**Title:** `Unknown`\n**- ID:** `{chat_id}`\n**- Error:** {str(e)}\n\n"
