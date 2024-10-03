@@ -49,55 +49,64 @@ async def get_locked_features(chat_id: int):
 
 
 # Lock Command (Only admins or the owner can lock features)
-# Lock Command (Only admins or the owner can lock features)
 @app.on_message(filters.command("lock") & filters.group)
-async def lock_features(_, message):
-    user_status = await app.get_chat_member(message.chat.id, message.from_user.id)
-
-    if user_status.status not in [
-        enums.ChatMemberStatus.OWNER,
-        enums.ChatMemberStatus.ADMINISTRATOR,
-    ]:
+async def lock_features(client, message):
+    user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
+    
+    if user_status.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
         await message.reply_text("Only admins can lock features.")
         return
 
     # Command format: /lock <feature>
     if len(message.command) < 2:
-        await message.reply_text(
-            "Please specify what you want to lock (e.g., /lock messages, /lock media, /lock forwarded, /lock all)."
-        )
+        await message.reply_text("Please specify what you want to lock (e.g., /lock messages, /lock media, /lock forwarded, /lock all).")
         return
 
     feature_to_lock = message.command[1].lower()
+    
+    # Fetch current chat details
+    chat = await client.get_chat(message.chat.id)
+    current_permissions = chat.permissions
 
-    # Fetch current permissions
-    current_permissions = await app.get_chat_permissions(message.chat.id)
+    # Create a permissions object to modify
+    permissions = ChatPermissions(
+        can_send_messages=current_permissions.can_send_messages,
+        can_send_media_messages=current_permissions.can_send_media_messages,
+        can_send_stickers=current_permissions.can_send_stickers,
+        can_send_animations=current_permissions.can_send_animations,
+        can_send_games=current_permissions.can_send_games,
+        can_use_inline_bots=current_permissions.can_use_inline_bots,
+        can_send_polls=current_permissions.can_send_polls,
+        can_add_web_page_previews=current_permissions.can_add_web_page_previews,
+        can_send_custom_emojis=current_permissions.can_send_custom_emojis,
+        can_send_voice_notes=current_permissions.can_send_voice_notes,
+        can_send_video_notes=current_permissions.can_send_video_notes,
+    )
 
     # Define the locking logic for each feature
     if feature_to_lock == "messages":
-        permissions = current_permissions.update(can_send_messages=False)
+        permissions.can_send_messages = False
     elif feature_to_lock == "media":
-        permissions = current_permissions.update(can_send_media_messages=False)
+        permissions.can_send_media_messages = False
     elif feature_to_lock == "stickers":
-        permissions = current_permissions.update(can_send_stickers=False)
+        permissions.can_send_stickers = False
     elif feature_to_lock == "gifs":
-        permissions = current_permissions.update(can_send_animations=False)
+        permissions.can_send_animations = False
     elif feature_to_lock == "polls":
-        permissions = current_permissions.update(can_send_polls=False)
+        permissions.can_send_polls = False
     elif feature_to_lock == "games":
-        permissions = current_permissions.update(can_send_games=False)
+        permissions.can_send_games = False
     elif feature_to_lock == "inline":
-        permissions = current_permissions.update(can_use_inline_bots=False)
+        permissions.can_use_inline_bots = False
     elif feature_to_lock == "web":
-        permissions = current_permissions.update(can_add_web_page_previews=False)
+        permissions.can_add_web_page_previews = False
     elif feature_to_lock == "emoji":
-        permissions = current_permissions.update(can_send_custom_emojis=False)
+        permissions.can_send_custom_emojis = False
     elif feature_to_lock == "voice":
-        permissions = current_permissions.update(can_send_voice_notes=False)
+        permissions.can_send_voice_notes = False
     elif feature_to_lock == "video_notes":
-        permissions = current_permissions.update(can_send_video_notes=False)
+        permissions.can_send_video_notes = False
     elif feature_to_lock == "all":
-        # Lock everything
         permissions = ChatPermissions(
             can_send_messages=False,
             can_send_media_messages=False,
@@ -109,7 +118,7 @@ async def lock_features(_, message):
             can_add_web_page_previews=False,
             can_send_custom_emojis=False,
             can_send_voice_notes=False,
-            can_send_video_notes=False,
+            can_send_video_notes=False
         )
     elif feature_to_lock == "forwarded":
         # Lock forwarded messages in the database
@@ -117,14 +126,12 @@ async def lock_features(_, message):
         await message.reply_text("Locked forwarded messages successfully.")
         return
     else:
-        await message.reply_text(
-            f"Unknown lock feature: {feature_to_lock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all."
-        )
+        await message.reply_text(f"Unknown lock feature: {feature_to_lock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all.")
         return
 
     try:
         # Apply the new permissions to the group
-        await app.set_chat_permissions(message.chat.id, permissions=permissions)
+        await client.set_chat_permissions(message.chat.id, permissions=permissions)
         await message.reply_text(f"Locked {feature_to_lock} successfully.")
     except Exception as e:
         await message.reply_text(f"Failed to lock {feature_to_lock}: {str(e)}")
@@ -132,51 +139,62 @@ async def lock_features(_, message):
 
 # Unlock Command (Only admins or the owner can unlock features)
 @app.on_message(filters.command("unlock") & filters.group)
-async def unlock_features(_, message):
-    user_status = await app.get_chat_member(message.chat.id, message.from_user.id)
+async def unlock_features(client, message):
+    user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
 
-    if user_status.status not in [
-        enums.ChatMemberStatus.OWNER,
-        enums.ChatMemberStatus.ADMINISTRATOR,
-    ]:
+    if user_status.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
         await message.reply_text("Only admins can unlock features.")
         return
 
     # Command format: /unlock <feature>
     if len(message.command) < 2:
-        await message.reply_text(
-            "Please specify what you want to unlock (e.g., /unlock messages, /unlock media, /unlock forwarded, /unlock all)."
-        )
+        await message.reply_text("Please specify what you want to unlock (e.g., /unlock messages, /unlock media, /unlock forwarded, /unlock all).")
         return
 
     feature_to_unlock = message.command[1].lower()
+    
+    # Fetch current chat details
+    chat = await client.get_chat(message.chat.id)
+    current_permissions = chat.permissions
 
-    # Fetch current permissions
-    current_permissions = await app.get_chat_permissions(message.chat.id)
+    # Create a permissions object to modify
+    permissions = ChatPermissions(
+        can_send_messages=current_permissions.can_send_messages,
+        can_send_media_messages=current_permissions.can_send_media_messages,
+        can_send_stickers=current_permissions.can_send_stickers,
+        can_send_animations=current_permissions.can_send_animations,
+        can_send_games=current_permissions.can_send_games,
+        can_use_inline_bots=current_permissions.can_use_inline_bots,
+        can_send_polls=current_permissions.can_send_polls,
+        can_add_web_page_previews=current_permissions.can_add_web_page_previews,
+        can_send_custom_emojis=current_permissions.can_send_custom_emojis,
+        can_send_voice_notes=current_permissions.can_send_voice_notes,
+        can_send_video_notes=current_permissions.can_send_video_notes,
+    )
 
     # Define the unlocking logic for each feature
     if feature_to_unlock == "messages":
-        permissions = current_permissions.update(can_send_messages=True)
+        permissions.can_send_messages = True
     elif feature_to_unlock == "media":
-        permissions = current_permissions.update(can_send_media_messages=True)
+        permissions.can_send_media_messages = True
     elif feature_to_unlock == "stickers":
-        permissions = current_permissions.update(can_send_stickers=True)
+        permissions.can_send_stickers = True
     elif feature_to_unlock == "gifs":
-        permissions = current_permissions.update(can_send_animations=True)
+        permissions.can_send_animations = True
     elif feature_to_unlock == "polls":
-        permissions = current_permissions.update(can_send_polls=True)
+        permissions.can_send_polls = True
     elif feature_to_unlock == "games":
-        permissions = current_permissions.update(can_send_games=True)
+        permissions.can_send_games = True
     elif feature_to_unlock == "inline":
-        permissions = current_permissions.update(can_use_inline_bots=True)
+        permissions.can_use_inline_bots = True
     elif feature_to_unlock == "web":
-        permissions = current_permissions.update(can_add_web_page_previews=True)
+        permissions.can_add_web_page_previews = True
     elif feature_to_unlock == "emoji":
-        permissions = current_permissions.update(can_send_custom_emojis=True)
+        permissions.can_send_custom_emojis = True
     elif feature_to_unlock == "voice":
-        permissions = current_permissions.update(can_send_voice_notes=True)
+        permissions.can_send_voice_notes = True
     elif feature_to_unlock == "video_notes":
-        permissions = current_permissions.update(can_send_video_notes=True)
+        permissions.can_send_video_notes = True
     elif feature_to_unlock == "all":
         # Unlock everything
         permissions = ChatPermissions(
@@ -190,7 +208,7 @@ async def unlock_features(_, message):
             can_add_web_page_previews=True,
             can_send_custom_emojis=True,
             can_send_voice_notes=True,
-            can_send_video_notes=True,
+            can_send_video_notes=True
         )
     elif feature_to_unlock == "forwarded":
         # Unlock forwarded messages in the database
@@ -198,14 +216,12 @@ async def unlock_features(_, message):
         await message.reply_text("Unlocked forwarded messages successfully.")
         return
     else:
-        await message.reply_text(
-            f"Unknown unlock feature: {feature_to_unlock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all."
-        )
+        await message.reply_text(f"Unknown unlock feature: {feature_to_unlock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all.")
         return
 
     try:
         # Apply the new permissions to the group
-        await app.set_chat_permissions(message.chat.id, permissions=permissions)
+        await client.set_chat_permissions(message.chat.id, permissions=permissions)
         await message.reply_text(f"Unlocked {feature_to_unlock} successfully.")
     except Exception as e:
         await message.reply_text(f"Failed to unlock {feature_to_unlock}: {str(e)}")
