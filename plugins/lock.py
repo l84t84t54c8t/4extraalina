@@ -1,40 +1,40 @@
+from pyrogram import Client, filters
+from pyrogram.types import ChatPermissions, enums
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
-from AlinaMusic.misc import SUDOERS
-from pyrogram import filters
-from pyrogram.types import ChatPermissions
 
 # MongoDB collections
 locksdb = mongodb.locks
-
 
 # Lock feature in the MongoDB database
 async def lock_feature_db(chat_id: int, feature: str) -> bool:
     chat = await locksdb.find_one({"chat_id": chat_id})
     locked = chat.get("locked", []) if chat else []
-
+    
     if feature not in locked:
         locked.append(feature)
         await locksdb.update_one(
-            {"chat_id": chat_id}, {"$set": {"locked": locked}}, upsert=True
+            {"chat_id": chat_id},
+            {"$set": {"locked": locked}},
+            upsert=True
         )
         return True
     return False
-
 
 # Unlock feature in the MongoDB database
 async def unlock_feature_db(chat_id: int, feature: str) -> bool:
     chat = await locksdb.find_one({"chat_id": chat_id})
     locked = chat.get("locked", []) if chat else []
-
+    
     if feature in locked:
         locked.remove(feature)
         await locksdb.update_one(
-            {"chat_id": chat_id}, {"$set": {"locked": locked}}, upsert=True
+            {"chat_id": chat_id},
+            {"$set": {"locked": locked}},
+            upsert=True
         )
         return True
     return False
-
 
 # Check if a feature is locked for a chat
 async def is_locked(chat_id: int, feature: str) -> bool:
@@ -42,27 +42,23 @@ async def is_locked(chat_id: int, feature: str) -> bool:
     locked = chat.get("locked", []) if chat else []
     return feature in locked
 
-
 # Get locked features for a chat
 async def get_locked_features(chat_id: int):
     chat = await locksdb.find_one({"chat_id": chat_id})
     return chat.get("locked", []) if chat else []
 
-
 # Lock Command (Only admins or the owner can lock features)
 @app.on_message(filters.command("lock") & filters.group)
 async def lock_features(client, message):
-    if message.from_user.id != SUDOERS and not await client.get_chat_member(
-        message.chat.id, message.from_user.id
-    ).status in ["administrator", "creator"]:
+    user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
+    
+    if user_status.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
         await message.reply_text("Only admins can lock features.")
         return
 
     # Command format: /lock <feature>
     if len(message.command) < 2:
-        await message.reply_text(
-            "Please specify what you want to lock (e.g., /lock messages, /lock media, /lock forwarded, /lock all)."
-        )
+        await message.reply_text("Please specify what you want to lock (e.g., /lock messages, /lock media, /lock forwarded, /lock all).")
         return
 
     feature_to_lock = message.command[1].lower()
@@ -103,7 +99,7 @@ async def lock_features(client, message):
             can_add_web_page_previews=False,
             can_send_custom_emojis=False,
             can_send_voice_notes=False,
-            can_send_video_notes=False,
+            can_send_video_notes=False
         )
     elif feature_to_lock == "forwarded":
         # Lock forwarded messages in the database
@@ -111,9 +107,7 @@ async def lock_features(client, message):
         await message.reply_text("Locked forwarded messages successfully.")
         return
     else:
-        await message.reply_text(
-            f"Unknown lock feature: {feature_to_lock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all."
-        )
+        await message.reply_text(f"Unknown lock feature: {feature_to_lock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all.")
         return
 
     try:
@@ -123,21 +117,18 @@ async def lock_features(client, message):
     except Exception as e:
         await message.reply_text(f"Failed to lock {feature_to_lock}: {str(e)}")
 
-
 # Unlock Command (Only admins or the owner can unlock features)
 @app.on_message(filters.command("unlock") & filters.group)
 async def unlock_features(client, message):
-    if message.from_user.id != SUDOERS and not await client.get_chat_member(
-        message.chat.id, message.from_user.id
-    ).status in ["administrator", "creator"]:
+    user_status = await client.get_chat_member(message.chat.id, message.from_user.id)
+
+    if user_status.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
         await message.reply_text("Only admins can unlock features.")
         return
 
     # Command format: /unlock <feature>
     if len(message.command) < 2:
-        await message.reply_text(
-            "Please specify what you want to unlock (e.g., /unlock messages, /unlock media, /unlock forwarded, /unlock all)."
-        )
+        await message.reply_text("Please specify what you want to unlock (e.g., /unlock messages, /unlock media, /unlock forwarded, /unlock all).")
         return
 
     feature_to_unlock = message.command[1].lower()
@@ -178,7 +169,7 @@ async def unlock_features(client, message):
             can_add_web_page_previews=True,
             can_send_custom_emojis=True,
             can_send_voice_notes=True,
-            can_send_video_notes=True,
+            can_send_video_notes=True
         )
     elif feature_to_unlock == "forwarded":
         # Unlock forwarded messages in the database
@@ -186,9 +177,7 @@ async def unlock_features(client, message):
         await message.reply_text("Unlocked forwarded messages successfully.")
         return
     else:
-        await message.reply_text(
-            f"Unknown unlock feature: {feature_to_unlock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all."
-        )
+        await message.reply_text(f"Unknown unlock feature: {feature_to_unlock}. Available options: messages, media, stickers, gifs, polls, games, inline, web, emoji, voice, video_notes, forwarded, all.")
         return
 
     try:
@@ -198,17 +187,15 @@ async def unlock_features(client, message):
     except Exception as e:
         await message.reply_text(f"Failed to unlock {feature_to_unlock}: {str(e)}")
 
-
 # Command to show lock status in the group
-@app.on_message(filters.command("locks") & filters.group)
+@app.on_message(filters.command("lockstatus") & filters.group)
 async def lock_status(client, message):
     locked_features = await get_locked_features(message.chat.id)
-
+    
     if not locked_features:
         await message.reply_text("No features are currently locked in this group.")
     else:
         await message.reply_text(f"Locked features: {', '.join(locked_features)}")
-
 
 # Forwarded message handler (to enforce the lock on forwarded messages)
 @app.on_message(filters.forwarded & filters.group)
