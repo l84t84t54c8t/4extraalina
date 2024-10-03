@@ -8,11 +8,12 @@ from strings.filters import command
 
 # Initialize
 
-@app.on_message(filters.command("group_info") & SUDOERS) 
+
+@app.on_message(filters.command("group_info") & SUDOERS)
 async def group_info(_, message):
     # Fetch the served groups from the MongoDB
     served_chats = await get_served_chats()
-    
+
     if not served_chats:
         await message.reply("No groups found in the database.")
         return
@@ -27,7 +28,7 @@ async def group_info(_, message):
             members_count = await app.get_chat_members_count(chat_id)
             description = chat.description or "No description"
             invite_link = "Not available"  # Default in case of no admin rights
-            
+
             # Attempt to generate invite link (admin permissions required)
             try:
                 invite_link = await app.export_chat_invite_link(chat_id)
@@ -55,6 +56,8 @@ async def group_info(_, message):
         await message.reply("**Group Information:**\n\n" + "\n".join(groups_info))
     else:
         await message.reply("No valid group information found.")
+
+
 # ------------------------------------------------------------------------------- #
 
 
