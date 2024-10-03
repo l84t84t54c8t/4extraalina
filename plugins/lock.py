@@ -76,7 +76,7 @@ async def lock_features(_, message):
     feature_to_lock = message.command[1].lower()
 
     # Fetch current permissions
-    current_permissions = await get_current_permissions(client, message.chat.id)
+    current_permissions = await get_current_permissions(_, message.chat.id)
 
     # Create a permissions object to modify
     permissions = ChatPermissions(
@@ -170,7 +170,7 @@ async def unlock_features(_, message):
     feature_to_unlock = message.command[1].lower()
 
     # Fetch current permissions
-    current_permissions = await get_current_permissions(client, message.chat.id)
+    current_permissions = await get_current_permissions(_, message.chat.id)
 
     # Create a permissions object to modify
     permissions = ChatPermissions(
