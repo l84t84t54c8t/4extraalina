@@ -60,13 +60,15 @@ async def group_info(_, message):
 """
 
 
-@app.on_message(filters.command(["/chats", "/groups", "/group", "گرووپەکان"], ""))
+@app.on_message(
+    filters.command(["/chats", "/groups", "/group", "گرووپەکان"], "")
+)
 async def list_chats(_, message):
     raju = await message.reply("Getting List Of Chats...")
     chats = await get_served_chats()  # Fetching chats from your MongoDB
 
     out = "Chats Saved In DB Are:\n\n"
-
+    
     for chat_data in chats:
         chat_id = chat_data["chat_id"]
         try:
@@ -86,14 +88,18 @@ async def list_chats(_, message):
         except Exception as e:
             out += f"**Title:** `Unknown`\n**- ID:** `{chat_id}`\n**- Error:** {str(e)}\n\n"
 
-    try:
-        # Try to send the list in the message
-        await raju.edit_text(out)
-    except MessageTooLong:
-        # If the message is too long, write the output to a file
+    # Check if the message is too long for Telegram (limit: ~4096 characters)
+    if len(out) > 4096:
         with open("chats.txt", "w+") as outfile:
             outfile.write(out)
         await message.reply_document("chats.txt", caption="List Of Chats")
+    elif len(out.strip()) == 0:
+        await raju.edit_text("No chat information available.")
+    else:
+        try:
+            await raju.edit_text(out)
+        except Exception as e:
+            await raju.edit_text(f"An error occurred: {str(e)}")
 
 
 # ------------------------------------------------------------------------------- #
