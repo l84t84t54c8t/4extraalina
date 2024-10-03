@@ -98,7 +98,6 @@ async def group_info(_, message):
                     f"**Invite Link:** {invite_link}\n"
                     f"**Type:** {chat.type}\n"
                     f"**Username:** @{chat.username if chat.username else 'No username'}\n"
-                    f"**Creation Date:** {chat.date}\n\n"
                 )
 
                 groups_info.append(group_details)
