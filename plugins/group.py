@@ -77,7 +77,6 @@ async def list_chats(_, message):
             invite_link = chat.invite_link or "Not available"
             username = chat.username or "Not available"
 
-
             # Add chat info to outpu
             out += f"**- ID:** `{chat_id}`\n"
             out += f"**- Members:** {members_count}\n"
