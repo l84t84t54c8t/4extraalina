@@ -6,6 +6,47 @@ from pyrogram.types import ChatPermissions
 # MongoDB collections
 locksdb = mongodb.locks
 
+# Lock feature in the MongoDB database
+async def lock_feature_db(chat_id: int, feature: str) -> bool:
+    chat = await locksdb.find_one({"chat_id": chat_id})
+    locked = chat.get("locked", []) if chat else []
+    
+    if feature not in locked:
+        locked.append(feature)
+        await locksdb.update_one(
+            {"chat_id": chat_id},
+            {"$set": {"locked": locked}},
+            upsert=True
+        )
+        return True
+    return False
+
+# Unlock feature in the MongoDB database
+async def unlock_feature_db(chat_id: int, feature: str) -> bool:
+    chat = await locksdb.find_one({"chat_id": chat_id})
+    locked = chat.get("locked", []) if chat else []
+    
+    if feature in locked:
+        locked.remove(feature)
+        await locksdb.update_one(
+            {"chat_id": chat_id},
+            {"$set": {"locked": locked}},
+            upsert=True
+        )
+        return True
+    return False
+
+# Check if a feature is locked for a chat
+async def is_locked(chat_id: int, feature: str) -> bool:
+    chat = await locksdb.find_one({"chat_id": chat_id})
+    locked = chat.get("locked", []) if chat else []
+    return feature in locked
+
+# Get locked features for a chat
+async def get_locked_features(chat_id: int):
+    chat = await locksdb.find_one({"chat_id": chat_id})
+    return chat.get("locked", []) if chat else []
+
 
 # Fetch current chat permissions
 async def get_current_permissions(client, chat_id):
