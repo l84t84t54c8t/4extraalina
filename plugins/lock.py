@@ -82,7 +82,6 @@ async def lock_features(_, message):
     permissions = ChatPermissions(
         can_send_messages=current_permissions.can_send_messages,
         can_send_media_messages=current_permissions.can_send_media_messages,
-        can_send_stickers=current_permissions.can_send_stickers,
         can_send_animations=current_permissions.can_send_animations,
         can_send_games=current_permissions.can_send_games,
         can_use_inline_bots=current_permissions.can_use_inline_bots,
@@ -98,8 +97,6 @@ async def lock_features(_, message):
         permissions.can_send_messages = False
     elif feature_to_lock == "media":
         permissions.can_send_media_messages = False
-    elif feature_to_lock == "stickers":
-        permissions.can_send_stickers = False
     elif feature_to_lock == "gifs":
         permissions.can_send_animations = False
     elif feature_to_lock == "polls":
@@ -120,7 +117,6 @@ async def lock_features(_, message):
         permissions = ChatPermissions(
             can_send_messages=False,
             can_send_media_messages=False,
-            can_send_stickers=False,
             can_send_animations=False,
             can_send_games=False,
             can_use_inline_bots=False,
@@ -176,7 +172,6 @@ async def unlock_features(_, message):
     permissions = ChatPermissions(
         can_send_messages=current_permissions.can_send_messages,
         can_send_media_messages=current_permissions.can_send_media_messages,
-        can_send_stickers=current_permissions.can_send_stickers,
         can_send_animations=current_permissions.can_send_animations,
         can_send_games=current_permissions.can_send_games,
         can_use_inline_bots=current_permissions.can_use_inline_bots,
@@ -192,8 +187,6 @@ async def unlock_features(_, message):
         permissions.can_send_messages = True
     elif feature_to_unlock == "media":
         permissions.can_send_media_messages = True
-    elif feature_to_unlock == "stickers":
-        permissions.can_send_stickers = True
     elif feature_to_unlock == "gifs":
         permissions.can_send_animations = True
     elif feature_to_unlock == "polls":
@@ -214,7 +207,6 @@ async def unlock_features(_, message):
         permissions = ChatPermissions(
             can_send_messages=True,
             can_send_media_messages=True,
-            can_send_stickers=True,
             can_send_animations=True,
             can_send_games=True,
             can_use_inline_bots=True,
