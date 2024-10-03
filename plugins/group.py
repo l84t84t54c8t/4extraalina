@@ -60,15 +60,13 @@ async def group_info(_, message):
 """
 
 
-@app.on_message(
-    filters.command(["/chats", "/groups", "/group", "گرووپەکان"], "")
-)
+@app.on_message(filters.command(["/chats", "/groups", "/group", "گرووپەکان"], ""))
 async def list_chats(_, message):
     raju = await message.reply("Getting List Of Chats...")
     chats = await get_served_chats()  # Fetching chats from your MongoDB
 
     out = "Chats Saved In DB Are:\n\n"
-    
+
     for chat_data in chats:
         chat_id = chat_data["chat_id"]
         try:
