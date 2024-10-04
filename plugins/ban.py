@@ -150,8 +150,6 @@ async def kickFunc(_, message: Message):
         await message.reply_to_message.delete()
         await app.delete_user_history(message.chat.id, user_id)
     await message.reply_text(msg)
-    await asyncio.sleep(1)
-    await message.chat.unban_member(user_id)
 
 
 # Ban members
