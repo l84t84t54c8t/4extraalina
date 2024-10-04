@@ -3,6 +3,7 @@ from pyrogram import filters
 
 SLEEP = 0.1
 
+
 @app.on_message(filters.regex("^بڵێ|^بلی") & filters.group)
 async def say(app, message):
     if message.text.startswith("بلی") and message.reply_to_message:
