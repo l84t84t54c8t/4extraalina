@@ -3,6 +3,7 @@ from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden
 
+
 @app.on_message(filters.forwarded)
 async def gjgh(app, m):
     if m.chat is None or m.from_user is None:
