@@ -137,25 +137,24 @@ async def kickFunc(_, message: Message):
         )
     ]:
         return await message.reply_text("**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**")
+    
     mention = (await app.get_users(user_id)).mention
     msg = f"""
 **بەکارهێنەر : {mention}**
-**دەرکرا لەلایەن : {message.from_user.mention if message.from_user else 'بەکارهێنەری نەناسراو'} **
+**دەرکرا لەلایەن : {message.from_user.mention if message.from_user else 'بەکارهێنەری نەناسراو'}**
 **هۆکار : {reason or 'هیچ هۆکارێك نییە'}**"""
     await message.chat.ban_member(user_id)
-    replied_message = message.reply_to_message
-    if replied_message:
-        message = replied_message
+    
+    # Check if message.command exists and has a valid length
+    if message.command and len(message.command[0]) > 0 and message.command[0][0] == "s":
+        await message.reply_to_message.delete()
+        await app.delete_user_history(message.chat.id, user_id)
     await message.reply_text(msg)
     await asyncio.sleep(1)
     await message.chat.unban_member(user_id)
-    if message.command[0][0] == "s":
-        await message.reply_to_message.delete()
-        await app.delete_user_history(message.chat.id, user_id)
 
 
 # Ban members
-
 
 @app.on_message(
     filters.command(["دەرم بکە", "/kickme", "/banme"], "")
@@ -177,19 +176,20 @@ async def fire_user(_, message: Message):
         )
     ]:
         return await message.reply_text("**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**")
+    
     await message.reply_text("**یەللە بۆ دەرەوە**")
     await app.ban_chat_member(message.chat.id, message.from_user.id)
 
 
 @app.on_message(
-    filters.command(["/ban", "/sban", "/tban", "باند", "باندی کاتی"], "")
+    filters.command(["/ban", "/sban", "/tban", "باندی کاتی"], "")
     & ~filters.private
     & ~BANNED_USERS
 )
 @adminsOnly("can_restrict_members")
 async def banFunc(_, message: Message):
     user_id, reason = await extract_user_and_reason(message, sender_chat=True)
-
+    
     if not user_id:
         return await message.reply_text("**ناتوانم بەکارهێنەر بدۆزمەوە**")
     if user_id == app.id:
@@ -203,7 +203,7 @@ async def banFunc(_, message: Message):
         )
     ]:
         return await message.reply_text("**ناتوانم ئەدمینی تر دەربکەم بەڕێزم**")
-
+    
     try:
         mention = (await app.get_users(user_id)).mention
     except IndexError:
@@ -212,14 +212,16 @@ async def banFunc(_, message: Message):
             if message.reply_to_message
             else "بەکارهێنەری نەناسراو"
         )
-
+    
     msg = (
         f"**بەکارهێنەر : {mention}\n**"
         f"**دەرکرا لەلایەن : {message.from_user.mention if message.from_user else 'بەکارهێنەری نەناسراو'}\n**"
     )
-    if message.command[0][0] == "s":
+    
+    if message.command and len(message.command[0]) > 0 and message.command[0][0] == "s":
         await message.reply_to_message.delete()
         await app.delete_user_history(message.chat.id, user_id)
+    
     if message.command[0] == "tban":
         split = reason.split(None, 1)
         time_value = split[0]
@@ -238,13 +240,16 @@ async def banFunc(_, message: Message):
             else:
                 await message.reply_text("**ناتوانی لە 99 زیاتر بەکاربێنی**")
         return
+    
     if reason:
         msg += f"**هۆکار : {reason}**"
+    
     await message.chat.ban_member(user_id)
     replied_message = message.reply_to_message
     if replied_message:
         message = replied_message
     await message.reply_text(msg)
+
 
 
 # Unban members
