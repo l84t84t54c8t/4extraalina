@@ -1,4 +1,5 @@
 from typing import Optional, Union
+
 from AlinaMusic import app as Hiroko
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import enums
@@ -10,6 +11,7 @@ get_font = lambda font_size, font_path: ImageFont.truetype(font_path, font_size)
 resize_text = lambda text_size, text: (
     (text[:text_size] + "...").upper() if len(text) > text_size else text.upper()
 )
+
 
 async def get_userinfo_img(
     bg_path: str,
@@ -43,6 +45,7 @@ async def get_userinfo_img(
     bg.save(path)
     return path
 
+
 # Function to get user status
 async def userstatus(user_id):
     try:
@@ -62,6 +65,7 @@ async def userstatus(user_id):
         print(f"Error fetching user status: {e}")
         return "**هەندێك هەڵە ڕوویدا!**"
 
+
 # Command handler for /info and /userinfo
 @Hiroko.on_message(command(["/info", "/userinfo", "info", "id", "ا", "ئایدی"]))
 async def userinfo(_, message):
@@ -74,7 +78,7 @@ async def userinfo(_, message):
             user_id = message.reply_to_message.from_user.id
         elif len(message.command) > 1:
             user_id = message.command[1]
-        
+
         user_info = await Hiroko.get_chat(user_id)
         user = await Hiroko.get_users(user_id)
         status = await userstatus(user.id)
@@ -100,9 +104,9 @@ async def userinfo(_, message):
             welcome_photo = await get_userinfo_img(
                 bg_path="assets/userinfo.png",
                 font_path="assets/hiroko.ttf",
-                user_id=user_id
+                user_id=user_id,
             )
-        
+
         await message.reply_photo(
             photo=welcome_photo,
             caption=f"""**زانیاری بەڕێزت♥🙇🏻‍♂️\n
