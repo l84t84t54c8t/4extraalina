@@ -85,10 +85,10 @@ async def userinfo(_, message):
 
         # Safely retrieve user information
         id = user_info.id
-        name = user_info.first_name or "Unknown"
-        username = user_info.username or "Not set"
-        mention = user.mention or "Not available"
-        bio = user_info.bio or "No bio available"
+        name = user_info.first_name or "نەناسراو"
+        username = user_info.username or "نییەتی"
+        mention = user.mention or "بەردەست نییە"
+        bio = user_info.bio or "بەردەست نییە"
 
         # Check if user has a profile photo
         if user.photo and user.photo.big_file_id:
@@ -112,7 +112,7 @@ async def userinfo(_, message):
             caption=f"""**زانیاری بەڕێزت♥🙇🏻‍♂️\n
  ✧ ¦ نـاوت ← {mention}
  ✧ ¦ یـوزەرت ← @{username}
- ✧ ¦ ئـایدی ← `{id}`\n
+ ✧ ¦ ئـایدی ← `{id}`
  ✧ ¦ ئـەکـتـیـڤـی بـەکـارهـێـنـەر ←\n`{status}`\n
  ✧ ¦ بـایـۆ ← {bio}\n\n
             **""",
