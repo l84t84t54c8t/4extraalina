@@ -1,5 +1,4 @@
 from typing import Optional, Union
-
 from AlinaMusic import app as Hiroko
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import enums
@@ -11,7 +10,6 @@ get_font = lambda font_size, font_path: ImageFont.truetype(font_path, font_size)
 resize_text = lambda text_size, text: (
     (text[:text_size] + "...").upper() if len(text) > text_size else text.upper()
 )
-
 
 async def get_userinfo_img(
     bg_path: str,
@@ -45,9 +43,7 @@ async def get_userinfo_img(
     bg.save(path)
     return path
 
-
 # Function to get user status
-# noinspection PyBroadException
 async def userstatus(user_id):
     try:
         user = await Hiroko.get_users(user_id)
@@ -62,9 +58,9 @@ async def userstatus(user_id):
             return "User is offline."
         elif x == enums.UserStatus.ONLINE:
             return "User is online."
-    except:
+    except Exception as e:
+        print(f"Error fetching user status: {e}")
         return "**هەندێك هەڵە ڕوویدا!**"
-
 
 # Command handler for /info and /userinfo
 @Hiroko.on_message(command(["/info", "/userinfo", "info", "id", "ا", "ئایدی"]))
@@ -73,20 +69,24 @@ async def userinfo(_, message):
     user_id = message.from_user.id
 
     try:
-        if not message.reply_to_message and len(message.command) == 2:
-            user_id = message.text.split(None, 1)[1]
-        elif message.reply_to_message:
+        # Determine user ID based on the context
+        if message.reply_to_message:
             user_id = message.reply_to_message.from_user.id
-
+        elif len(message.command) > 1:
+            user_id = message.command[1]
+        
         user_info = await Hiroko.get_chat(user_id)
         user = await Hiroko.get_users(user_id)
         status = await userstatus(user.id)
-        id = user_info.id
-        name = user_info.first_name
-        username = user_info.username
-        mention = user.mention
-        bio = user_info.bio
 
+        # Safely retrieve user information
+        id = user_info.id
+        name = user_info.first_name or "Unknown"
+        username = user_info.username or "Not set"
+        mention = user.mention or "Not available"
+        bio = user_info.bio or "No bio available"
+
+        # Check if user has a profile photo
         if user.photo and user.photo.big_file_id:
             photo = await Hiroko.download_media(user.photo.big_file_id)
             welcome_photo = await get_userinfo_img(
@@ -95,28 +95,33 @@ async def userinfo(_, message):
                 user_id=user_id,
                 profile_path=photo,
             )
-            await message.reply_photo(
-                photo=welcome_photo,
-                caption=f"""**زانیاری بەڕێزت♥🙇🏻‍♂️\n
+        else:
+            # Use the background image when there is no profile photo
+            welcome_photo = await get_userinfo_img(
+                bg_path="assets/userinfo.png",
+                font_path="assets/hiroko.ttf",
+                user_id=user_id
+            )
+        
+        await message.reply_photo(
+            photo=welcome_photo,
+            caption=f"""**زانیاری بەڕێزت♥🙇🏻‍♂️\n
  ✧ ¦ نـاوت ← {mention}
  ✧ ¦ یـوزەرت ← @{username}
- ✧ ¦ ئـایدی ← `{id}`
+ ✧ ¦ ئـایدی ← `{id}`\n
  ✧ ¦ ئـەکـتـیـڤـی بـەکـارهـێـنـەر ←\n`{status}`\n
  ✧ ¦ بـایـۆ ← {bio}\n\n
             **""",
-                reply_markup=InlineKeyboardMarkup(
+            reply_markup=InlineKeyboardMarkup(
+                [
                     [
-                        [
-                            InlineKeyboardButton(
-                                name, url=f"https://t.me/{message.from_user.username}"
-                            )
-                        ],
-                    ]
-                ),
-            )
-        else:
-            await Hiroko.send_message(
-                chat_id, text=f"User {user_info.first_name} has no profile photo."
-            )
+                        InlineKeyboardButton(
+                            name, url=f"https://t.me/{message.from_user.username}"
+                        )
+                    ],
+                ]
+            ),
+        )
+
     except Exception as e:
-        await message.reply_text(str(e))
+        await message.reply_text(f"Error: {str(e)}")
