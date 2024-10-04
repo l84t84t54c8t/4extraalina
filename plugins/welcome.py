@@ -25,8 +25,9 @@ from .notes import extract_urls
 
 
 async def handle_new_member(member, chat):
-
     try:
+        if not member or not member.id:  # Check if member exists
+            return
         if member.id in SUDOERS:
             return
         if await is_gbanned_user(member.id):
@@ -41,7 +42,6 @@ async def handle_new_member(member, chat):
         if member.is_bot:
             return
         return await send_welcome_message(chat, member.id)
-
     except ChatAdminRequired:
         return
 
@@ -57,6 +57,8 @@ async def welcome(_, user: ChatMemberUpdated):
         return
 
     member = user.new_chat_member.user if user.new_chat_member else user.from_user
+    if not member:
+        return  # Prevent AttributeError if member is None
     chat = user.chat
     return await handle_new_member(member, chat)
 
