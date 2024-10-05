@@ -717,7 +717,7 @@ async def remove_warning(_, cq: CallbackQuery):
     warn = {"warns": warns - 1}
     await add_warn(chat_id, await int_to_alpha(user_id), warn)
     text = cq.message.text.markdown
-    text = f"**~~{text}~~\n\n**"
+    text = f"~~{text}~~\n\n"
     text += f"**ئاگاداری سڕدرایەوە لەلایەن : {from_user.mention} **"
     await cq.message.edit(text)
 
