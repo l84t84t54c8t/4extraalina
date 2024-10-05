@@ -684,11 +684,11 @@ async def warn_user(_, message: Message):
         await remove_warns(chat_id, await int_to_alpha(user_id))
     else:
         warn = {"warns": warns + 1}
-        msg = f"""
-**بەکارهێنەر ئاگادارکرایەوە : {mention}**
-**لەلایەن : {message.from_user.mention if message.from_user else 'نەناسراو'}**
-**هۆکار : {reason or 'هیچ هۆکارێک نییە'}**
-**ژمارەی ئاگادارکردنەوە : {warns + 1}/3**"""
+        msg = f"""**
+بەکارهێنەر ئاگادارکرایەوە : {mention}
+لەلایەن : {message.from_user.mention if message.from_user else 'نەناسراو'}
+هۆکار : {reason or 'هیچ هۆکارێک نییە'}
+ژمارەی ئاگادارکردنەوە : {warns + 1}/3**"""
         replied_message = message.reply_to_message
         if replied_message:
             message = replied_message
@@ -717,8 +717,8 @@ async def remove_warning(_, cq: CallbackQuery):
     warn = {"warns": warns - 1}
     await add_warn(chat_id, await int_to_alpha(user_id), warn)
     text = cq.message.text.markdown
-    text = f"~~{text}~~\n\n"
-    text += f"- ئاگاداری سڕدرایەوە لەلایەن : {from_user.mention} **"
+    text = f"~~ {text} ~~\n\n"
+    text += f"**- ئاگاداری سڕدرایەوە لەلایەن : {from_user.mention} **"
     await cq.message.edit(text)
 
 
