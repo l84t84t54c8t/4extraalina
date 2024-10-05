@@ -16,10 +16,12 @@ def get_ai_chat_response(user_message):
             model="gpt-4",  # You can change to "gpt-3.5-turbo" if needed
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_message}
-            ]
+                {"role": "user", "content": user_message},
+            ],
         )
-        return response['choices'][0]['message']['content'].strip()  # Extract the AI-generated message
+        return response["choices"][0]["message"][
+            "content"
+        ].strip()  # Extract the AI-generated message
     except Exception as e:
         return f"Error: {e}"
 
