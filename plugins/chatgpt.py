@@ -5,7 +5,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 # Set your OpenAI API Key
-openai.api_key = "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"  # Replace with your OpenAI API key
+openai.api_key = "sk-svcacct-Iqac6w1z7uS8YvcGBQ0pAAOYXfPM4zUVNS1wgy74mTpHTLJb2v-U_zQtfDmkCaT3BlbkFJlbH6qgPs5XQsrL30rbAkvC2Ko7nd-eiWUb6YysPsNgEbiER56Q3SdA744Sbl4A"  # Replace with your OpenAI API key
 
 
 # Function to generate AI responses using OpenAI Chat API
