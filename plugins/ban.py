@@ -653,9 +653,7 @@ async def warn_user(_, message: Message):
     if user_id == app.id:
         return await message.reply_text("**- ناتوانم خۆم ئاگاداربکەمەوە بەڕێزم **")
     if user_id in SUDOERS:
-        return await message.reply_text(
-            "**- ناتوانم گەشەپێدەرەکەم ئاگاداربکەمەوە **"
-        )
+        return await message.reply_text("**- ناتوانم گەشەپێدەرەکەم ئاگاداربکەمەوە **")
     if user_id in [
         member.user.id
         async for member in app.get_chat_members(
@@ -680,7 +678,9 @@ async def warn_user(_, message: Message):
         await app.delete_user_history(message.chat.id, user_id)
     if warns >= 2:
         await message.chat.ban_member(user_id)
-        await message.reply_text(f"**- ژمارەی ئاگادارکردنەوەکانی : {mention}\n- زۆر بووە، دەرمکرد**")
+        await message.reply_text(
+            f"**- ژمارەی ئاگادارکردنەوەکانی : {mention}\n- زۆر بووە، دەرمکرد**"
+        )
         await remove_warns(chat_id, await int_to_alpha(user_id))
     else:
         warn = {"warns": warns + 1}
@@ -751,8 +751,12 @@ async def check_warns(_, message: Message):
     if warns:
         warns = warns["warns"]
     else:
-        return await message.reply_text(f"**- بەکارهێنەر : {mention}\n- ئاگادار نەکراوەتەوە**")
-    return await message.reply_text(f"**- بەکارهێنەر :{mention}\n- ژمارەی ئاگاداری : {warns} لە 3**")
+        return await message.reply_text(
+            f"**- بەکارهێنەر : {mention}\n- ئاگادار نەکراوەتەوە**"
+        )
+    return await message.reply_text(
+        f"**- بەکارهێنەر :{mention}\n- ژمارەی ئاگاداری : {warns} لە 3**"
+    )
 
 
 @app.on_message(filters.command("unbanme"))
