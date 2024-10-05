@@ -11,16 +11,15 @@ openai.api_key = "sk-svcacct-Iqac6w1z7uS8YvcGBQ0pAAOYXfPM4zUVNS1wgy74mTpHTLJb2v-
 # Function to generate AI responses using OpenAI Chat API
 def get_ai_chat_response(user_message):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Use "gpt-4" if you have access
+        # Updated API usage
+        response = openai.chat_completions.create(
+            model="gpt-4",  # Use "gpt-3.5-turbo" if you prefer
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": user_message},
-            ],
+                {"role": "user", "content": user_message}
+            ]
         )
-        return response["choices"][0]["message"][
-            "content"
-        ].strip()  # Get the chat response
+        return response['choices'][0]['message']['content'].strip()  # Get the chat response
     except Exception as e:
         return f"Error: {e}"
 
