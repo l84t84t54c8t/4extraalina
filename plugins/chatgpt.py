@@ -1,9 +1,8 @@
+from AlinaMusic import app
+from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.enums import ChatAction
 from TheApi import api
-
-from AlinaMusic import app
-from config import BANNED_USERS
 
 
 @app.on_message(filters.command(["chatgpt", "gpt", "ai", "ask"]) & ~BANNED_USERS)
