@@ -34,9 +34,13 @@ async def heart_animation(app, message):
     try:
         if message.reply_to_message:  # Check if the message is a reply
             target_user = message.reply_to_message.from_user  # Get the replied user
-            msg = await message.reply_to_message.reply(f"🧡 @{target_user.username}" if target_user.username else "🧡")
+            msg = await message.reply_to_message.reply(
+                f"🧡 @{target_user.username}" if target_user.username else "🧡"
+            )
         else:
-            msg = await message.reply("🧡.")  # Default reply if there's no reply message
+            msg = await message.reply(
+                "🧡."
+            )  # Default reply if there's no reply message
 
         deq = deque(list("❤️🧡💛💚💙💜🖤"))
         for _ in range(20):  # Reduced iterations
