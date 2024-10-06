@@ -29,37 +29,22 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-@app.on_message(filters.command(["دڵی", "دلی", "dly", "dli", "dlly", "dlli"], ""))
-async def hearts_animation(app, message):
+@app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], ""))
+async def heart_animation(app, message):
     try:
-        animation_interval = 0.5  # Increased to reduce spamming
-        animation_ttl = range(20)  # Reduced the number of iterations
-        msg = await message.reply("🖤")
-        animation_chars = [
-            "❤️",
-            "🧡",
-            "💛",
-            "💚",
-            "💙",
-            "💜",
-            "🖤",
-            "💘",
-            "💝",
-            "❤️",
-            "🧡",
-            "💛",
-            "💚",
-            "💙",
-            "💜",
-            "🖤",
-            "💘",
-            "💝",
-        ]
-        for i in animation_ttl:
-            await asyncio.sleep(animation_interval)
-            await msg.edit(animation_chars[i % len(animation_chars)])
+        if message.reply_to_message:  # Check if the message is a reply
+            target_user = message.reply_to_message.from_user  # Get the replied user
+            msg = await message.reply_to_message.reply(f"🧡 @{target_user.username}" if target_user.username else "🧡")
+        else:
+            msg = await message.reply("🧡.")  # Default reply if there's no reply message
+
+        deq = deque(list("❤️🧡💛💚💙💜🖤"))
+        for _ in range(20):  # Reduced iterations
+            await asyncio.sleep(0.3)  # Increased sleep interval
+            await msg.edit("".join(deq))
+            deq.rotate(1)
     except FloodWait as e:
-        await asyncio.sleep(e.value)  # Wait for the required time
+        await asyncio.sleep(e.value)
 
 
 @app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
