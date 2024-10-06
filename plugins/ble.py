@@ -36,8 +36,24 @@ async def hearts_animation(app, message):
         animation_ttl = range(20)  # Reduced the number of iterations
         msg = await message.reply("🖤")
         animation_chars = [
-            "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
-            "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+            "❤️",
+            "🧡",
+            "💛",
+            "💚",
+            "💙",
+            "💜",
+            "🖤",
+            "💘",
+            "💝",
+            "❤️",
+            "🧡",
+            "💛",
+            "💚",
+            "💙",
+            "💜",
+            "🖤",
+            "💘",
+            "💝",
         ]
         for i in animation_ttl:
             await asyncio.sleep(animation_interval)
