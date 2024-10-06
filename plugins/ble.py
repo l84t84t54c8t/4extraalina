@@ -61,8 +61,8 @@ async def hearts_animation(app, message):
         await msg.edit(animation_chars[i % 18])
 
 
-@Client.on_message(filters.command(["muah", "mua7", "مواح"]))
-async def kiss_animation(client, message):
+@Client.on_message(filters.command(["muah", "mua7", "مواح"], ""))
+async def kiss_animation(app, message):
     msg = await message.reply("😗.")
     deq = deque(list("😗😙😚😚😘"))
     for _ in range(48):
@@ -72,7 +72,7 @@ async def kiss_animation(client, message):
 
 
 @Client.on_message(filters.command(["دل", "دڵ", "dl", "dll"], ""))
-async def heart_animation(client, message):
+async def heart_animation(app, message):
     msg = await message.reply("🧡.")
     deq = deque(list("❤️🧡💛💚💙💜🖤"))
     for _ in range(48):
