@@ -29,26 +29,31 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-@app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], ""))
+
+@app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], "") & filters.group)
 async def heart_animation(app, message):
     try:
-        if message.reply_to_message:  # Check if the message is a reply
-            target_user = message.reply_to_message.from_user  # Get the replied user
-            msg = await message.reply_to_message.reply(
-                f"🧡 @{target_user.username}" if target_user.username else "🧡"
-            )
+        # Check if the command was used as a reply to another user
+        if message.reply_to_message:
+            replied_user = message.reply_to_message.from_user  # Get the replied user
+            target_id = message.reply_to_message.message_id  # ID of the replied message
+            if replied_user:
+                # Send animation reply to the replied user's message
+                msg = await message.reply_to_message.reply("🧡")
         else:
-            msg = await message.reply(
-                "🧡."
-            )  # Default reply if there's no reply message
+            # If it's not a reply, reply to the sender
+            msg = await message.reply("🧡.")
 
+        # Animation sequence
         deq = deque(list("❤️🧡💛💚💙💜🖤"))
         for _ in range(20):  # Reduced iterations
             await asyncio.sleep(0.3)  # Increased sleep interval
             await msg.edit("".join(deq))
             deq.rotate(1)
+
     except FloodWait as e:
-        await asyncio.sleep(e.value)
+        await asyncio.sleep(e.value)  # Handle FloodWait exception
+
 
 
 @app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
