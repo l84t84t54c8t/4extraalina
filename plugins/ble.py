@@ -1,5 +1,8 @@
 from AlinaMusic import app
-from pyrogram import filters
+from pyrogram import Client, filters
+from collections import deque
+import asyncio
+
 
 SLEEP = 0.1
 
@@ -23,3 +26,40 @@ async def say(app, message):
             return await message.reply(txt)
         else:
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
+
+
+
+io
+
+@Client.on_message(filters.command(["دڵی" ,"دلی", "dly", "dli","dlly","dlli"], ""))
+async def hearts_animation(app, message):
+    animation_interval = 0.3
+    animation_ttl = range(54)
+    msg = await message.reply("🖤")
+    animation_chars = [
+        "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+        "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+    ]
+    for i in animation_ttl:
+        await asyncio.sleep(animation_interval)
+        await msg.edit(animation_chars[i % 18])
+
+
+@Client.on_message(filters.command(["muah","mua7","مواح"]))
+async def kiss_animation(client, message):
+    msg = await message.reply("😗.")
+    deq = deque(list("😗😙😚😚😘"))
+    for _ in range(48):
+        await asyncio.sleep(0.1)
+        await msg.edit("".join(deq))
+        deq.rotate(1)
+
+
+@Client.on_message(filters.command(["دل", "دڵ", "dl", "dll"],""))
+async def heart_animation(client, message):
+    msg = await message.reply("🧡.")
+    deq = deque(list("❤️🧡💛💚💙💜🖤"))
+    for _ in range(48):
+        await asyncio.sleep(0.1)
+        await msg.edit("".join(deq))
+        deq.rotate(1)
