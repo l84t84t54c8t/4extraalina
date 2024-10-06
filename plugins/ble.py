@@ -29,7 +29,22 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-@app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], "") & filters.group)
+
+
+@app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
+async def kiss_animation(app, message):
+    try:
+        msg = await message.reply("😗.")
+        deq = deque(list("😗😙😚😚😘"))
+        for _ in range(20):  # Reduced iterations
+            await asyncio.sleep(0.3)  # Increased sleep interval
+            await msg.edit("".join(deq))
+            deq.rotate(1)
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Wait for the required time
+
+
+@app.on_message(filters.command(["دلی", "دڵی", "dli", "dlly"], "") & filters.group)
 async def heart_animation(app, message):
     try:
         # Check if the command was used as a reply to another user
@@ -52,29 +67,3 @@ async def heart_animation(app, message):
 
     except FloodWait as e:
         await asyncio.sleep(e.value)  # Handle FloodWait exception
-
-
-@app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
-async def kiss_animation(app, message):
-    try:
-        msg = await message.reply("😗.")
-        deq = deque(list("😗😙😚😚😘"))
-        for _ in range(20):  # Reduced iterations
-            await asyncio.sleep(0.3)  # Increased sleep interval
-            await msg.edit("".join(deq))
-            deq.rotate(1)
-    except FloodWait as e:
-        await asyncio.sleep(e.value)  # Wait for the required time
-
-
-@app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], ""))
-async def heart_animation(app, message):
-    try:
-        msg = await message.reply("🧡.")
-        deq = deque(list("❤️🧡💛💚💙💜🖤"))
-        for _ in range(20):  # Reduced iterations
-            await asyncio.sleep(0.3)  # Increased sleep interval
-            await msg.edit("".join(deq))
-            deq.rotate(1)
-    except FloodWait as e:
-        await asyncio.sleep(e.value)  # Wait for the required time
