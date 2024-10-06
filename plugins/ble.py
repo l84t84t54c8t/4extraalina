@@ -28,9 +28,6 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-io
-
-
 @Client.on_message(filters.command(["دڵی", "دلی", "dly", "dli", "dlly", "dlli"], ""))
 async def hearts_animation(app, message):
     animation_interval = 0.3
