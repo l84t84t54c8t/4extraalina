@@ -29,10 +29,43 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-@app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
+
+@app.on_message(filters.command(["دڵی", "دلی", "dly", "dli", "dlly", "dlli"], "") & filters.group)
+async def hearts_animation(app, message):
+    try:
+        animation_interval = 0.5  # Increased to reduce spamming
+        animation_ttl = range(20)  # Reduced the number of iterations
+
+        # Check if the command was used as a reply to another user
+        if message.reply_to_message:
+            # Reply to the original message
+            msg = await message.reply_to_message.reply("🖤")
+        else:
+            # If it's not a reply, just reply to the sender
+            msg = await message.reply("🖤")
+
+        animation_chars = [
+            "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+            "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+        ]
+        for i in animation_ttl:
+            await asyncio.sleep(animation_interval)
+            await msg.edit(animation_chars[i % len(animation_chars)])
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Wait for the required time
+
+
+@app.on_message(filters.command(["muah", "mua7", "مواح"], "") & filters.group)
 async def kiss_animation(app, message):
     try:
-        msg = await message.reply("😗.")
+        # Check if the command was used as a reply to another user
+        if message.reply_to_message:
+            # Reply to the original message
+            msg = await message.reply_to_message.reply("😗.")
+        else:
+            # If it's not a reply, just reply to the sender
+            msg = await message.reply("😗.")
+        
         deq = deque(list("😗😙😚😚😘"))
         for _ in range(20):  # Reduced iterations
             await asyncio.sleep(0.3)  # Increased sleep interval
@@ -42,26 +75,22 @@ async def kiss_animation(app, message):
         await asyncio.sleep(e.value)  # Wait for the required time
 
 
-@app.on_message(filters.command(["دلی", "دڵی", "dli", "dlly"], "") & filters.group)
+@app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], "") & filters.group)
 async def heart_animation(app, message):
     try:
         # Check if the command was used as a reply to another user
         if message.reply_to_message:
-            replied_user = message.reply_to_message.from_user  # Get the replied user
-            target_id = message.reply_to_message.id  # Use .id for the message ID
-            if replied_user:
-                # Send animation reply to the replied user's message
-                msg = await message.reply_to_message.reply("🧡")
+            # Reply to the original message
+            msg = await message.reply_to_message.reply("🧡.")
         else:
-            # If it's not a reply, reply to the sender
+            # If it's not a reply, just reply to the sender
             msg = await message.reply("🧡.")
-
-        # Animation sequence
+        
         deq = deque(list("❤️🧡💛💚💙💜🖤"))
         for _ in range(20):  # Reduced iterations
             await asyncio.sleep(0.3)  # Increased sleep interval
             await msg.edit("".join(deq))
             deq.rotate(1)
-
     except FloodWait as e:
-        await asyncio.sleep(e.value)  # Handle FloodWait exception
+        await asyncio.sleep(e.value)  # Wait for the required time
+
