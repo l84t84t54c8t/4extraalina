@@ -1,7 +1,7 @@
 from AlinaMusic import app
+from AlinaMusic.utils.database import get_assistant
 from config import OWNER_ID
 from pyrogram import filters, idle
-from AlinaMusic.utils.database import get_assistant
 
 
 @app.on_message(filters.media & filters.private)
