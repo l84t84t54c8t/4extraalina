@@ -3,6 +3,7 @@ from collections import deque
 
 from AlinaMusic import app
 from pyrogram import filters
+from pyrogram.errors import FloodWait
 
 SLEEP = 0.1
 
@@ -30,49 +31,42 @@ async def say(app, message):
 
 @app.on_message(filters.command(["دڵی", "دلی", "dly", "dli", "dlly", "dlli"], ""))
 async def hearts_animation(app, message):
-    animation_interval = 0.3
-    animation_ttl = range(54)
-    msg = await message.reply("🖤")
-    animation_chars = [
-        "❤️",
-        "🧡",
-        "💛",
-        "💚",
-        "💙",
-        "💜",
-        "🖤",
-        "💘",
-        "💝",
-        "❤️",
-        "🧡",
-        "💛",
-        "💚",
-        "💙",
-        "💜",
-        "🖤",
-        "💘",
-        "💝",
-    ]
-    for i in animation_ttl:
-        await asyncio.sleep(animation_interval)
-        await msg.edit(animation_chars[i % 18])
+    try:
+        animation_interval = 0.5  # Increased to reduce spamming
+        animation_ttl = range(20)  # Reduced the number of iterations
+        msg = await message.reply("🖤")
+        animation_chars = [
+            "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+            "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "💘", "💝",
+        ]
+        for i in animation_ttl:
+            await asyncio.sleep(animation_interval)
+            await msg.edit(animation_chars[i % len(animation_chars)])
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Wait for the required time
 
 
 @app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
 async def kiss_animation(app, message):
-    msg = await message.reply("😗.")
-    deq = deque(list("😗😙😚😚😘"))
-    for _ in range(48):
-        await asyncio.sleep(0.1)
-        await msg.edit("".join(deq))
-        deq.rotate(1)
+    try:
+        msg = await message.reply("😗.")
+        deq = deque(list("😗😙😚😚😘"))
+        for _ in range(20):  # Reduced iterations
+            await asyncio.sleep(0.3)  # Increased sleep interval
+            await msg.edit("".join(deq))
+            deq.rotate(1)
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Wait for the required time
 
 
 @app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], ""))
 async def heart_animation(app, message):
-    msg = await message.reply("🧡.")
-    deq = deque(list("❤️🧡💛💚💙💜🖤"))
-    for _ in range(48):
-        await asyncio.sleep(0.1)
-        await msg.edit("".join(deq))
-        deq.rotate(1)
+    try:
+        msg = await message.reply("🧡.")
+        deq = deque(list("❤️🧡💛💚💙💜🖤"))
+        for _ in range(20):  # Reduced iterations
+            await asyncio.sleep(0.3)  # Increased sleep interval
+            await msg.edit("".join(deq))
+            deq.rotate(1)
+    except FloodWait as e:
+        await asyncio.sleep(e.value)  # Wait for the required time
