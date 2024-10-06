@@ -29,8 +29,6 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-
-
 @app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
 async def kiss_animation(app, message):
     try:
