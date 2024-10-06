@@ -29,7 +29,6 @@ async def say(app, message):
             return await message.reply("**- تکایە وشەم پێ بە بۆ دووبارەکردنەوە**")
 
 
-
 @app.on_message(filters.command(["دل", "دڵ", "dl", "dll"], "") & filters.group)
 async def heart_animation(app, message):
     try:
@@ -53,7 +52,6 @@ async def heart_animation(app, message):
 
     except FloodWait as e:
         await asyncio.sleep(e.value)  # Handle FloodWait exception
-
 
 
 @app.on_message(filters.command(["muah", "mua7", "مواح"], ""))
