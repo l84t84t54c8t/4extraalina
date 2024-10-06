@@ -48,7 +48,7 @@ async def heart_animation(app, message):
         # Check if the command was used as a reply to another user
         if message.reply_to_message:
             replied_user = message.reply_to_message.from_user  # Get the replied user
-            target_id = message.reply_to_message.message_id  # ID of the replied message
+            target_id = message.reply_to_message.id  # Use .id for the message ID
             if replied_user:
                 # Send animation reply to the replied user's message
                 msg = await message.reply_to_message.reply("🧡")
