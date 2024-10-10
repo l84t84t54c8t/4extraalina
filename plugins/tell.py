@@ -1,6 +1,7 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
+from pyrogram.errors import ChatAdminRequired
 
 
 # vc on
@@ -16,7 +17,6 @@ async def brah(client, message):
         )
 
 
-from pyrogram.errors import ChatAdminRequired
 
 
 @app.on_message(filters.video_chat_ended)
