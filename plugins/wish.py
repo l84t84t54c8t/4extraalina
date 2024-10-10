@@ -23,7 +23,16 @@ async def wish(_, m):
     url = api["results"][0]["url"]
     text = m.text.split(None, 1)[1]
     wish_count = random.randint(1, 100)
-    wish = f"**🍓 سڵاو {m.from_user.first_name}!**\n"
+
+    # Check if the message is from a group or a channel
+    if m.from_user:
+        user_name = m.from_user.first_name
+    elif m.sender_chat:
+        user_name = m.sender_chat.title  # Use channel title if from a channel
+    else:
+        user_name = "ناو نەدۆزرایەوە"  # Fallback if no user or channel
+
+    wish = f"**🍓 سڵاو {user_name}!**\n"
     wish += f"**🍓 حەزی تۆ: {text} **\n\n"
     wish += f"**🍓 ڕێژەی ڕوودانی: {wish_count}% **"
 
@@ -41,6 +50,7 @@ async def wish(_, m):
             ]
         ),
     )
+
 
 
 BUTTON = [
