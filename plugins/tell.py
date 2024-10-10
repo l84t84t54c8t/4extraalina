@@ -11,10 +11,13 @@ async def brah(client, message):
     except ChatAdminRequired:
         # Handle the case when the bot is not an admin
         print(f"Error: Bot does not have admin privileges in chat {message.chat.id}")
-        await message.reply("<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>")
+        await message.reply(
+            "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
+        )
 
 
 from pyrogram.errors import ChatAdminRequired
+
 
 @app.on_message(filters.video_chat_ended)
 async def brah2(client, message):
@@ -39,10 +42,11 @@ async def brah2(client, message):
             await message.reply(reply_message)
         except ChatAdminRequired:
             print(f"Error: Bot lacks admin privileges in chat {message.chat.id}")
-            await message.reply("<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>")
+            await message.reply(
+                "<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>"
+            )
     else:
         print("No duration available for the video chat.")
-
 
 
 @app.on_message(filters.command("math", prefixes="/"))
