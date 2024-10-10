@@ -17,8 +17,6 @@ async def brah(client, message):
         )
 
 
-
-
 @app.on_message(filters.video_chat_ended)
 async def brah2(client, message):
     if message.video_chat_ended and message.video_chat_ended.duration:
