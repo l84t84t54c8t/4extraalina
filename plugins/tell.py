@@ -6,47 +6,43 @@ from pyrogram import filters
 # vc on
 @app.on_message(filters.video_chat_started)
 async def brah(client, message):
-    await message.reply("<b>• ئەدمین تێلی کردەوە وەرن ⎋</b>")
+    try:
+        await message.reply("<b>• ئەدمین تێلی کردەوە وەرن ⎋</b>")
+    except ChatAdminRequired:
+        # Handle the case when the bot is not an admin
+        print(f"Error: Bot does not have admin privileges in chat {message.chat.id}")
+        await message.reply("<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>")
 
+
+from pyrogram.errors import ChatAdminRequired
 
 @app.on_message(filters.video_chat_ended)
 async def brah2(client, message):
-    da = message.video_chat_ended.duration
-    ma = divmod(da, 60)
-    ho = divmod(ma[0], 60)
-    day = divmod(ho[0], 24)
-    if da < 60:
-        await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {da} چرکە و داخرا ⎋**")
-    elif 60 < da < 3600:
-        if 1 <= ma[0] < 2:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی 1 خولەك ⎋**")
-        elif 2 <= ma[0] < 3:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی 2 خولەك ⎋**")
-        elif 3 <= ma[0] < 11:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {ma[0]} خولەك ⎋**")
+    if message.video_chat_ended and message.video_chat_ended.duration:
+        da = message.video_chat_ended.duration
+        ma = divmod(da, 60)  # minutes and seconds
+        ho = divmod(ma[0], 60)  # hours and minutes
+        day = divmod(ho[0], 24)  # days and hours
+
+        # Create the appropriate message based on the duration
+        if da < 60:
+            reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {da} چرکە و داخرا ⎋**"
+        elif da < 3600:
+            reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {ma[0]} خولەك ⎋**"
+        elif da < 86400:
+            reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {ho[0]} کاتژمێر ⎋**"
         else:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {ma[0]} خولەك ⎋**")
-    elif 3600 < da < 86400:
-        if 1 <= ho[0] < 2:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی 1 کاتژمێر ⎋**")
-        elif 2 <= ho[0] < 3:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی 2 کاتژمێر ⎋**")
-        elif 3 <= ho[0] < 11:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {ho[0]} کاتژمێر ⎋**")
-        else:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {ho[0]} کاتژمێر ⎋**")
+            reply_message = f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {day[0]} ڕۆژ ⎋**"
+
+        # Try to send the reply and handle permissions errors
+        try:
+            await message.reply(reply_message)
+        except ChatAdminRequired:
+            print(f"Error: Bot lacks admin privileges in chat {message.chat.id}")
+            await message.reply("<b>• بۆ ئەوەی ئەم فەرمانە کاربکات، پێویستە بۆت ئەدمین بێت ⎋</b>")
     else:
-        if 1 <= day[0] < 2:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی 1 ڕۆژ ⎋**")
-        elif 2 <= day[0] < 3:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی 2 ڕۆژ ⎋**")
-        elif 3 <= day[0] < 11:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {day[0]} ڕۆژ ⎋**")
-        else:
-            await message.reply(f"**🎻┋ تێل کۆتایی پێھات، ماوەکەی {day[0]} ڕۆژ ⎋**")
+        print("No duration available for the video chat.")
 
-
-####
 
 
 @app.on_message(filters.command("math", prefixes="/"))
