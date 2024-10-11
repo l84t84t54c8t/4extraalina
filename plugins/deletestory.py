@@ -85,7 +85,7 @@ async def delete_story(client, message):
             if member.status == ChatMemberStatus.MEMBER:
                 # Attempt to delete the story message
                 await message.delete()
-                
+
         except (PeerIdInvalid, RPCError) as e:
             print(f"Failed to delete the story: {e}")
         except MessageDeleteForbidden:
