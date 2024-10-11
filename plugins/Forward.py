@@ -4,6 +4,7 @@ from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden
 
+from utils.permissions import adminsOnly
 # MongoDB collection for settings
 forwarddb = mongodb.forward  # Ensure you have a collection named 'settings'
 
