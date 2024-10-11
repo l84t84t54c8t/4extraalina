@@ -9,6 +9,7 @@ from utils.permissions import adminsOnly
 # MongoDB collection for settings
 storydb = mongodb.story  # Ensure you have a collection named 'story'
 
+
 # Function to enable or disable story deletion
 async def set_deletion_feature(chat_id: int, status: bool):
     update_data = {"story": status}
@@ -16,6 +17,7 @@ async def set_deletion_feature(chat_id: int, status: bool):
         {"chat_id": chat_id}, {"$set": update_data}, upsert=True
     )
     return result.modified_count > 0 or result.upserted_id is not None
+
 
 # Function to check if story deletion is enabled, default to True
 async def is_deletion_enabled(chat_id: int) -> bool:
@@ -28,6 +30,7 @@ async def is_deletion_enabled(chat_id: int) -> bool:
             return True
         return False  # Otherwise, return disabled
     return data.get("story", True)  # Default to True if not set
+
 
 # Command to enable or disable story deletion
 @app.on_message(filters.command("story") & filters.group)
@@ -45,7 +48,9 @@ async def toggle_delete(client, message):
     if action == "off":
         if await is_deletion_enabled(chat_id):
             await set_deletion_feature(chat_id, False)  # Disable deletion
-            await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری ناچالاککرا ✅**")
+            await message.reply_text(
+                "**• بە سەرکەوتوویی سڕینەوەی ستۆری ناچالاککرا ✅**"
+            )
         else:
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر ناچالاککراوە ✅**")
 
@@ -55,6 +60,7 @@ async def toggle_delete(client, message):
             await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
         else:
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر چالاککراوە ✅**")
+
 
 # Story Deletion
 @app.on_message(filters.group)
