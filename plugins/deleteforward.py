@@ -8,7 +8,7 @@ from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
 settingsdb = mongodb.settings  # Ensure you have a collection named 'settings'
 
 
-# Function to enable a feature (story or forwarded deletion)
+# Function to enable or disable a feature (story or forward deletion)
 async def set_deletion_feature(chat_id: int, feature: str, status: bool):
     update_data = {feature: status}
     result = await settingsdb.update_one(
@@ -17,7 +17,7 @@ async def set_deletion_feature(chat_id: int, feature: str, status: bool):
     return result.modified_count > 0 or result.upserted_id is not None
 
 
-# Function to check if a feature (story or forwarded deletion) is enabled
+# Function to check if a feature (story or forward deletion) is enabled
 async def is_deletion_enabled(chat_id: int, feature: str) -> bool:
     data = await settingsdb.find_one({"chat_id": chat_id})
     if not data:
@@ -31,16 +31,14 @@ async def enable_delete(client, message):
     chat_id = message.chat.id
     feature = message.command[1] if len(message.command) > 1 else None
 
-    if feature not in ["story", "forwarded"]:
-        await message.reply_text("Usage: /enable_delete <story|forwarded>")
+    if feature not in ["story", "forward"]:
+        await message.reply_text("Usage: /enable_delete <story|forward>")
         return
 
     is_enabled = await is_deletion_enabled(chat_id, feature)
 
     if is_enabled:
-        await message.reply_text(
-            f"{feature.capitalize()} deletion is already **enabled**."
-        )
+        await message.reply_text(f"{feature.capitalize()} deletion is already **enabled**.")
     else:
         await set_deletion_feature(chat_id, feature, True)
         await message.reply_text(f"{feature.capitalize()} deletion is now **enabled**.")
@@ -52,21 +50,17 @@ async def disable_delete(client, message):
     chat_id = message.chat.id
     feature = message.command[1] if len(message.command) > 1 else None
 
-    if feature not in ["story", "forwarded"]:
-        await message.reply_text("Usage: /disable_delete <story|forwarded>")
+    if feature not in ["story", "forward"]:
+        await message.reply_text("Usage: /disable_delete <story|forward>")
         return
 
     is_enabled = await is_deletion_enabled(chat_id, feature)
 
     if not is_enabled:
-        await message.reply_text(
-            f"{feature.capitalize()} deletion is already **disabled**."
-        )
+        await message.reply_text(f"{feature.capitalize()} deletion is already **disabled**.")
     else:
         await set_deletion_feature(chat_id, feature, False)
-        await message.reply_text(
-            f"{feature.capitalize()} deletion is now **disabled**."
-        )
+        await message.reply_text(f"{feature.capitalize()} deletion is now **disabled**.")
 
 
 # Story Deletion
@@ -92,40 +86,40 @@ async def delete_story(client, message):
             if member.status == ChatMemberStatus.MEMBER:
                 # Attempt to delete the story message
                 await message.delete()
-                await message.reply_text(
-                    "⛔ Stories are not allowed and have been deleted."
-                )
-                print(
-                    f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}"
-                )
+                print(f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}")
             else:
-                print(
-                    f"User {message.from_user.id} is an admin or owner. Story will not be deleted."
-                )
+                print(f"User {message.from_user.id} is an admin or owner. Story will not be deleted.")
 
         except (PeerIdInvalid, RPCError) as e:
             print(f"Failed to delete the story: {e}")
-            await message.reply_text(
-                "⚠️ Error occurred while trying to delete the story."
-            )
         except MessageDeleteForbidden:
             print("Bot does not have permission to delete the story.")
 
 
-from pyrogram import filters
-from pyrogram.enums import ChatMemberStatus
+# Forwarded Message Deletion
+@app.on_message(filters.forwarded & filters.group)
+async def delete_forwarded_message(client, message):
+    chat_id = message.chat.id
 
+    # Check if forwarded deletion is enabled
+    if not await is_deletion_enabled(chat_id, "forward"):
+        return
 
-@app.on_message(filters.forwarded)
-async def gjgh(app, m):
     # Ensure m.chat and m.from_user are not None
-    if m.chat is None or m.from_user is None:
+    if message.chat is None or message.from_user is None:
         return  # Exit the function if they are None
 
-    # Fetch the chat member status
-    chat_member = await app.get_chat_member(m.chat.id, m.from_user.id)
-    su = chat_member.status
+    try:
+        chat_member = await client.get_chat_member(message.chat.id, message.from_user.id)
 
-    # Check if the user's status is "member"
-    if su == ChatMemberStatus.MEMBER:
-        await m.delete()
+        # Check if the user is a regular member (not admin or owner)
+        if chat_member.status == ChatMemberStatus.MEMBER:
+            await message.delete()
+            print(f"Deleted forwarded message from user {message.from_user.id}")
+        else:
+            print(f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted.")
+
+    except MessageDeleteForbidden:
+        print("Bot does not have permission to delete the message.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
