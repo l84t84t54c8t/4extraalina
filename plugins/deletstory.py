@@ -78,5 +78,3 @@ async def delete_story(client, message):
             await message.reply_text(
                 "⚠️ Error occurred while trying to delete the story."
             )
-    else:
-        print("No story found in the message.")
