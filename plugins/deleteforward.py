@@ -22,7 +22,7 @@ async def is_deletion_enabled(chat_id: int) -> bool:
     data = await storydb.find_one({"chat_id": chat_id})
     if not data:
         return False  # Default to disabled if no data exists
-    return data.get("story", False)  # Default to False if not set
+    return data.get("story", True)  # Default to False if not set
 
 
 # Command to enable or disable story deletion
