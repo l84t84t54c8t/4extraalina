@@ -33,18 +33,18 @@ async def toggle_delete(client, message):
 
     if action not in ["on", "off"]:
         await message.reply_text(
-            "**• کۆنتڕۆڵ کردنی ناردنی ستۆری**\n-بۆ داخستن و کردنەوەی ستۆری لە گرووپ\n- داخستنی ستۆری :/story off\n- کردنەوەی ستۆری : /story on"
+            "**• کۆنتڕۆڵ کردنی ناردنی ستۆری**\n-بۆ داخستن و کردنەوەی ستۆری لە گرووپ\n\n- داخستنی ستۆری :\n/story off\n- کردنەوەی ستۆری :\n/story on"
         )
         return
 
-    if action == "on":
+    if action == "off":
         if await is_deletion_enabled(chat_id):
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر چالاککراوە ✅**")
         else:
             await set_deletion_feature(chat_id, True)
             await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
 
-    elif action == "off":
+    elif action == "on":
         if not await is_deletion_enabled(chat_id):
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر ناچالاککراوە ✅**")
         else:
