@@ -115,6 +115,7 @@ async def delete_story(client, message):
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 
+
 @app.on_message(filters.forwarded)
 async def gjgh(app, m):
     # Ensure m.chat and m.from_user are not None
