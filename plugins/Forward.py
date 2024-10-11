@@ -52,7 +52,7 @@ async def gjgh(app, m):
 
 
 # Function to toggle the forwarded message deletion feature
-@app.on_message(filters.command("forwarded") & filters.group)
+@app.on_message(filters.command("forward") & filters.group)
 @adminsOnly("can_delete_messages")
 async def toggle_forwarded_deletion(app, message):
     if len(message.command) != 2:
