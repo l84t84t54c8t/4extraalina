@@ -112,24 +112,20 @@ async def delete_story(client, message):
             print("Bot does not have permission to delete the story.")
 
 
-# Forwarded Message Deletion
 from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import MessageDeleteForbidden
-
+from pyrogram.errors import MessageDeleteForbidden, RPCError
 
 @app.on_message(filters.forwarded & filters.group)
 async def delete_forwarded_message(client, message):
-    # Ensure message has both chat and from_user fields
+    # Ensure the message has both chat and from_user fields
     if message.chat is None or message.from_user is None:
-        return  # Exit if they are None
+        return  # Exit if either is None
 
     try:
-        # Get the status of the user in the chat
-        chat_member = await client.get_chat_member(
-            message.chat.id, message.from_user.id
-        )
+        # Get the status of the user in the group
+        chat_member = await client.get_chat_member(message.chat.id, message.from_user.id)
 
         # Check if the user is a regular member (not admin or owner)
         if chat_member.status == ChatMemberStatus.MEMBER:
@@ -137,11 +133,13 @@ async def delete_forwarded_message(client, message):
             await message.delete()
             print(f"Deleted forwarded message from user {message.from_user.id}")
         else:
-            print(
-                f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted."
-            )
-
+            print(f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted.")
+    
     except MessageDeleteForbidden:
         print("Bot does not have permission to delete the message.")
+    
+    except RPCError as e:
+        print(f"An RPC error occurred: {e}")
+    
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An unexpected error occurred: {e}")
