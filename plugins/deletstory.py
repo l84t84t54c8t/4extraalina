@@ -1,7 +1,8 @@
 from AlinaMusic import app
-from pyrogram import Client, filters
-from pyrogram.errors import RPCError, PeerIdInvalid
+from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
+from pyrogram.errors import PeerIdInvalid, RPCError
+
 
 @app.on_message(filters.group)
 async def delete_story(client, message):
@@ -15,14 +16,21 @@ async def delete_story(client, message):
             if member.status == ChatMemberStatus.MEMBER:
                 # Attempt to delete the story message
                 await message.delete()
-                await message.reply_text("**• ببوورە ئەزیزم ناردنی ستۆری قەدەغەکراوە ⛔**")
-                print(f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}")
+                await message.reply_text(
+                    "**• ببوورە ئەزیزم ناردنی ستۆری قەدەغەکراوە ⛔**"
+                )
+                print(
+                    f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}"
+                )
             else:
-                print(f"User {message.from_user.id} is an admin or owner. Story will not be deleted.")
-                
+                print(
+                    f"User {message.from_user.id} is an admin or owner. Story will not be deleted."
+                )
+
         except (PeerIdInvalid, RPCError) as e:
             print(f"Failed to delete the story: {e}")
-            await message.reply_text("⚠️ Error occurred while trying to delete the story.")
+            await message.reply_text(
+                "⚠️ Error occurred while trying to delete the story."
+            )
     else:
         print("No story found in the message.")
-
