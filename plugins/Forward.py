@@ -9,7 +9,6 @@ from utils.permissions import adminsOnly
 # MongoDB collection for settings
 forwarddb = mongodb.forward  # Ensure you have a collection named 'settings'
 
-
 # Function to enable or disable forwarded message deletion
 async def set_deletion_feature(chat_id: int, status: bool):
     update_data = {"forwarded_message_deletion": status}
@@ -18,22 +17,17 @@ async def set_deletion_feature(chat_id: int, status: bool):
     )
     return result.modified_count > 0 or result.upserted_id is not None
 
-
 # Function to check if forwarded message deletion is enabled, default to True
 async def is_deletion_enabled(chat_id: int) -> bool:
     data = await forwarddb.find_one({"chat_id": chat_id})
     if data is None:
         # Check if the bot is an admin; if so, enable deletion by default
         chat_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
-        if chat_member.status in [
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.OWNER,
-        ]:
+        if chat_member.status == ChatMemberStatus.ADMINISTRATOR:
             await set_deletion_feature(chat_id, True)  # Enable by default
             return True
         return False  # Otherwise, return disabled
     return data.get("forwarded_message_deletion", True)  # Default to True if not set
-
 
 @app.on_message(filters.forwarded)
 async def gjgh(app, m):
@@ -57,7 +51,6 @@ async def gjgh(app, m):
         print("Bot does not have permission to delete the message.")
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 @app.on_message(filters.command("forward") & filters.group)
 @adminsOnly("can_delete_messages")
