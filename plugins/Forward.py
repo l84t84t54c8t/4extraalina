@@ -51,23 +51,27 @@ async def gjgh(app, m):
         print(f"An error occurred: {e}")
 
 
-# Function to toggle the forwarded message deletion feature
 @app.on_message(filters.command("forward") & filters.group)
 @adminsOnly("can_delete_messages")
-async def toggle_forwarded_deletion(app, message):
-    if len(message.command) != 2:
+async def toggle_forwarded_deletion(client, message):
+    action = message.command[1].lower() if len(message.command) > 1 else None
+
+    if action not in ["on", "off"]:
         await message.reply(
             "**• کۆنتڕۆڵ کردنی ناردنی ڕێکڵام**\n-بۆ داخستن و کردنەوەی ڕێکڵام لە گرووپ\n\n- داخستنی ڕێکڵام :\n/forward off\n- کردنەوەی ڕێکڵام :\n/forward on"
         )
         return
 
-    status = message.command[1].lower()
-    if status not in ["on", "off"]:
-        await message.reply("**تکایە بنووسە 'on' یان 'off'**")
-        return
+    if action == "off":
+        if not await is_deletion_enabled(message.chat.id):
+            await set_deletion_feature(message.chat.id, True)  # Enable deletion
+            await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام داخرا ✅**")
+        else:
+            await message.reply("**• ناردنی ڕێکڵام پێشتر داخراوە ✅**")
 
-    # Set the new status based on user input
-    new_status = status == "off"
-    await set_deletion_feature(message.chat.id, new_status)
-    status_text = "enabled" if new_status else "disabled"
-    await message.reply(f"بە سەرکەوتوویی ناردنی ڕێکڵام {status_text}")
+    elif action == "on":
+        if await is_deletion_enabled(message.chat.id):
+            await set_deletion_feature(message.chat.id, False)  # Disable deletion
+            await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام کرایەوە ✅**")
+        else:
+            await message.reply("**• ناردنی ڕێکڵام پێشتر کراوەتەوە ✅**")
