@@ -127,7 +127,9 @@ async def delete_forwarded_message(client, message):
 
     try:
         # Get the status of the user in the chat
-        chat_member = await client.get_chat_member(message.chat.id, message.from_user.id)
+        chat_member = await client.get_chat_member(
+            message.chat.id, message.from_user.id
+        )
 
         # Check if the user is a regular member (not admin or owner)
         if chat_member.status == ChatMemberStatus.MEMBER:
@@ -135,7 +137,9 @@ async def delete_forwarded_message(client, message):
             await message.delete()
             print(f"Deleted forwarded message from user {message.from_user.id}")
         else:
-            print(f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted.")
+            print(
+                f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted."
+            )
 
     except MessageDeleteForbidden:
         print("Bot does not have permission to delete the message.")
