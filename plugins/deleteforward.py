@@ -38,7 +38,9 @@ async def enable_delete(client, message):
     is_enabled = await is_deletion_enabled(chat_id, feature)
 
     if is_enabled:
-        await message.reply_text(f"{feature.capitalize()} deletion is already **enabled**.")
+        await message.reply_text(
+            f"{feature.capitalize()} deletion is already **enabled**."
+        )
     else:
         await set_deletion_feature(chat_id, feature, True)
         await message.reply_text(f"{feature.capitalize()} deletion is now **enabled**.")
@@ -57,10 +59,14 @@ async def disable_delete(client, message):
     is_enabled = await is_deletion_enabled(chat_id, feature)
 
     if not is_enabled:
-        await message.reply_text(f"{feature.capitalize()} deletion is already **disabled**.")
+        await message.reply_text(
+            f"{feature.capitalize()} deletion is already **disabled**."
+        )
     else:
         await set_deletion_feature(chat_id, feature, False)
-        await message.reply_text(f"{feature.capitalize()} deletion is now **disabled**.")
+        await message.reply_text(
+            f"{feature.capitalize()} deletion is now **disabled**."
+        )
 
 
 # Story Deletion
@@ -86,9 +92,13 @@ async def delete_story(client, message):
             if member.status == ChatMemberStatus.MEMBER:
                 # Attempt to delete the story message
                 await message.delete()
-                print(f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}")
+                print(
+                    f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}"
+                )
             else:
-                print(f"User {message.from_user.id} is an admin or owner. Story will not be deleted.")
+                print(
+                    f"User {message.from_user.id} is an admin or owner. Story will not be deleted."
+                )
 
         except (PeerIdInvalid, RPCError) as e:
             print(f"Failed to delete the story: {e}")
@@ -110,14 +120,18 @@ async def delete_forwarded_message(client, message):
         return  # Exit the function if they are None
 
     try:
-        chat_member = await client.get_chat_member(message.chat.id, message.from_user.id)
+        chat_member = await client.get_chat_member(
+            message.chat.id, message.from_user.id
+        )
 
         # Check if the user is a regular member (not admin or owner)
         if chat_member.status == ChatMemberStatus.MEMBER:
             await message.delete()
             print(f"Deleted forwarded message from user {message.from_user.id}")
         else:
-            print(f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted.")
+            print(
+                f"User {message.from_user.id} is an admin or owner. Forwarded message will not be deleted."
+            )
 
     except MessageDeleteForbidden:
         print("Bot does not have permission to delete the message.")
