@@ -7,8 +7,7 @@ from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
 from utils.permissions import adminsOnly
 
 # MongoDB collection for settings
-storydb = mongodb.story  # Ensure you have a collection named 'settings'
-
+storydb = mongodb.story  # Ensure you have a collection named 'story'
 
 # Function to enable or disable story deletion
 async def set_deletion_feature(chat_id: int, status: bool):
@@ -18,14 +17,17 @@ async def set_deletion_feature(chat_id: int, status: bool):
     )
     return result.modified_count > 0 or result.upserted_id is not None
 
-
-# Function to check if story deletion is enabled
+# Function to check if story deletion is enabled, default to True
 async def is_deletion_enabled(chat_id: int) -> bool:
     data = await storydb.find_one({"chat_id": chat_id})
-    if not data:
-        return False  # Default to disabled if no data exists
-    return data.get("story", True)  # Default to False if not set
-
+    if data is None:
+        # Check if the bot is an admin; if so, enable deletion by default
+        chat_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
+        if chat_member.status == ChatMemberStatus.ADMINISTRATOR:
+            await set_deletion_feature(chat_id, True)  # Enable by default
+            return True
+        return False  # Otherwise, return disabled
+    return data.get("story", True)  # Default to True if not set
 
 # Command to enable or disable story deletion
 @app.on_message(filters.command("story") & filters.group)
@@ -42,20 +44,17 @@ async def toggle_delete(client, message):
 
     if action == "off":
         if await is_deletion_enabled(chat_id):
-            await message.reply_text("**• سڕینەوەی ستۆری پێشتر چالاککراوە ✅**")
+            await set_deletion_feature(chat_id, False)  # Disable deletion
+            await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری ناچالاککرا ✅**")
         else:
-            await set_deletion_feature(chat_id, True)
-            await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
+            await message.reply_text("**• سڕینەوەی ستۆری پێشتر ناچالاککراوە ✅**")
 
     elif action == "on":
         if not await is_deletion_enabled(chat_id):
-            await message.reply_text("**• سڕینەوەی ستۆری پێشتر ناچالاککراوە ✅**")
+            await set_deletion_feature(chat_id, True)  # Enable deletion
+            await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
         else:
-            await set_deletion_feature(chat_id, False)
-            await message.reply_text(
-                "**• بە سەرکەوتوویی سڕینەوەی ستۆری ناچالاککرا ✅**"
-            )
-
+            await message.reply_text("**• سڕینەوەی ستۆری پێشتر چالاککراوە ✅**")
 
 # Story Deletion
 @app.on_message(filters.group)
