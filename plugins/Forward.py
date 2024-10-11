@@ -14,9 +14,10 @@ async def gjgh(app, m):
         chat_member = await app.get_chat_member(m.chat.id, m.from_user.id)
         su = chat_member.status
 
-    # Check if the user's status is "member"
-    if su == ChatMemberStatus.MEMBER:
+        # Check if the user's status is "member"
+        if su == ChatMemberStatus.MEMBER:
             await m.delete()
+
     except MessageDeleteForbidden:
         print("Bot does not have permission to delete the message.")
     except Exception as e:
