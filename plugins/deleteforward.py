@@ -32,7 +32,9 @@ async def toggle_delete(client, message):
     action = message.command[1].lower() if len(message.command) > 1 else None
 
     if action not in ["on", "off"]:
-        await message.reply_text("**• کۆنتڕۆڵ کردنی ناردنی ستۆری**\n-بۆ داخستن و کردنەوەی ستۆری لە گرووپ\n- داخستنی ستۆری :/story off\n- کردنەوەی ستۆری : /story on")
+        await message.reply_text(
+            "**• کۆنتڕۆڵ کردنی ناردنی ستۆری**\n-بۆ داخستن و کردنەوەی ستۆری لە گرووپ\n- داخستنی ستۆری :/story off\n- کردنەوەی ستۆری : /story on"
+        )
         return
 
     if action == "on":
@@ -41,13 +43,15 @@ async def toggle_delete(client, message):
         else:
             await set_deletion_feature(chat_id, True)
             await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
-    
+
     elif action == "off":
         if not await is_deletion_enabled(chat_id):
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر ناچالاککراوە ✅**")
         else:
             await set_deletion_feature(chat_id, False)
-            await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری ناچالاککرا ✅**")
+            await message.reply_text(
+                "**• بە سەرکەوتوویی سڕینەوەی ستۆری ناچالاککرا ✅**"
+            )
 
 
 # Story Deletion
@@ -73,9 +77,13 @@ async def delete_story(client, message):
             if member.status == ChatMemberStatus.MEMBER:
                 # Attempt to delete the story message
                 await message.delete()
-                print(f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}")
+                print(
+                    f"Deleted story with ID: {message.story.id} from user: {message.from_user.id}"
+                )
             else:
-                print(f"User {message.from_user.id} is an admin or owner. Story will not be deleted.")
+                print(
+                    f"User {message.from_user.id} is an admin or owner. Story will not be deleted."
+                )
 
         except (PeerIdInvalid, RPCError) as e:
             print(f"Failed to delete the story: {e}")
