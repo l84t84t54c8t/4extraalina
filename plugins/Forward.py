@@ -67,7 +67,7 @@ async def toggle_forwarded_deletion(app, message):
         return
 
     # Set the new status based on user input
-    new_status = status == "on"
+    new_status = status == "off"
     await set_deletion_feature(message.chat.id, new_status)
     status_text = "enabled" if new_status else "disabled"
-    await message.reply(f"Forwarded message deletion has been {status_text}.")
+    await message.reply(f"بە سەرکەوتوویی ناردنی ڕێکڵام {status_text}")
