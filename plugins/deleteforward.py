@@ -4,6 +4,8 @@ from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
 
+from utils.permissions import adminsOnly
+
 # MongoDB collection for settings
 storydb = mongodb.story  # Ensure you have a collection named 'settings'
 
@@ -27,6 +29,7 @@ async def is_deletion_enabled(chat_id: int) -> bool:
 
 # Command to enable or disable story deletion
 @app.on_message(filters.command("story") & filters.group)
+@adminsOnly("can_delete_messages")
 async def toggle_delete(client, message):
     chat_id = message.chat.id
     action = message.command[1].lower() if len(message.command) > 1 else None
