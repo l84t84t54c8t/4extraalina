@@ -32,17 +32,17 @@ async def is_story_deletion_on(chat_id: int) -> bool:
     return data.get("delete_story", True)  # Default to True if not set
 
 
-@app.on_message(filters.command("toggle_delete") & filters.group)
+@app.on_message(filters.command("story") & filters.group)
 async def toggle_delete(client, message):
     chat_id = message.chat.id
     is_enabled = await is_story_deletion_on(chat_id)
 
     if is_enabled:
-        await set_story_deletion_off(chat_id)
-        await message.reply_text("Story deletion is now **disabled**.")
-    else:
         await set_story_deletion_on(chat_id)
-        await message.reply_text("Story deletion is now **enabled**.")
+        await message.reply_text("**• سڕینەوەی ستۆری چالاککراوە**")
+    else:
+        await set_story_deletion_off(chat_id)
+        await message.reply_text("**• سڕینەوەی ستۆری ناچالاککراوە**")
 
 
 @app.on_message(filters.group)
