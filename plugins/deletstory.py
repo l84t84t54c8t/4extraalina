@@ -1,33 +1,33 @@
 from AlinaMusic import app
-from pyrogram import filters
-from pyrogram.errors import PeerIdInvalid, RPCError
+from pyrogram import Client, filters
+from pyrogram.errors import RPCError, PeerIdInvalid, StoryInvalid
 
-
-@app.on_message(filters.forwarded & filters.group)
-async def delete_forwarded_story(client, message):
+@app.on_message(filters.group)
+async def detect_and_delete_story(client, message):
+    # First, check if the message contains media that might be a story
     try:
-        # Check if the forwarded message has a valid peer and is a story
-        if message.forward_from and message.forward_from.is_story:
-            try:
-                # Try to delete the forwarded story
-                await message.delete()
-                print(
-                    f"Deleted forwarded story from user {message.forward_from.id} in chat {message.chat.id}"
-                )
+        if message.media and message.media.peer and hasattr(message.media, "story"):
+            # Get story details using Pyrogram's `get_stories` method from the document
+            story_id = message.media.id
+            user_id = message.media.peer.id
 
-                # Optionally notify the group
-                await message.reply_text(
-                    "⛔ Forwarded stories are not allowed and have been deleted."
-                )
+            try:
+                # Fetch the story to interact with it
+                story = await client.get_stories(user_id, story_id)
+
+                # If the story is found, delete it
+                if story:
+                    await message.delete()
+                    await message.reply_text("⛔ Forwarded stories are not allowed and have been deleted.")
 
             except PeerIdInvalid:
-                # Handle the case where the peer ID is invalid or the bot cannot resolve it
-                print(
-                    f"Invalid Peer ID for forwarded story in chat {message.chat.id}. Cannot delete the message."
-                )
-                await message.reply_text(
-                    "⚠️ The forwarded story could not be deleted due to an invalid peer ID."
-                )
+                print(f"Invalid Peer ID for story in chat {message.chat.id}. Cannot delete the story.")
+                await message.reply_text("⚠️ The story could not be deleted due to an invalid peer ID.")
+
+            except StoryInvalid:
+                print(f"Story is invalid or could not be fetched for user {user_id}")
+                await message.reply_text("⚠️ This story could not be found or is invalid.")
 
     except RPCError as e:
-        print(f"Failed to delete message: {e}")
+        print(f"Failed to delete story due to: {e}")
+        await message.reply_text("⚠️ Error occurred while trying to delete the story.")
