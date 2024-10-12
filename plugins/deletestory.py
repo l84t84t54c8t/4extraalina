@@ -65,8 +65,9 @@ async def toggle_delete(client, message):
 # Story Deletion
 @app.on_message(filters.group, group=0)
 async def delete_story(client, message):
+    if not message.story:
+        return
     chat_id = message.chat.id
-
     # Check if story deletion is enabled
     if not await is_deletion_enabled(chat_id):
         return
