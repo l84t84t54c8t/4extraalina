@@ -45,7 +45,7 @@ async def toggle_delete(client, message):
         )
         return
 
-    if action == "off":
+    if action == "on":
         if await is_deletion_enabled(chat_id):
             await set_deletion_feature(chat_id, False)  # Disable deletion
             await message.reply_text(
@@ -54,7 +54,7 @@ async def toggle_delete(client, message):
         else:
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر ناچالاککراوە ✅**")
 
-    elif action == "on":
+    elif action == "off":
         if not await is_deletion_enabled(chat_id):
             await set_deletion_feature(chat_id, True)  # Enable deletion
             await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
