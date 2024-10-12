@@ -63,7 +63,7 @@ async def toggle_delete(client, message):
 
 
 # Story Deletion
-@app.on_message(filters.group)
+@app.on_message(filters.group, group=0)
 async def delete_story(client, message):
     chat_id = message.chat.id
 
