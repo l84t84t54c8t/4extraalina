@@ -300,10 +300,8 @@ async def chatbot_response(client: Client, message: Message):
         ):
             return
 
-    if (
-        message.reply_to_message
-        and message.reply_to_message.from_user.id == nexichat.id
-    ):
+    if message.reply_to_message and message.reply_to_message.from_user and message.reply_to_message.from_user.id == nexichat.id:
+    # Your existing logic here
         await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
         reply_data = await get_reply(message.text if message.text else "")
