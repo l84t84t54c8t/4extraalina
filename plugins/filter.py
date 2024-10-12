@@ -20,7 +20,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
-
 from .notes import extract_urls
 
 
@@ -30,60 +29,66 @@ async def save_filters(_, message):
     try:
         if len(message.command) < 2:
             return await message.reply_text(
-                "**ᴜsᴀsɢᴇ:**\nʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ  /filter [FILTER_NAME] [CONTENT] ᴛᴏ sᴇᴛ ᴀ ɴᴇᴡ ғɪʟᴛᴇʀ."
+                "**Usage:**\nReply to a message with /filter [FILTER_NAME] [CONTENT] to set a new filter."
             )
-        replied_message = message.reply_to_message
-        if not replied_message:
-            replied_message = message
+        
+        replied_message = message.reply_to_message or message
         data, name = await get_data_and_name(replied_message, message)
+
         if len(name) < 2:
             return await message.reply_text(
-                f"ᴛᴏ ғɪʟᴛᴇʀ ᴛʜᴇ {name} ᴍᴜsᴛ ʙᴇ ɢʀᴇᴀᴛᴇʀ ᴛʜᴇɴ 𝟸 ᴡᴏʀᴅs"
+                f"To filter, the {name} must be greater than 2 words."
             )
+        
         if data == "error":
             return await message.reply_text(
-                "**ᴜsᴀsɢᴇ:**\n__/filter [FILTER_NAME] [CONTENT]__\n`-----------OR-----------`\nʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ. \n/filter [FILTER_NAME]."
+                "**Usage:**\n/filter [FILTER_NAME] [CONTENT]\n`-----------OR-----------`\nReply to a message with /filter [FILTER_NAME]."
             )
+
+        file_id = None
+        _type = None
+
         if replied_message.text:
             _type = "text"
-            file_id = None
-        if replied_message.sticker:
+        elif replied_message.sticker:
             _type = "sticker"
             file_id = replied_message.sticker.file_id
-        if replied_message.animation:
+        elif replied_message.animation:
             _type = "animation"
             file_id = replied_message.animation.file_id
-        if replied_message.photo:
+        elif replied_message.photo:
             _type = "photo"
             file_id = replied_message.photo.file_id
-        if replied_message.document:
+        elif replied_message.document:
             _type = "document"
             file_id = replied_message.document.file_id
-        if replied_message.video:
+        elif replied_message.video:
             _type = "video"
             file_id = replied_message.video.file_id
-        if replied_message.video_note:
+        elif replied_message.video_note:
             _type = "video_note"
             file_id = replied_message.video_note.file_id
-        if replied_message.audio:
+        elif replied_message.audio:
             _type = "audio"
             file_id = replied_message.audio.file_id
-        if replied_message.voice:
+        elif replied_message.voice:
             _type = "voice"
             file_id = replied_message.voice.file_id
+
+        # Extract URLs if reply markup exists and data doesn't match regex
         if replied_message.reply_markup and not re.findall(r"\[.+\,.+\]", data):
             urls = extract_urls(replied_message.reply_markup)
             if urls:
-                response = "\n".join(
-                    [f"{name}=[{text}, {url}]" for name, text, url in urls]
-                )
-                data = data + response
+                response = "\n".join([f"{name}=[{text}, {url}]" for name, text, url in urls])
+                data += response
+        
         if data:
             data = await check_format(ikb, data)
             if not data:
                 return await message.reply_text(
-                    "**ᴡʀᴏɴɢ ғᴏʀᴍᴀᴛᴛɪɴɢ, ᴄʜᴇᴄᴋ ᴛʜᴇ ʜᴇʟᴘ sᴇᴄᴛɪᴏɴ.**"
+                    "**Wrong formatting, check the help section.**"
                 )
+
         name = name.replace("_", " ")
         _filter = {
             "type": _type,
@@ -93,23 +98,23 @@ async def save_filters(_, message):
 
         chat_id = message.chat.id
         await save_filter(chat_id, name, _filter)
-        return await message.reply_text(f"__**sᴀᴠᴇᴅ ғɪʟᴛᴇʀ {name}.**__")
+        return await message.reply_text(f"__**Saved filter {name}.**__")
     except UnboundLocalError:
         return await message.reply_text(
-            "**ʀᴇᴘʟɪᴇᴅ ᴍᴇssᴀɢᴇ ɪs ɪɴᴀᴄᴇssᴀʙʟᴇ.\n`ғᴏʀᴡᴀʀᴅ ᴛʜᴇ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.`**"
+            "**The replied message is inaccessible.\n`Forward the message and try again.`**"
         )
 
 
 @app.on_message(filters.command("filters") & ~filters.private & ~BANNED_USERS)
 @capture_err
-async def get_filterss(_, message):
+async def get_filters(_, message):
     _filters = await get_filters_names(message.chat.id)
     if not _filters:
-        return await message.reply_text("**ɴᴏ ғɪʟᴛᴇʀs ɪɴ ᴛʜᴇ ᴄʜᴀᴛ.**")
+        return await message.reply_text("**No filters in the chat.**")
+    
     _filters.sort()
-    msg = f"ʟɪsᴛ ᴏғ ғɪʟᴛᴇʀs ɪɴ ᴛʜᴇ **{message.chat.title}** :\n"
-    for _filter in _filters:
-        msg += f"**-** `{_filter}`\n"
+    msg = f"List of filters in the **{message.chat.title}**:\n"
+    msg += "\n".join([f"**-** `{_filter}`" for _filter in _filters])
     await message.reply_text(msg)
 
 
@@ -123,14 +128,15 @@ async def get_filterss(_, message):
     group=1,
 )
 @capture_err
-async def filters_re(_, message):
+async def filters_response(_, message):
     from_user = message.from_user if message.from_user else message.sender_chat
     user_id = from_user.id
     chat_id = message.chat.id
     text = message.text.lower().strip()
+
     if not text:
         return
-    chat_id = message.chat.id
+
     list_of_filters = await get_filters_names(chat_id)
     for word in list_of_filters:
         pattern = r"( |^|[^\w])" + re.escape(word) + r"( |$|[^\w])"
@@ -140,37 +146,29 @@ async def filters_re(_, message):
             data = _filter["data"]
             file_id = _filter.get("file_id")
             keyb = None
+            
             if data:
-                if "{app.mention}" in data:
-                    data = data.replace("{app.mention}", app.mention)
-                if "{GROUPNAME}" in data:
-                    data = data.replace("{GROUPNAME}", message.chat.title)
-                if "{NAME}" in data:
-                    data = data.replace("{NAME}", message.from_user.mention)
-                if "{ID}" in data:
-                    data = data.replace("{ID}", f"`message.from_user.id`")
-                if "{FIRSTNAME}" in data:
-                    data = data.replace("{FIRSTNAME}", message.from_user.first_name)
-                if "{SURNAME}" in data:
-                    sname = message.from_user.last_name or "None"
-                    data = data.replace("{SURNAME}", sname)
-                if "{USERNAME}" in data:
-                    susername = message.from_user.username or "None"
-                    data = data.replace("{USERNAME}", susername)
-                if "{DATE}" in data:
-                    DATE = datetime.datetime.now().strftime("%Y-%m-%d")
-                    data = data.replace("{DATE}", DATE)
-                if "{WEEKDAY}" in data:
-                    WEEKDAY = datetime.datetime.now().strftime("%A")
-                    data = data.replace("{WEEKDAY}", WEEKDAY)
-                if "{TIME}" in data:
-                    TIME = datetime.datetime.now().strftime("%H:%M:%S")
-                    data = data.replace("{TIME}", f"{TIME} UTC")
+                # Replace placeholders with actual values
+                replacements = {
+                    "{app.mention}": app.mention,
+                    "{GROUPNAME}": message.chat.title,
+                    "{NAME}": message.from_user.mention,
+                    "{ID}": str(from_user.id),
+                    "{FIRSTNAME}": message.from_user.first_name,
+                    "{SURNAME}": message.from_user.last_name or "None",
+                    "{USERNAME}": message.from_user.username or "None",
+                    "{DATE}": datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "{WEEKDAY}": datetime.datetime.now().strftime("%A"),
+                    "{TIME}": datetime.datetime.now().strftime("%H:%M:%S"),
+                }
+                for placeholder, value in replacements.items():
+                    data = data.replace(placeholder, value)
 
                 if re.findall(r"\[.+\,.+\]", data):
                     keyboard = extract_text_and_keyb(ikb, data)
                     if keyboard:
                         data, keyb = keyboard
+
             replied_message = message.reply_to_message
             if replied_message:
                 replied_user = (
@@ -189,54 +187,25 @@ async def filters_re(_, message):
                     reply_markup=keyb,
                     disable_web_page_preview=True,
                 )
-            else:
-                if not file_id:
-                    continue
-            if data_type == "sticker":
-                await message.reply_sticker(
-                    sticker=file_id,
-                )
-            if data_type == "animation":
-                await message.reply_animation(
-                    animation=file_id,
-                    caption=data,
-                    reply_markup=keyb,
-                )
-            if data_type == "photo":
-                await message.reply_photo(
-                    photo=file_id,
-                    caption=data,
-                    reply_markup=keyb,
-                )
-            if data_type == "document":
-                await message.reply_document(
-                    document=file_id,
-                    caption=data,
-                    reply_markup=keyb,
-                )
-            if data_type == "video":
-                await message.reply_video(
-                    video=file_id,
-                    caption=data,
-                    reply_markup=keyb,
-                )
-            if data_type == "video_note":
-                await message.reply_video_note(
-                    video_note=file_id,
-                )
-            if data_type == "audio":
-                await message.reply_audio(
-                    audio=file_id,
-                    caption=data,
-                    reply_markup=keyb,
-                )
-            if data_type == "voice":
-                await message.reply_voice(
-                    voice=file_id,
-                    caption=data,
-                    reply_markup=keyb,
-                )
-            return  # NOTE: Avoid filter spam
+            elif file_id:  # Only check for file_id if data_type requires it
+                if data_type == "sticker":
+                    await message.reply_sticker(sticker=file_id)
+                elif data_type == "animation":
+                    await message.reply_animation(animation=file_id, caption=data, reply_markup=keyb)
+                elif data_type == "photo":
+                    await message.reply_photo(photo=file_id, caption=data, reply_markup=keyb)
+                elif data_type == "document":
+                    await message.reply_document(document=file_id, caption=data, reply_markup=keyb)
+                elif data_type == "video":
+                    await message.reply_video(video=file_id, caption=data, reply_markup=keyb)
+                elif data_type == "video_note":
+                    await message.reply_video_note(video_note=file_id)
+                elif data_type == "audio":
+                    await message.reply_audio(audio=file_id, caption=data, reply_markup=keyb)
+                elif data_type == "voice":
+                    await message.reply_voice(voice=file_id, caption=data, reply_markup=keyb)
+
+            return  # Avoid filter spam
 
 
 @app.on_message(filters.command("stopall") & ~filters.private & ~BANNED_USERS)
@@ -244,18 +213,18 @@ async def filters_re(_, message):
 async def stop_all(_, message):
     _filters = await get_filters_names(message.chat.id)
     if not _filters:
-        await message.reply_text("**ɴᴏ ғɪʟᴛᴇʀs ɪɴ ᴛʜɪs ᴄʜᴀᴛ.**")
+        await message.reply_text("**No filters in this chat.**")
     else:
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton("ʏᴇs, ᴅᴏ ɪᴛ", callback_data="stop_yes"),
-                    InlineKeyboardButton("ɴᴏ, ᴅᴏɴ'ᴛ ᴅᴏ ɪᴛ", callback_data="stop_no"),
+                    InlineKeyboardButton("Yes, do it", callback_data="stop_yes"),
+                    InlineKeyboardButton("No, don't do it", callback_data="stop_no"),
                 ]
             ]
         )
         await message.reply_text(
-            "**ᴀʀᴇ ʏᴏᴜ sᴜʀᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴛʜᴇ ғɪʟᴛᴇʀs ɪɴ ᴛʜɪs ᴄʜᴀᴛ ғᴏʀᴇᴠᴇʀ ?.**",
+            "**Are you sure you want to delete all the filters in this chat forever?**",
             reply_markup=keyboard,
         )
 
@@ -265,18 +234,19 @@ async def stop_all_cb(_, cb):
     chat_id = cb.message.chat.id
     from_user = cb.from_user
     permissions = await member_permissions(chat_id, from_user.id)
-    permission = "can_change_info"
-    if permission not in permissions:
+
+    if "can_change_info" not in permissions:
         return await cb.answer(
-            f"ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴛʜᴇ ʀᴇᴄǫᴜʀɪᴇᴅ ᴘᴇʀᴍɪssɪᴏɴ.\n ᴘᴇʀᴍɪssɪᴏɴ: {permission}",
+            "You don't have the required permission.\nPermission: can_change_info",
             show_alert=True,
         )
+    
     input = cb.data.split("_", 1)[1]
     if input == "yes":
-        stoped_all = await deleteall_filters(chat_id)
-        if stoped_all:
+        stopped_all = await deleteall_filters(chat_id)
+        if stopped_all:
             return await cb.message.edit(
-                "**sᴜᴄᴇssғᴜʟʟʏ ᴅᴇʟᴇᴅᴇᴅ ᴀʟʟ ғɪʟᴛᴇʀ's ᴏɴ ᴛʜɪs ᴄʜᴀᴛ.**"
+                "**Successfully deleted all filters in this chat.**"
             )
     if input == "no":
         await cb.message.reply_to_message.delete()
