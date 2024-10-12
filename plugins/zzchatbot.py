@@ -44,6 +44,8 @@ languages = {
     "vietnamese": "vi",
     "thai": "th",
     "dutch": "nl",
+    # Kurdish dialects
+    'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb',
     # Top languages spoken in Bihar
     "bhojpuri": "bho",
     "maithili": "mai",
@@ -300,42 +302,37 @@ async def chatbot_response(client: Client, message: Message):
         ):
             return
 
-    if (
-        message.reply_to_message
-        and message.reply_to_message.from_user
-        and message.reply_to_message.from_user.id == nexichat.id
-    ):
-        # Your existing logic here
-        await client.send_chat_action(message.chat.id, ChatAction.TYPING)
+    if message.reply_to_message and message.reply_to_message.from_user and nexichat.id:
+        if message.reply_to_message.from_user.id == nexichat.id:
+            await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-        reply_data = await get_reply(message.text if message.text else "")
+            reply_data = await get_reply(message.text if message.text else "")
 
-        if reply_data:
-            response_text = reply_data["text"]
-            chat_lang = get_chat_language(message.chat.id)
+            if reply_data:
+                response_text = reply_data["text"]
+                chat_lang = get_chat_language(message.chat.id)
 
-            if not chat_lang or chat_lang == "en":
-                translated_text = response_text
+                if not chat_lang or chat_lang == "en":
+                    translated_text = response_text
+                else:
+                    translated_text = GoogleTranslator(
+                        source="auto", target=chat_lang
+                    ).translate(response_text)
+                if reply_data["check"] == "sticker":
+                    await message.reply_sticker(reply_data["text"])
+                elif reply_data["check"] == "photo":
+                    await message.reply_photo(reply_data["text"])
+                elif reply_data["check"] == "video":
+                    await message.reply_video(reply_data["text"])
+                elif reply_data["check"] == "audio":
+                    await message.reply_audio(reply_data["text"])
+                else:
+                    await message.reply_text(translated_text)
             else:
-                translated_text = GoogleTranslator(
-                    source="auto", target=chat_lang
-                ).translate(response_text)
-            if reply_data["check"] == "sticker":
-                await message.reply_sticker(reply_data["text"])
-            elif reply_data["check"] == "photo":
-                await message.reply_photo(reply_data["text"])
-            elif reply_data["check"] == "video":
-                await message.reply_video(reply_data["text"])
-            elif reply_data["check"] == "audio":
-                await message.reply_audio(reply_data["text"])
-            else:
-                await message.reply_text(translated_text)
-        else:
-            await message.reply_text("**what??**")
+                await message.reply_text("**what??**")
 
     if message.reply_to_message:
         await save_reply(message.reply_to_message, message)
-
 
 async def save_reply(original_message: Message, reply_message: Message):
     if reply_message.sticker:
