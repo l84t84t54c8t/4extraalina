@@ -33,7 +33,7 @@ async def is_deletion_enabled(chat_id: int) -> bool:
 
 
 # Command to enable or disable story deletion
-@app.on_message(filters.command("story"))
+@app.on_message(filters.command("story")& filters.group)
 @adminsOnly("can_delete_messages")
 async def toggle_delete(client, message):
     chat_id = message.chat.id
@@ -63,10 +63,10 @@ async def toggle_delete(client, message):
 
 
 # Story Deletion
-@app.on_message(filters.private)
+@app.on_message(filters.group)
 async def delete_story(client, message):
     chat_id = message.chat.id
-    # Check if story deletion is enabled
+    # Check if story
     if not await is_deletion_enabled(chat_id):
         return
 
