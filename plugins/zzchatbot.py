@@ -45,7 +45,8 @@ languages = {
     "thai": "th",
     "dutch": "nl",
     # Kurdish dialects
-    'kurdish (kurmanji)': 'ku', 'kurdish (sorani)': 'ckb',
+    "kurdish (kurmanji)": "ku",
+    "kurdish (sorani)": "ckb",
     # Top languages spoken in Bihar
     "bhojpuri": "bho",
     "maithili": "mai",
@@ -333,6 +334,7 @@ async def chatbot_response(client: Client, message: Message):
 
     if message.reply_to_message:
         await save_reply(message.reply_to_message, message)
+
 
 async def save_reply(original_message: Message, reply_message: Message):
     if reply_message.sticker:
