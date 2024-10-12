@@ -20,6 +20,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
+
 from .notes import extract_urls
 
 
@@ -31,7 +32,7 @@ async def save_filters(_, message):
             return await message.reply_text(
                 "**Usage:**\nReply to a message with /filter [FILTER_NAME] [CONTENT] to set a new filter."
             )
-        
+
         replied_message = message.reply_to_message or message
         data, name = await get_data_and_name(replied_message, message)
 
@@ -39,7 +40,7 @@ async def save_filters(_, message):
             return await message.reply_text(
                 f"To filter, the {name} must be greater than 2 words."
             )
-        
+
         if data == "error":
             return await message.reply_text(
                 "**Usage:**\n/filter [FILTER_NAME] [CONTENT]\n`-----------OR-----------`\nReply to a message with /filter [FILTER_NAME]."
@@ -79,9 +80,11 @@ async def save_filters(_, message):
         if replied_message.reply_markup and not re.findall(r"\[.+\,.+\]", data):
             urls = extract_urls(replied_message.reply_markup)
             if urls:
-                response = "\n".join([f"{name}=[{text}, {url}]" for name, text, url in urls])
+                response = "\n".join(
+                    [f"{name}=[{text}, {url}]" for name, text, url in urls]
+                )
                 data += response
-        
+
         if data:
             data = await check_format(ikb, data)
             if not data:
@@ -111,7 +114,7 @@ async def get_filters(_, message):
     _filters = await get_filters_names(message.chat.id)
     if not _filters:
         return await message.reply_text("**No filters in the chat.**")
-    
+
     _filters.sort()
     msg = f"List of filters in the **{message.chat.title}**:\n"
     msg += "\n".join([f"**-** `{_filter}`" for _filter in _filters])
@@ -146,7 +149,7 @@ async def filters_response(_, message):
             data = _filter["data"]
             file_id = _filter.get("file_id")
             keyb = None
-            
+
             if data:
                 # Replace placeholders with actual values
                 replacements = {
@@ -191,19 +194,31 @@ async def filters_response(_, message):
                 if data_type == "sticker":
                     await message.reply_sticker(sticker=file_id)
                 elif data_type == "animation":
-                    await message.reply_animation(animation=file_id, caption=data, reply_markup=keyb)
+                    await message.reply_animation(
+                        animation=file_id, caption=data, reply_markup=keyb
+                    )
                 elif data_type == "photo":
-                    await message.reply_photo(photo=file_id, caption=data, reply_markup=keyb)
+                    await message.reply_photo(
+                        photo=file_id, caption=data, reply_markup=keyb
+                    )
                 elif data_type == "document":
-                    await message.reply_document(document=file_id, caption=data, reply_markup=keyb)
+                    await message.reply_document(
+                        document=file_id, caption=data, reply_markup=keyb
+                    )
                 elif data_type == "video":
-                    await message.reply_video(video=file_id, caption=data, reply_markup=keyb)
+                    await message.reply_video(
+                        video=file_id, caption=data, reply_markup=keyb
+                    )
                 elif data_type == "video_note":
                     await message.reply_video_note(video_note=file_id)
                 elif data_type == "audio":
-                    await message.reply_audio(audio=file_id, caption=data, reply_markup=keyb)
+                    await message.reply_audio(
+                        audio=file_id, caption=data, reply_markup=keyb
+                    )
                 elif data_type == "voice":
-                    await message.reply_voice(voice=file_id, caption=data, reply_markup=keyb)
+                    await message.reply_voice(
+                        voice=file_id, caption=data, reply_markup=keyb
+                    )
 
             return  # Avoid filter spam
 
@@ -240,7 +255,7 @@ async def stop_all_cb(_, cb):
             "You don't have the required permission.\nPermission: can_change_info",
             show_alert=True,
         )
-    
+
     input = cb.data.split("_", 1)[1]
     if input == "yes":
         stopped_all = await deleteall_filters(chat_id)
