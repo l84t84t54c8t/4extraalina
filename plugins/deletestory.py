@@ -63,7 +63,7 @@ async def toggle_delete(client, message):
 
 
 # Story Deletion
-@app.on_message(~filters.private)
+@app.on_message(filters.private)
 async def delete_story(client, message):
     if not message.story:
         return
