@@ -15,3 +15,4 @@ pydub
 SpeechRecognition
 nekos.py
 SafoneAPI
+deep_translator
