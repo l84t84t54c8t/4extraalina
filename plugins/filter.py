@@ -2,11 +2,17 @@ import datetime
 import re
 
 from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import (
     deleteall_filters,
     get_filter,
     get_filters_names,
     save_filter,
+    save_global_filter,
+    delete_global_filter,
+    delete_all_global_filters,
+    get_global_filter_names,
+    get_global_filter,
 )
 from AlinaMusic.utils.functions import (
     check_format,
@@ -266,6 +272,143 @@ async def stop_all_cb(_, cb):
     if input == "no":
         await cb.message.reply_to_message.delete()
         await cb.message.delete()
+
+
+
+@app.on_message(filters.command("gfilter") & filters.group & ~BANNED_USERS)
+async def save_global_filter_command(_, message):
+    # Check if the message sender is the bot owner
+    if message.from_user.id != SUDOERS:
+        return await message.reply_text("**Only the bot owner can use this command.**")
+
+    try:
+        if len(message.command) < 3:
+            return await message.reply_text(
+                "**Usage:**\n/globalfilter [FILTER_NAME] [CONTENT] to set a new global filter."
+            )
+
+        replied_message = message.reply_to_message or message
+        data, name = await get_data_and_name(replied_message, message)
+
+        if len(name) < 2:
+            return await message.reply_text(
+                f"To create a global filter, the name must be greater than 2 words."
+            )
+
+        file_id = None
+        _type = None
+
+        # Determine the type of the message content
+        if replied_message.text:
+            _type = "text"
+        elif replied_message.sticker:
+            _type = "sticker"
+            file_id = replied_message.sticker.file_id
+        elif replied_message.animation:
+            _type = "animation"
+            file_id = replied_message.animation.file_id
+        elif replied_message.photo:
+            _type = "photo"
+            file_id = replied_message.photo.file_id
+        elif replied_message.document:
+            _type = "document"
+            file_id = replied_message.document.file_id
+        elif replied_message.video:
+            _type = "video"
+            file_id = replied_message.video.file_id
+        elif replied_message.video_note:
+            _type = "video_note"
+            file_id = replied_message.video_note.file_id
+        elif replied_message.audio:
+            _type = "audio"
+            file_id = replied_message.audio.file_id
+        elif replied_message.voice:
+            _type = "voice"
+            file_id = replied_message.voice.file_id
+
+        # Save the global filter in the database
+        _filter = {
+            "type": _type,
+            "data": data,
+            "file_id": file_id,
+        }
+
+        await save_global_filter(name, _filter)  # Save the global filter
+        return await message.reply_text(f"__**Saved global filter {name}.**__")
+    except Exception as e:
+        return await message.reply_text(f"**An error occurred:** {str(e)}")
+
+@app.on_message(filters.text & ~filters.private & ~filters.channel & ~filters.via_bot & ~BANNED_USERS)
+async def global_filters_response(_, message):
+    text = message.text.lower().strip()
+    global_filters = await get_global_filter_names()
+
+    for filter_name in global_filters:
+        global_filter = await get_global_filter(filter_name)
+        if not global_filter:
+            continue
+
+        # Check if the filter should trigger (you can modify this logic)
+        pattern = r"( |^|[^\w])" + re.escape(filter_name) + r"( |$|[^\w])"
+        if re.search(pattern, text, flags=re.IGNORECASE):
+            data_type = global_filter["type"]
+            data = global_filter["data"]
+            file_id = global_filter.get("file_id")
+
+            # Send the appropriate response based on the filter type
+            if data_type == "text":
+                await message.reply_text(data)
+            elif file_id:
+                if data_type == "sticker":
+                    await message.reply_sticker(sticker=file_id)
+                elif data_type == "animation":
+                    await message.reply_animation(animation=file_id, caption=data)
+                elif data_type == "photo":
+                    await message.reply_photo(photo=file_id, caption=data)
+                elif data_type == "document":
+                    await message.reply_document(document=file_id, caption=data)
+                elif data_type == "video":
+                    await message.reply_video(video=file_id, caption=data)
+                elif data_type == "voice":
+                    await message.reply_voice(voice=file_id, caption=data)
+                elif data_type == "audio":
+                    await message.reply_audio(audio=file_id, caption=data)
+
+            return  # Stop further processing if a global filter triggered
+
+@app.on_message(filters.command("delgfilter") & filters.group & ~BANNED_USERS)
+async def delete_global_filter_command(_, message):
+    # Check if the message sender is the bot owner
+    if message.from_user.id != SUDOERS:
+        return await message.reply_text("**Only the bot owner can use this command.**")
+
+    try:
+        if len(message.command) < 2:
+            return await message.reply_text("**Usage:**\n/deleteglobalfilter [FILTER_NAME]")
+
+        name = message.command[1]
+        
+        # Delete the global filter from the database
+        if await delete_global_filter(name):
+            return await message.reply_text(f"__**Deleted global filter {name}.**__")
+        else:
+            return await message.reply_text(f"**Global filter {name} not found.**")
+    except Exception as e:
+        return await message.reply_text(f"**An error occurred:** {str(e)}")
+
+@app.on_message(filters.command("delallgfilters") & filters.group & ~BANNED_USERS)
+async def delete_all_global_filters_command(_, message):
+    # Check if the message sender is the bot owner
+    if message.from_user.id != SUDOERS:
+        return await message.reply_text("**Only the bot owner can use this command.**")
+
+    try:
+        if await delete_all_global_filters():
+            return await message.reply_text("__**Deleted all global filters.**__")
+        else:
+            return await message.reply_text("**No global filters to delete.**")
+    except Exception as e:
+        return await message.reply_text(f"**An error occurred:** {str(e)}")
 
 
 __MODULE__ = "Fɪʟᴛᴇʀs"
