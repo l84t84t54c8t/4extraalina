@@ -640,7 +640,7 @@ async def unmute(_, message: Message):
     replied_message = message.reply_to_message
     if replied_message:
         message = replied_message
-    await message.reply_text(f"**بەکارهێنەر : {umention}\میوتی لادرا**")
+    await message.reply_text(f"**بەکارهێنەر : {umention}\nمیوتی لادرا**")
 
 
 @app.on_message(filters.command(["warn", "swarn"]) & ~filters.private & ~BANNED_USERS)
