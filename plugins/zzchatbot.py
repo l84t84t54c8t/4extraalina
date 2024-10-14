@@ -281,7 +281,7 @@ async def language_selection_callback(client: Client, callback_query):
     )
 
 
-@nexichat.on_message(filters.command("chatbot"))
+@nexichat.on_message(filters.command("/chatbot", "سمسمی"), "")
 async def chaton(client: Client, message: Message):
     await message.reply_text(
         f"**گرووپ : {message.chat.title}\nدووگمەکانی خوارەوە داگرە بۆ کاراکردنی سمسمی**",
@@ -451,7 +451,7 @@ __MODULE__ = "ᴄʜᴀᴛʙᴏᴛ"
 __HELP__ = f"""**
 ๏ ʜᴇʀᴇ ᴀʀᴇ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅs ғᴏʀ {nexichat.mention}:
 
-➻ /chatbot - ᴏᴘᴇɴs ᴏᴘᴛɪᴏns ᴛᴏ ᴇɴᴀʙʟᴇ ᴏʀ ᴅɪsᴀʙʟᴇ ᴛʜᴇ ᴄʜᴀᴛʙᴏᴛ.
+➻ /chatbot - سمسمی - ᴏᴘᴇɴs ᴏᴘᴛɪᴏns ᴛᴏ ᴇɴᴀʙʟᴇ ᴏʀ ᴅɪsᴀʙʟᴇ ᴛʜᴇ ᴄʜᴀᴛʙᴏᴛ.
 ──────────────
 ➻ /chatbotlang, /chatbotlanguage, /setchatbotlang - ᴏᴘᴇɴs ᴀ ᴍᴇɴᴜ ᴛᴏ sᴇʟᴇᴄᴛ ᴛʜᴇ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ.  
 ──────────────
