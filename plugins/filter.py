@@ -277,7 +277,7 @@ async def stop_all_cb(_, cb):
 @app.on_message(filters.command("gfilter") & filters.group & ~BANNED_USERS)
 async def save_global_filter_command(_, message):
     # Check if the message sender is the bot owner
-    if message.from_user.id != SUDOERS:
+    if message.from_user.id != 833360381:
         return await message.reply_text("**Only the bot owner can use this command.**")
 
     try:
@@ -386,7 +386,7 @@ async def global_filters_response(_, message):
 @app.on_message(filters.command("delgfilter") & filters.group & ~BANNED_USERS)
 async def delete_global_filter_command(_, message):
     # Check if the message sender is the bot owner
-    if message.from_user.id != SUDOERS:
+    if message.from_user.id != 833360381:
         return await message.reply_text("**Only the bot owner can use this command.**")
 
     try:
@@ -409,7 +409,7 @@ async def delete_global_filter_command(_, message):
 @app.on_message(filters.command("delallgfilters") & filters.group & ~BANNED_USERS)
 async def delete_all_global_filters_command(_, message):
     # Check if the message sender is the bot owner
-    if message.from_user.id != SUDOERS:
+    if message.from_user.id != 833360381:
         return await message.reply_text("**Only the bot owner can use this command.**")
 
     try:
