@@ -337,7 +337,7 @@ async def promoteFunc(_, message: Message):
 # Handle callback to check and toggle admin powers
 @app.on_callback_query(filters.regex(r"^check_powers_(\d+)"))
 async def check_powers_callback(_, query: CallbackQuery):
-    user_id = int(query.data.split("_")[2])
+    user_id = int(query.data.split("_")[2])  # Ensure we extract the user_id correctly
     bot = (await app.get_chat_member(query.message.chat.id, app.id)).privileges
     user_privileges = (
         await app.get_chat_member(query.message.chat.id, user_id)
@@ -370,8 +370,8 @@ async def check_powers_callback(_, query: CallbackQuery):
         buttons.append([InlineKeyboardButton("داخستن", callback_data="close")])
         return buttons
 
-    await query.message.edit_text(
-        "**ڕۆڵی ئەدمین :**\n"
+    await query.message.edit_caption(
+        caption="**ڕۆڵی ئەدمین :\n**"
         + "\n".join(
             f"{name}: {'✅ ڕێپێدراو' if getattr(user_privileges, priv, False) else '❌ ڕێپێنەدراو'}"
             for priv, name in [
@@ -395,7 +395,7 @@ async def toggle_power_callback(_, query: CallbackQuery):
     power, user_id_str = query.data.split("_")[1], query.data.split("_")[2]
 
     try:
-        user_id = int(user_id_str)
+        user_id = int(user_id_str)  # Ensure user_id is converted to int
     except ValueError:
         return await query.answer("Invalid user ID.", show_alert=True)
 
@@ -403,10 +403,12 @@ async def toggle_power_callback(_, query: CallbackQuery):
     if not bot or not getattr(bot, power, False):
         return await query.answer("ئەم رؤلەم نییە کە بیدەم بە کەسیتر", show_alert=True)
 
+    # Get current user privileges
     current_privs = (
         await app.get_chat_member(query.message.chat.id, user_id)
     ).privileges
 
+    # Toggle the selected power
     new_privs = ChatPrivileges(
         can_change_info=current_privs.can_change_info,
         can_invite_users=current_privs.can_invite_users,
@@ -419,6 +421,7 @@ async def toggle_power_callback(_, query: CallbackQuery):
     )
     setattr(new_privs, power, not getattr(current_privs, power))
 
+    # Apply the new privileges
     await query.message.chat.promote_member(user_id=user_id, privileges=new_privs)
 
     await query.answer(
@@ -426,6 +429,7 @@ async def toggle_power_callback(_, query: CallbackQuery):
         show_alert=True,
     )
 
+    # Update the buttons and caption
     await check_powers_callback(_, query)
 
 
