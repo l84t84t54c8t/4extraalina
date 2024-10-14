@@ -562,7 +562,13 @@ async def mute(_, message: Message):
 
     mention = (await app.get_users(user_id)).mention
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("🚨  لادانی میوت  🚨", callback_data=f"unmute_{user_id}")]]
+        [
+            [
+                InlineKeyboardButton(
+                    "🚨  لادانی میوت  🚨", callback_data=f"unmute_{user_id}"
+                )
+            ]
+        ]
     )
     msg = (
         f"**بەکارهێنەر :** {mention}\n"
@@ -605,9 +611,7 @@ async def mute(_, message: Message):
 
 
 @app.on_message(
-    filters.command(["unmute", "لادانی ئاگاداری"])
-    & ~filters.private
-    & ~BANNED_USERS
+    filters.command(["unmute", "لادانی ئاگاداری"]) & ~filters.private & ~BANNED_USERS
 )
 @adminsOnly("can_restrict_members")
 async def unmute(_, message: Message):
