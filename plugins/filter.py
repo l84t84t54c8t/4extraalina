@@ -275,32 +275,37 @@ async def stop_all_cb(_, cb):
 
 @app.on_message(filters.command("gfilter") & filters.group & ~BANNED_USERS)
 async def save_global_filter_command(_, message):
-    if message.from_user.id != 833360381:  # Check for the bot owner
+    # Check if the message sender is the bot owner
+    if message.from_user.id != 833360381:
         return await message.reply_text("**Only the bot owner can use this command.**")
 
     try:
-        if not message.reply_to_message:  # Check if there's a replied message
+        if len(message.command) < 2:
             return await message.reply_text(
-                "**Usage:**\nReply to a message with `/gfilter [FILTER_NAME] [CONTENT]`."
+                "**Usage:**\nReply to a message with /gfilter [FILTER_NAME] to set a new global filter."
             )
-
-        # Extract filter name and content from the message text
-        content_parts = message.text.split(" ", 2)
-        if len(content_parts) < 3:
-            return await message.reply_text(
-                "**Usage:**\n/gfilter [FILTER_NAME] [CONTENT] to set a new global filter."
-            )
-
-        filter_name = content_parts[1]
-        filter_content = content_parts[2]
 
         replied_message = message.reply_to_message
+        if not replied_message:
+            return await message.reply_text(
+                "**You must reply to a message to create a global filter.**"
+            )
+
+        name = message.command[1].lower()
+
+        if len(name) < 2:
+            return await message.reply_text(
+                f"To create a global filter, the filter name must be greater than 2 characters."
+            )
+
         file_id = None
         _type = None
+        data = None
 
-        # Determine the type of the replied message
+        # Determine the type of the message content
         if replied_message.text:
             _type = "text"
+            data = replied_message.text
         elif replied_message.sticker:
             _type = "sticker"
             file_id = replied_message.sticker.file_id
@@ -326,17 +331,21 @@ async def save_global_filter_command(_, message):
             _type = "voice"
             file_id = replied_message.voice.file_id
 
+        if not data and not file_id:
+            return await message.reply_text("**Unsupported content type for global filter.**")
+
         # Save the global filter in the database
         _filter = {
             "type": _type,
-            "data": filter_content,
+            "data": data,
             "file_id": file_id,
         }
 
-        await save_global_filter(filter_name, _filter)  # Save the global filter
-        return await message.reply_text(f"__**Saved global filter {filter_name}.**__")
+        await save_global_filter(name, _filter)  # Save the global filter
+        return await message.reply_text(f"__**Saved global filter {name}.**__")
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
+
 
 
 @app.on_message(
