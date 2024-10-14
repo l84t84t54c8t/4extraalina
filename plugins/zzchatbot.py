@@ -281,7 +281,7 @@ async def language_selection_callback(client: Client, callback_query):
     )
 
 
-@nexichat.on_message(filters.command("/chatbot", "سمسمی"), "")
+@nexichat.on_message(filters.command(["/chatbot", "سمسمی"], ""))
 async def chaton(client: Client, message: Message):
     await message.reply_text(
         f"**گرووپ : {message.chat.title}\nدووگمەکانی خوارەوە داگرە بۆ کاراکردنی سمسمی**",
