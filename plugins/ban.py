@@ -24,7 +24,7 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
-
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ChatPrivileges, Message, CallbackQuery
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
 
@@ -280,6 +280,7 @@ async def unban_func(_, message: Message):
     await message.reply_text(f"**بەکارهێنەر : {umention}\nباندی لادرا**")
 
 
+
 @app.on_message(
     filters.command(["promote", "fullpromote"]) & ~filters.private & ~BANNED_USERS
 )
@@ -301,60 +302,37 @@ async def promoteFunc(_, message: Message):
     umention = (await app.get_users(user_id)).mention
     from_user_mention = message.from_user.mention
 
-    if message.command[0][0] == "f":
-        await message.chat.promote_member(
-            user_id=user_id,
-            privileges=ChatPrivileges(
-                can_change_info=bot.can_change_info,
-                can_invite_users=bot.can_invite_users,
-                can_delete_messages=bot.can_delete_messages,
-                can_restrict_members=bot.can_restrict_members,
-                can_pin_messages=bot.can_pin_messages,
-                can_promote_members=bot.can_promote_members,
-                can_manage_chat=bot.can_manage_chat,
-                can_manage_video_chats=bot.can_manage_video_chats,
-            ),
-        )
-        await message.reply_text(
-            f"**بەکارهێنەر : {umention}\nکرا بە فوول ئەدمین\nلەلایەن {from_user_mention} **",
-            reply_markup=InlineKeyboardMarkup(
+    privileges = ChatPrivileges(
+        can_change_info=bot.can_change_info,
+        can_invite_users=bot.can_invite_users,
+        can_delete_messages=bot.can_delete_messages,
+        can_restrict_members=bot.can_restrict_members,
+        can_pin_messages=bot.can_pin_messages,
+        can_promote_members=bot.can_promote_members,
+        can_manage_chat=bot.can_manage_chat,
+        can_manage_video_chats=bot.can_manage_video_chats,
+    )
+
+    if message.command[0] == "fullpromote":
+        privileges.can_change_info = True
+        privileges.can_restrict_members = True
+        privileges.can_promote_members = True
+
+    await message.chat.promote_member(user_id=user_id, privileges=privileges)
+
+    await message.reply_text(
+        f"**بەکارهێنەر : {umention}\nکرا بە {'فوول' if message.command[0] == 'fullpromote' else ''} ئەدمین\nلەلایەن {from_user_mention} **",
+        reply_markup=InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton(
-                            "پشکنینی ڕۆڵی ئەدمین",
-                            callback_data=f"check_powers_{user_id}",
-                        )
-                    ]
+                    InlineKeyboardButton(
+                        "پشکنینی ڕۆڵی ئەدمین",
+                        callback_data=f"check_powers_{user_id}",
+                    )
                 ]
-            ),
-        )
-    else:
-        await message.chat.promote_member(
-            user_id=user_id,
-            privileges=ChatPrivileges(
-                can_change_info=False,
-                can_invite_users=bot.can_invite_users,
-                can_delete_messages=bot.can_delete_messages,
-                can_restrict_members=False,
-                can_pin_messages=bot.can_pin_messages,
-                can_promote_members=False,
-                can_manage_chat=bot.can_manage_chat,
-                can_manage_video_chats=bot.can_manage_video_chats,
-            ),
-        )
-        await message.reply_text(
-            f"**بەکارهێنەر : {umention}\nکرا بە ئەدمین\nلەلایەن {from_user_mention} **",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            "پشکنینی ڕۆڵی ئەدمین",
-                            callback_data=f"check_powers_{user_id}",
-                        )
-                    ]
-                ]
-            ),
-        )
+            ]
+        ),
+    )
 
 
 # Handle callback to check and toggle admin powers
@@ -393,8 +371,8 @@ async def check_powers_callback(_, query: CallbackQuery):
         buttons.append([InlineKeyboardButton("داخستن", callback_data="close")])
         return buttons
 
-    await query.message.edit_caption(
-        caption="**ڕۆڵی ئەدمین :\n**"
+    await query.message.edit_text(
+        "**ڕۆڵی ئەدمین :**\n"
         + "\n".join(
             f"{name}: {'✅ ڕێپێدراو' if getattr(user_privileges, priv, False) else '❌ ڕێپێنەدراو'}"
             for priv, name in [
@@ -415,23 +393,21 @@ async def check_powers_callback(_, query: CallbackQuery):
 # Toggle admin power
 @app.on_callback_query(filters.regex(r"^toggle_(.+)_(\d+)"))
 async def toggle_power_callback(_, query: CallbackQuery):
-    print(f"Received callback data: {query.data}")  # Add logging to check the data
     power, user_id_str = query.data.split("_")[1], query.data.split("_")[2]
 
     try:
-        user_id = int(user_id_str)  # Attempt to convert to int
+        user_id = int(user_id_str)
     except ValueError:
         return await query.answer("Invalid user ID.", show_alert=True)
 
+    bot = (await app.get_chat_member(query.message.chat.id, app.id)).privileges
     if not bot or not getattr(bot, power, False):
         return await query.answer("ئەم رؤلەم نییە کە بیدەم بە کەسیتر", show_alert=True)
 
-    # Get current user privileges
     current_privs = (
         await app.get_chat_member(query.message.chat.id, user_id)
     ).privileges
 
-    # Toggle the selected power
     new_privs = ChatPrivileges(
         can_change_info=current_privs.can_change_info,
         can_invite_users=current_privs.can_invite_users,
@@ -444,7 +420,6 @@ async def toggle_power_callback(_, query: CallbackQuery):
     )
     setattr(new_privs, power, not getattr(current_privs, power))
 
-    # Apply the new privileges
     await query.message.chat.promote_member(user_id=user_id, privileges=new_privs)
 
     await query.answer(
@@ -452,7 +427,6 @@ async def toggle_power_callback(_, query: CallbackQuery):
         show_alert=True,
     )
 
-    # Update the buttons and caption
     await check_powers_callback(_, query)
 
 
@@ -463,7 +437,8 @@ async def close_callback(_, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex(r"^back"))
 async def back_callback(_, query: CallbackQuery):
-    await query.message.edit_caption("**هەڵوەشایەوە ❌**")
+    await query.message.edit_text("**هەڵوەشایەوە ❌**")
+
 
 
 # Demote Member
