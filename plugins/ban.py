@@ -24,7 +24,7 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ChatPrivileges, Message, CallbackQuery
+
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
 
@@ -280,7 +280,6 @@ async def unban_func(_, message: Message):
     await message.reply_text(f"**بەکارهێنەر : {umention}\nباندی لادرا**")
 
 
-
 @app.on_message(
     filters.command(["promote", "fullpromote"]) & ~filters.private & ~BANNED_USERS
 )
@@ -438,7 +437,6 @@ async def close_callback(_, query: CallbackQuery):
 @app.on_callback_query(filters.regex(r"^back"))
 async def back_callback(_, query: CallbackQuery):
     await query.message.edit_text("**هەڵوەشایەوە ❌**")
-
 
 
 # Demote Member
