@@ -1,10 +1,8 @@
 from AlinaMusic import app
-from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
 
-from utils.permissions import adminsOnly
 
 # Story Deletion
 @app.on_message(filters.group)
