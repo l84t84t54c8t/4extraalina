@@ -543,7 +543,7 @@ async def demote(_, message: Message):
 
 
 @app.on_message(
-    filters.command(["mute", "tmute", "ئاگاداری", "ئاگاداری کاتی"])
+    filters.command(["/mute", "/tmute", "ئاگاداری", "ئاگاداری کاتی"],"")
     & ~filters.private
     & ~BANNED_USERS
 )
@@ -615,7 +615,7 @@ async def mute(_, message: Message):
 
 
 @app.on_message(
-    filters.command(["unmute", "لادانی ئاگاداری"]) & ~filters.private & ~BANNED_USERS
+    filters.command(["/unmute", "لادانی ئاگاداری", "لادانی میوت"],"") & ~filters.private & ~BANNED_USERS
 )
 @adminsOnly("can_restrict_members")
 async def unmute(_, message: Message):
