@@ -301,13 +301,13 @@ async def promoteFunc(_, message: Message):
     umention = (await app.get_users(user_id)).mention
     from_user_mention = message.from_user.mention
 
-    privileges = ChatPrivileges(
-        can_change_info=bot.can_change_info,
+    privileges=ChatPrivileges(
+        can_change_info=False,
         can_invite_users=bot.can_invite_users,
         can_delete_messages=bot.can_delete_messages,
-        can_restrict_members=bot.can_restrict_members,
+        can_restrict_members=False,
         can_pin_messages=bot.can_pin_messages,
-        can_promote_members=bot.can_promote_members,
+        can_promote_members=False,
         can_manage_chat=bot.can_manage_chat,
         can_manage_video_chats=bot.can_manage_video_chats,
     )
