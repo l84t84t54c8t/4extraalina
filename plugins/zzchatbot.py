@@ -440,14 +440,14 @@ async def cb_handler(_, query: CallbackQuery):
         if chat_status.get("status") != "disabled":
             await query.answer("سمسمی چالاککرا ✅", show_alert=True)
             await query.edit_message_text(
-                f"گرووپ : {query.message.chat.title}\n**سمسمی چالاککرا**"
+                f"**گرووپ : {query.message.chat.title}\n**سمسمی چالاککرا**"
             )
 
     elif query.data == "disable_chatbot":
         status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "disabled"}})
         await query.answer("Chatbot disabled!", show_alert=True)
         await query.edit_message_text(
-            f"گرووپ : {query.message.chat.title}\n**سمسمی ناچالاککرا**"
+            f"**گرووپ : {query.message.chat.title}\n**سمسمی ناچالاککرا**"
         )
 
 
