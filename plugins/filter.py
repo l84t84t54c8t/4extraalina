@@ -332,7 +332,9 @@ async def save_global_filter_command(_, message):
             file_id = replied_message.voice.file_id
 
         if not data and not file_id:
-            return await message.reply_text("**Unsupported content type for global filter.**")
+            return await message.reply_text(
+                "**Unsupported content type for global filter.**"
+            )
 
         # Save the global filter in the database
         _filter = {
@@ -345,7 +347,6 @@ async def save_global_filter_command(_, message):
         return await message.reply_text(f"__**Saved global filter {name}.**__")
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
-
 
 
 @app.on_message(
