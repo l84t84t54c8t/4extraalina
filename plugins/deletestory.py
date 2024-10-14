@@ -60,6 +60,7 @@ async def delete_story(client, message):
         except MessageDeleteForbidden:
             print("Bot does not have permission to delete the story.")
 
+
 # Command to enable or disable story deletion
 @app.on_message(filters.command("story") & filters.group)
 @adminsOnly("can_delete_messages")
@@ -88,7 +89,6 @@ async def toggle_delete(client, message):
             await message.reply_text("**• بە سەرکەوتوویی سڕینەوەی ستۆری چالاککرا ✅**")
         else:
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر چالاککراوە ✅**")
-
 
 
 @app.on_message(filters.command("getstory") & filters.group)
