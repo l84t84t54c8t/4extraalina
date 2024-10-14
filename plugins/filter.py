@@ -273,6 +273,7 @@ async def stop_all_cb(_, cb):
         await cb.message.delete()
 
 
+"""
 @app.on_message(filters.command("gfilter") & filters.group & ~BANNED_USERS)
 async def save_global_filter_command(_, message):
     # Check if the message sender is the bot owner
@@ -458,7 +459,7 @@ async def confirm_delete_all_cb(_, cb):
 async def cancel_delete_all_cb(_, cb):
     await cb.answer("Deletion canceled.", show_alert=True)
 
-
+"""
 __MODULE__ = "Fɪʟᴛᴇʀs"
 __HELP__ = """/filters To Get All The Filters In The Chat.
 /filter [FILTER_NAME] To Save A Filter(reply to a message).
