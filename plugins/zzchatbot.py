@@ -284,7 +284,7 @@ async def language_selection_callback(client: Client, callback_query):
 @nexichat.on_message(filters.command("chatbot"))
 async def chaton(client: Client, message: Message):
     await message.reply_text(
-        f"**گرووپ : {message.chat.title}\nدووگمەکانی خوارەوە داگرە بۆ کاراکردنی زیرەکی دەستکرد**",
+        f"**گرووپ : {message.chat.title}\nدووگمەکانی خوارەوە داگرە بۆ کاراکردنی سمسمی**",
         reply_markup=InlineKeyboardMarkup(CHATBOT_ON),
     )
 
@@ -434,7 +434,7 @@ async def cb_handler(_, query: CallbackQuery):
         status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "enabled"}})
         await query.answer("زیرەکی دەستکرد چالاککرا ✅", show_alert=True)
         await query.edit_message_text(
-            f"گرووپ : {query.message.chat.title}\n**زیرەکی دەستکرد چالاککرا**"
+            f"گرووپ : {query.message.chat.title}\n**سمسمی چالاککرا**"
         )
 
     elif query.data == "disable_chatbot":
@@ -443,7 +443,7 @@ async def cb_handler(_, query: CallbackQuery):
         status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "disabled"}})
         await query.answer("Chatbot disabled!", show_alert=True)
         await query.edit_message_text(
-            f"گرووپ : {query.message.chat.title}\n**زیرەکی دەستکرد ناچالاککرا**"
+            f"گرووپ : {query.message.chat.title}\n**سمسمی ناچالاککرا**"
         )
 
 
