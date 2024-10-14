@@ -290,7 +290,7 @@ async def save_global_filter_command(_, message):
             return await message.reply_text(
                 "**Usage:**\n/gfilter [FILTER_NAME] [CONTENT] to set a new global filter."
             )
-        
+
         filter_name = content_parts[1]
         filter_content = content_parts[2]
 
@@ -415,14 +415,24 @@ async def delete_all_global_filters_command(_, message):
     try:
         # Confirm the deletion of all global filters
         confirmation_keyboard = InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton("Yes, delete all", callback_data="confirm_delete_all"),
-                InlineKeyboardButton("No, cancel", callback_data="cancel_delete_all"),
-            ]]
+            [
+                [
+                    InlineKeyboardButton(
+                        "Yes, delete all", callback_data="confirm_delete_all"
+                    ),
+                    InlineKeyboardButton(
+                        "No, cancel", callback_data="cancel_delete_all"
+                    ),
+                ]
+            ]
         )
-        await message.reply_text("**Are you sure you want to delete all global filters?**", reply_markup=confirmation_keyboard)
+        await message.reply_text(
+            "**Are you sure you want to delete all global filters?**",
+            reply_markup=confirmation_keyboard,
+        )
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
+
 
 @app.on_callback_query(filters.regex("confirm_delete_all") & ~BANNED_USERS)
 async def confirm_delete_all_cb(_, cb):
@@ -432,6 +442,7 @@ async def confirm_delete_all_cb(_, cb):
         await cb.message.edit("**Successfully deleted all global filters.**")
     except Exception as e:
         await cb.message.edit(f"**An error occurred:** {str(e)}")
+
 
 @app.on_callback_query(filters.regex("cancel_delete_all") & ~BANNED_USERS)
 async def cancel_delete_all_cb(_, cb):
