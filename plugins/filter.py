@@ -4,15 +4,15 @@ import re
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import (
+    delete_all_global_filters,
+    delete_global_filter,
     deleteall_filters,
     get_filter,
     get_filters_names,
+    get_global_filter,
+    get_global_filter_names,
     save_filter,
     save_global_filter,
-    delete_global_filter,
-    delete_all_global_filters,
-    get_global_filter_names,
-    get_global_filter,
 )
 from AlinaMusic.utils.functions import (
     check_format,
@@ -274,7 +274,6 @@ async def stop_all_cb(_, cb):
         await cb.message.delete()
 
 
-
 @app.on_message(filters.command("gfilter") & filters.group & ~BANNED_USERS)
 async def save_global_filter_command(_, message):
     # Check if the message sender is the bot owner
@@ -338,7 +337,14 @@ async def save_global_filter_command(_, message):
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
 
-@app.on_message(filters.text & ~filters.private & ~filters.channel & ~filters.via_bot & ~BANNED_USERS)
+
+@app.on_message(
+    filters.text
+    & ~filters.private
+    & ~filters.channel
+    & ~filters.via_bot
+    & ~BANNED_USERS
+)
 async def global_filters_response(_, message):
     text = message.text.lower().strip()
     global_filters = await get_global_filter_names()
@@ -376,6 +382,7 @@ async def global_filters_response(_, message):
 
             return  # Stop further processing if a global filter triggered
 
+
 @app.on_message(filters.command("delgfilter") & filters.group & ~BANNED_USERS)
 async def delete_global_filter_command(_, message):
     # Check if the message sender is the bot owner
@@ -384,10 +391,12 @@ async def delete_global_filter_command(_, message):
 
     try:
         if len(message.command) < 2:
-            return await message.reply_text("**Usage:**\n/deleteglobalfilter [FILTER_NAME]")
+            return await message.reply_text(
+                "**Usage:**\n/deleteglobalfilter [FILTER_NAME]"
+            )
 
         name = message.command[1]
-        
+
         # Delete the global filter from the database
         if await delete_global_filter(name):
             return await message.reply_text(f"__**Deleted global filter {name}.**__")
@@ -395,6 +404,7 @@ async def delete_global_filter_command(_, message):
             return await message.reply_text(f"**Global filter {name} not found.**")
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
+
 
 @app.on_message(filters.command("delallgfilters") & filters.group & ~BANNED_USERS)
 async def delete_all_global_filters_command(_, message):
