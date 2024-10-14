@@ -301,7 +301,7 @@ async def promoteFunc(_, message: Message):
     umention = (await app.get_users(user_id)).mention
     from_user_mention = message.from_user.mention
 
-    privileges=ChatPrivileges(
+    privileges = ChatPrivileges(
         can_change_info=False,
         can_invite_users=bot.can_invite_users,
         can_delete_messages=bot.can_delete_messages,
