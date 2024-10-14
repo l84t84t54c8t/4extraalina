@@ -70,9 +70,9 @@ async def toggle_forwarded_deletion(client, message):
     if action == "off":
         if not await is_deletion_enabled(message.chat.id):
             await set_deletion_feature(message.chat.id, True)  # Enable deletion
-            await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام داخرا ✅**")
+            await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام داخرا ❌**")
         else:
-            await message.reply("**• ناردنی ڕێکڵام پێشتر داخراوە ✅**")
+            await message.reply("**• ناردنی ڕێکڵام پێشتر داخراوە ❌**")
 
     elif action == "on":
         if await is_deletion_enabled(message.chat.id):
@@ -80,3 +80,17 @@ async def toggle_forwarded_deletion(client, message):
             await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام کرایەوە ✅**")
         else:
             await message.reply("**• ناردنی ڕێکڵام پێشتر کراوەتەوە ✅**")
+
+
+
+@app.on_message(filters.command("getforward") & filters.group)
+@adminsOnly("can_delete_messages")
+async def check_forwarded_deletion(client, message):
+    # Check if deletion is enabled for the chat
+    deletion_status = await is_deletion_enabled(message.chat.id)
+    
+    # Respond with the current status
+    if deletion_status:
+        await message.reply("**• ناردنی ڕێکڵام داخراوە ❌**")
+    else:
+        await message.reply("**• ناردنی ڕێکڵام کراوەتەوە ✅**")
