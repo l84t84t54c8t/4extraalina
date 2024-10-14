@@ -2,7 +2,6 @@ import datetime
 import re
 
 from AlinaMusic import app
-from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import (
     delete_all_global_filters,
     delete_global_filter,
