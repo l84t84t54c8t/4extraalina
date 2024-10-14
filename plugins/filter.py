@@ -3,15 +3,10 @@ import re
 
 from AlinaMusic import app
 from AlinaMusic.utils.database import (
-    delete_all_global_filters,
-    delete_global_filter,
     deleteall_filters,
     get_filter,
     get_filters_names,
-    get_global_filter,
-    get_global_filter_names,
     save_filter,
-    save_global_filter,
 )
 from AlinaMusic.utils.functions import (
     check_format,
