@@ -275,28 +275,30 @@ async def stop_all_cb(_, cb):
 
 @app.on_message(filters.command("gfilter") & filters.group & ~BANNED_USERS)
 async def save_global_filter_command(_, message):
-    # Check if the message sender is the bot owner
-    if message.from_user.id != 833360381:
+    if message.from_user.id != 833360381:  # Check for the bot owner
         return await message.reply_text("**Only the bot owner can use this command.**")
 
     try:
-        if len(message.command) < 3:
+        if not message.reply_to_message:  # Check if there's a replied message
             return await message.reply_text(
-                "**Usage:**\n/globalfilter [FILTER_NAME] [CONTENT] to set a new global filter."
+                "**Usage:**\nReply to a message with `/gfilter [FILTER_NAME] [CONTENT]`."
             )
 
-        replied_message = message.reply_to_message or message
-        data, name = await get_data_and_name(replied_message, message)
-
-        if len(name) < 2:
+        # Extract filter name and content from the message text
+        content_parts = message.text.split(" ", 2)
+        if len(content_parts) < 3:
             return await message.reply_text(
-                f"To create a global filter, the name must be greater than 2 words."
+                "**Usage:**\n/gfilter [FILTER_NAME] [CONTENT] to set a new global filter."
             )
+        
+        filter_name = content_parts[1]
+        filter_content = content_parts[2]
 
+        replied_message = message.reply_to_message
         file_id = None
         _type = None
 
-        # Determine the type of the message content
+        # Determine the type of the replied message
         if replied_message.text:
             _type = "text"
         elif replied_message.sticker:
@@ -327,12 +329,12 @@ async def save_global_filter_command(_, message):
         # Save the global filter in the database
         _filter = {
             "type": _type,
-            "data": data,
+            "data": filter_content,
             "file_id": file_id,
         }
 
-        await save_global_filter(name, _filter)  # Save the global filter
-        return await message.reply_text(f"__**Saved global filter {name}.**__")
+        await save_global_filter(filter_name, _filter)  # Save the global filter
+        return await message.reply_text(f"__**Saved global filter {filter_name}.**__")
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
 
@@ -407,17 +409,33 @@ async def delete_global_filter_command(_, message):
 
 @app.on_message(filters.command("delallgfilters") & filters.group & ~BANNED_USERS)
 async def delete_all_global_filters_command(_, message):
-    # Check if the message sender is the bot owner
-    if message.from_user.id != 833360381:
+    if message.from_user.id != 833360381:  # Check for the bot owner
         return await message.reply_text("**Only the bot owner can use this command.**")
 
     try:
-        if await delete_all_global_filters():
-            return await message.reply_text("__**Deleted all global filters.**__")
-        else:
-            return await message.reply_text("**No global filters to delete.**")
+        # Confirm the deletion of all global filters
+        confirmation_keyboard = InlineKeyboardMarkup(
+            [[
+                InlineKeyboardButton("Yes, delete all", callback_data="confirm_delete_all"),
+                InlineKeyboardButton("No, cancel", callback_data="cancel_delete_all"),
+            ]]
+        )
+        await message.reply_text("**Are you sure you want to delete all global filters?**", reply_markup=confirmation_keyboard)
     except Exception as e:
         return await message.reply_text(f"**An error occurred:** {str(e)}")
+
+@app.on_callback_query(filters.regex("confirm_delete_all") & ~BANNED_USERS)
+async def confirm_delete_all_cb(_, cb):
+    try:
+        # Delete all global filters
+        await delete_all_global_filters()
+        await cb.message.edit("**Successfully deleted all global filters.**")
+    except Exception as e:
+        await cb.message.edit(f"**An error occurred:** {str(e)}")
+
+@app.on_callback_query(filters.regex("cancel_delete_all") & ~BANNED_USERS)
+async def cancel_delete_all_cb(_, cb):
+    await cb.answer("Deletion canceled.", show_alert=True)
 
 
 __MODULE__ = "Fɪʟᴛᴇʀs"
