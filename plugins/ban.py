@@ -539,7 +539,7 @@ async def demote(_, message: Message):
 
 
 @app.on_message(
-    filters.command(["/mute", "/tmute", "ئاگاداری", "ئاگاداری کاتی"], "")
+    filters.command(["mute", "tmute", "ئاگاداری", "ئاگاداری کاتی"])
     & ~filters.private
     & ~BANNED_USERS
 )
@@ -547,7 +547,7 @@ async def demote(_, message: Message):
 async def mute(_, message: Message):
     user_id, reason = await extract_user_and_reason(message)
     if not user_id:
-        return await message.reply_text("**ناتوانم بەکارهێنەر بدۆزمەوە*")
+        return await message.reply_text("**ناتوانم بەکارهێنەر بدۆزمەوە**")
     if user_id == app.id:
         return await message.reply_text("**ناتوانم خۆم میوت بکەم بەڕێزم**")
     if user_id in SUDOERS:
@@ -559,22 +559,27 @@ async def mute(_, message: Message):
         )
     ]:
         return await message.reply_text("**ناتوانم ئەدمینی تر میوت بکەم بەڕێزم**")
+
     mention = (await app.get_users(user_id)).mention
-    keyboard = ikb({"🚨  لادانی میوت  🚨": f"unmute_{user_id}"})
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("🚨  لادانی میوت  🚨", callback_data=f"unmute_{user_id}")]]
+    )
     msg = (
-        f"**بەکارهێنەر :** {mention}\n**"
-        f"**میوت کرا لەلایەن : {message.from_user.mention if message.from_user else 'بەکارهێنەری نەناسراو'}\n**"
+        f"**بەکارهێنەر :** {mention}\n"
+        f"**میوت کرا لەلایەن : {message.from_user.mention if message.from_user else 'بەکارهێنەری نەناسراو'}**\n"
     )
     if message.command[0] == "tmute" or message.command[0] == "ئاگاداری کاتی":
         split = reason.split(None, 1)
+        if len(split) < 1:
+            return await message.reply_text("**تکایە کاتی دروست بنووسە بۆ میوت**")
         time_value = split[0]
         temp_reason = split[1] if len(split) > 1 else ""
         temp_mute = await time_converter(message, time_value)
-        msg += f"**میوت کرا بۆ : {time_value}\n**"
+        msg += f"**میوت کرا بۆ : {time_value}**\n"
         if temp_reason:
             msg += f"**هۆکار : {temp_reason}**"
         try:
-            if len(time_value[:-1]) < 3:
+            if len(time_value[:-1]) < 3:  # Ensures the duration is valid
                 await message.chat.restrict_member(
                     user_id,
                     permissions=ChatPermissions(),
@@ -589,6 +594,7 @@ async def mute(_, message: Message):
         except AttributeError:
             pass
         return
+
     if reason:
         msg += f"**هۆکار : {reason}**"
     await message.chat.restrict_member(user_id, permissions=ChatPermissions())
@@ -599,7 +605,7 @@ async def mute(_, message: Message):
 
 
 @app.on_message(
-    filters.command(["/unmute", "لادانی ئاگاداری"], "")
+    filters.command(["unmute", "لادانی ئاگاداری"])
     & ~filters.private
     & ~BANNED_USERS
 )
@@ -607,7 +613,7 @@ async def mute(_, message: Message):
 async def unmute(_, message: Message):
     user_id = await extract_user(message)
     if not user_id:
-        return await message.reply_text("**ناتوانم بەکارهێنەر بدۆزمەوە*")
+        return await message.reply_text("**ناتوانم بەکارهێنەر بدۆزمەوە**")
     await message.chat.unban_member(user_id)
     umention = (await app.get_users(user_id)).mention
     replied_message = message.reply_to_message
