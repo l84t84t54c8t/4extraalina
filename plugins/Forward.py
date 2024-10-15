@@ -9,6 +9,7 @@ from utils.permissions import adminsOnly
 # MongoDB collection for settings
 forwarddb = mongodb.forward  # Ensure you have a collection named 'forward'
 
+
 # Function to enable or disable forwarded message deletion
 async def set_deletion_feature(chat_id: int, status: bool):
     update_data = {"forwarded_message_deletion": status}
@@ -16,6 +17,7 @@ async def set_deletion_feature(chat_id: int, status: bool):
         {"chat_id": chat_id}, {"$set": update_data}, upsert=True
     )
     return result.modified_count > 0 or result.upserted_id is not None
+
 
 # Function to check if forwarded message deletion is enabled, default to True
 async def is_deletion_enabled(chat_id: int) -> bool:
@@ -28,6 +30,7 @@ async def is_deletion_enabled(chat_id: int) -> bool:
             return True
         return False  # Otherwise, return disabled
     return data.get("forwarded_message_deletion", True)  # Default to True if not set
+
 
 # Function to delete forwarded messages only from members
 @app.on_message(filters.forwarded)
@@ -50,6 +53,7 @@ async def delete_forwarded_messages(app, message):
         print("Bot does not have permission to delete the message.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 # Command to enable or disable the forwarded message deletion feature
 @app.on_message(filters.command("forward") & filters.group)
@@ -76,6 +80,7 @@ async def toggle_forwarded_deletion(client, message):
             await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام کرایەوە ✅**")
         else:
             await message.reply("**• ناردنی ڕێکڵام پێشتر کراوەتەوە ✅**")
+
 
 # Command to check if forwarded message deletion is enabled
 @app.on_message(filters.command("getforward") & filters.group)
