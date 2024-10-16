@@ -1,4 +1,5 @@
 import asyncio
+
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from config import MONGO_DB_URI
@@ -12,8 +13,11 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
+
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
+
+
 @app.on_message(filters.command(["fsub", "join", "on"]) & filters.group)
 async def set_forcesub(client: Client, message: Message):
     bot = await app.get_me()
@@ -168,10 +172,14 @@ async def set_forcesub(client: Client, message: Message):
             ),
         )
         await asyncio.sleep(1)
+
+
 @app.on_callback_query(filters.regex("close_force_sub"))
 async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.answer("داخرا!")
     await callback_query.message.delete()
+
+
 @app.on_message(
     filters.command(
         ["/setcaption", "/setmessage", "دانانی نامە", "گۆڕینی نامە", "گۆرینی نامە"], ""
@@ -210,6 +218,8 @@ async def set_custom_caption(client: Client, message: Message):
         {"chat_id": chat_id}, {"$set": {"custom_caption": caption}}, upsert=True
     )
     await message.reply_text("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
+
+
 @app.on_message(
     filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
     & filters.group
@@ -247,6 +257,8 @@ async def set_custom_photo(client: Client, message: Message):
         {"chat_id": chat_id}, {"$set": {"custom_photo_id": photo_id}}, upsert=True
     )
     await message.reply_text("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
+
+
 async def check_forcesub(client: Client, message: Message):
     if message.from_user is None:
         # Handle the case where from_user is None
