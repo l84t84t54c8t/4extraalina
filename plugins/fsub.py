@@ -222,13 +222,24 @@ async def check_forcesub(client: Client, message: Message):
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
-    custom_caption = forcesub_data.get(
-        "custom_caption", "Join the channel to participate."
+    custom_caption = forcesub_data.get("custom_caption", "Join the channel to participate.")
+
+    # Default caption if no custom caption is set
+    default_caption = (
+        "**✧¦ تۆ ئەندام نیت لەم کەناڵە {name}•\n\n\n**"
+        "**✧¦ ناتوانی چات بکەیت لەم گرووپە•\n\n**"
+        "**✧¦ سەرەتا پێویستە جۆینی کەناڵ بکەیت•\n\n**"
+        "**✧¦ ئەگەر جۆین نەکەیت ئەوا چاتەکەت دەسڕمەوە و ئاگادارتەکەمەوە•\n\n\n**"
+        "**✧¦ کەناڵی گرووپ {mention} ♥️•**"
     )
+
+    # Use final_caption based on the presence of custom_caption
+    final_caption = custom_caption if custom_caption else default_caption
 
     # If no custom photo is set, try to get the group photo
     if not custom_photo_id:
-        custom_photo_id = await app.download_media(message.chat.photo.big_file_id)
+        if message.chat.photo:
+            custom_photo_id = await app.download_media(message.chat.photo.big_file_id)
 
         # If no group photo, use the bot's own profile photo as fallback
         if not custom_photo_id:
@@ -248,15 +259,48 @@ async def check_forcesub(client: Client, message: Message):
             invite_link = await app.export_chat_invite_link(channel_id)
             channel_url = invite_link
 
-        await message.reply_photo(
-            photo=custom_photo_id,
-            caption=custom_caption.format(
-                name=message.from_user.mention, mention=channel_username
-            ),
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url)]]
-            ),
-        )
+        # Send message with a photo if custom_photo_id is set, otherwise send caption only
+        if custom_photo_id:
+            await message.reply_photo(
+                photo=custom_photo_id,
+                caption=final_caption.format(name=message.from_user.mention, mention=@{channel_username}),
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url
+                            )
+                        ],
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
+                                url="https://t.me/GroupAlina",
+                            )
+                        ],
+                    ]
+                ),
+            )
+        else:
+            await message.reply_text(
+                final_caption.format(name=message.from_user.mention, mention=@{channel_username}),
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url
+                            )
+                        ],
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪",
+                                url="https://t.me/GroupAlina",
+                            )
+                        ],
+                    ]
+                ),
+                disable_web_page_preview=True,
+            )
+
         await asyncio.sleep(1)
     except ChatAdminRequired:
         forcesub_collection.delete_one({"chat_id": chat_id})
