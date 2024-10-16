@@ -143,6 +143,59 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.message.delete()
 
 
+
+@app.on_message(filters.command("setcaption") & filters.group)
+async def set_custom_caption(client: Client, message: Message):
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+
+    # Check if the user is the owner/admin or in SUDOERS
+    member = await client.get_chat_member(chat_id, user_id)
+    if not (member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or user_id in SUDOERS):
+        return await message.reply_text("**Only the group owner, admins, or SUDOERS can use this command.**")
+
+    # Check if a caption is provided
+    if len(message.command) < 2:
+        return await message.reply_text("**Please provide a caption to set as the custom force subscription caption.**")
+
+    caption = message.text.split(None, 1)[1]  # Extract the caption
+
+    # Store the custom caption in MongoDB
+    forcesub_collection.update_one(
+        {"chat_id": chat_id},
+        {"$set": {"custom_caption": caption}},
+        upsert=True
+    )
+
+    await message.reply_text("**Custom caption has been set successfully for force subscription.**")
+
+
+@app.on_message(filters.command("setphoto") & filters.group)
+async def set_custom_photo(client: Client, message: Message):
+    chat_id = message.chat.id
+    user_id = message.from_user.id
+
+    # Check if the user is the owner/admin or in SUDOERS
+    member = await client.get_chat_member(chat_id, user_id)
+    if not (member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or user_id in SUDOERS):
+        return await message.reply_text("**Only the group owner, admins, or SUDOERS can use this command.**")
+
+    # Check if there is a photo in the message
+    if not message.photo:
+        return await message.reply_text("**Please send a photo to set it as the custom force subscription photo.**")
+
+    photo_id = message.photo.file_id  # Get the file ID of the photo
+
+    # Store the custom photo ID in MongoDB
+    forcesub_collection.update_one(
+        {"chat_id": chat_id},
+        {"$set": {"custom_photo_id": photo_id}},
+        upsert=True
+    )
+
+    await message.reply_text("**Custom photo has been set successfully for force subscription.**")
+
+
 async def check_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -153,6 +206,20 @@ async def check_forcesub(client: Client, message: Message):
 
     channel_id = forcesub_data["channel_id"]
     channel_username = forcesub_data["channel_username"]
+
+    # Retrieve custom photo and caption from the database
+    custom_photo_id = forcesub_data.get("custom_photo_id")
+    custom_caption = forcesub_data.get("custom_caption", "Join the channel to participate.")
+
+    # If no custom photo is set, try to get the group photo
+    if not custom_photo_id:
+        custom_photo_id = await app.download_media(message.chat.photo.big_file_id)
+
+        # If no group photo, use the bot's own profile photo as fallback
+        if not custom_photo_id:
+            bot = await app.get_me()
+            photobot = bot.photo.big_file_id
+            custom_photo_id = await app.download_media(photobot)
 
     try:
         user_member = await app.get_chat_member(channel_id, user_id)
@@ -165,13 +232,16 @@ async def check_forcesub(client: Client, message: Message):
         else:
             invite_link = await app.export_chat_invite_link(channel_id)
             channel_url = invite_link
+
         await message.reply_photo(
-            photo="https://envs.sh/Tn_.jpg",
+            photo=custom_photo_id,
             caption=(
-                f"**👋 ʜᴇʟʟᴏ {message.from_user.mention},**\n\n**ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ [ᴄʜᴀɴɴᴇʟ]({channel_url}) ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"
+                f"**👋 ʜᴇʟʟᴏ {message.from_user.mention},**\n\n"
+                f"{custom_caption}\n\n"
+                f"**[ᴄʜᴀɴɴᴇʟ]({channel_url}) ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"
             ),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("๏ ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=channel_url)]]
+                [[InlineKeyboardButton("ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url)]]
             ),
         )
         await asyncio.sleep(1)
