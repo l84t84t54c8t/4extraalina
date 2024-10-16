@@ -43,15 +43,16 @@ async def set_forcesub(client: Client, message: Message):
             "**ᴜsᴀɢᴇ: /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ ᴏʀ ɪᴅ> ᴏʀ /ғsᴜʙ ᴏғғ ᴛᴏ ᴅɪsᴀʙʟᴇ**"
         )
 
-    channel_input = message.command[1]
-
+    # Extract channel input, allowing for @ symbol
+    channel_input = message.command[1].lstrip('@')
+    
     try:
         channel_info = await client.get_chat(channel_input)
         channel_id = channel_info.id
         channel_title = channel_info.title
         channel_link = await app.export_chat_invite_link(channel_id)
         channel_username = (
-            f"{channel_info.username}" if channel_info.username else channel_link
+            f"@{channel_info.username}" if channel_info.username else channel_link
         )
         channel_members_count = channel_info.members_count
 
@@ -161,7 +162,7 @@ async def set_custom_caption(client: Client, message: Message):
     # Check if a caption is provided
     if len(message.command) < 2:
         return await message.reply_text(
-            "**Please provide a caption to set as the custom force subscription caption.**"
+            "**• نامەکە لەگەڵ فەرمان بینووسە یان ڕیپلەی بکە**\n\n- وشەی {name} بۆ نووسینی ناوی کەسەکە\n- وشەی {mention} یوزەری کەناڵەکە\n-دەتوانی ئەم نامەیە بەکاربھێنیت :\n\n`- سڵاو {name}\n- نامەکانت دەسڕدرێتەوە بەهۆی جۆین نەکردنت لە کەناڵی گرووپ\n- جۆینی کەناڵ بکە تاوەکو نامەکانت نەسڕدرێتەوە\n- کەناڵ : {mention}`"
         )
 
     caption = message.text.split(None, 1)[1]  # Extract the caption
@@ -172,7 +173,7 @@ async def set_custom_caption(client: Client, message: Message):
     )
 
     await message.reply_text(
-        "**Custom caption has been set successfully for force subscription.**"
+        "**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**"
     )
 
 
@@ -191,13 +192,14 @@ async def set_custom_photo(client: Client, message: Message):
             "**Only the group owner, admins, or SUDOERS can use this command.**"
         )
 
-    # Check if there is a photo in the message
-    if not message.photo:
+    # Check if the command is a reply to a message with a photo
+    if not message.reply_to_message or not message.reply_to_message.photo:
         return await message.reply_text(
-            "**Please send a photo to set it as the custom force subscription photo.**"
+            "**• تکایە ڕیپلەی وێنەی نوێ بکە**\n\n- وێنەکە لە گرووپ دابنێ\n- ڕیپلەی بکە و بنووسە گۆڕینی وێنە"
         )
 
-    photo_id = message.photo.file_id  # Get the file ID of the photo
+    # Get the file ID of the photo from the replied message
+    photo_id = message.reply_to_message.photo.file_id  
 
     # Store the custom photo ID in MongoDB
     forcesub_collection.update_one(
@@ -205,7 +207,7 @@ async def set_custom_photo(client: Client, message: Message):
     )
 
     await message.reply_text(
-        "**Custom photo has been set successfully for force subscription.**"
+        "**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**"
     )
 
 
@@ -263,7 +265,7 @@ async def check_forcesub(client: Client, message: Message):
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
-                caption=final_caption.format(name=message.from_user.mention, mention=@{channel_username}),
+                caption=final_caption.format(name=message.from_user.mention, mention=channel_username),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -282,7 +284,7 @@ async def check_forcesub(client: Client, message: Message):
             )
         else:
             await message.reply_text(
-                final_caption.format(name=message.from_user.mention, mention=@{channel_username}),
+                final_caption.format(name=message.from_user.mention, mention=channel_username),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
