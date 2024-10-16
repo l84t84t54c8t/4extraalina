@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
@@ -14,10 +15,10 @@ from pyrogram.types import (
     Message,
 )
 
-import logging
-
 # Set up basic logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
@@ -33,7 +34,10 @@ async def set_forcesub(client: Client, message: Message):
         user_id = message.from_user.id
         member = await client.get_chat_member(chat_id, user_id)
 
-        if not (member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or user_id in SUDOERS):
+        if not (
+            member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
+            or user_id in SUDOERS
+        ):
             return await message.reply_text(
                 "**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
                 reply_markup=InlineKeyboardMarkup(
@@ -47,7 +51,10 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
+        if len(message.command) == 2 and message.command[1].lower() in [
+            "off",
+            "disable",
+        ]:
             forcesub_collection.delete_one({"chat_id": chat_id})
             return await message.reply_text(
                 "**• بە سەرکەوتوویی جۆینی ناچاری ناچالاککرا .**",
@@ -140,7 +147,12 @@ async def set_forcesub(client: Client, message: Message):
 
             forcesub_collection.update_one(
                 {"chat_id": chat_id},
-                {"$set": {"channel_id": channel_id, "channel_username": channel_username}},
+                {
+                    "$set": {
+                        "channel_id": channel_id,
+                        "channel_username": channel_username,
+                    }
+                },
                 upsert=True,
             )
 
@@ -159,7 +171,13 @@ async def set_forcesub(client: Client, message: Message):
                     f"**👤 چالاککرا لەلایەن : {set_by_user}**"
                 ),
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("๏ داخستن ๏", callback_data="close_force_sub")]]
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "๏ داخستن ๏", callback_data="close_force_sub"
+                            )
+                        ]
+                    ]
                 ),
             )
 
