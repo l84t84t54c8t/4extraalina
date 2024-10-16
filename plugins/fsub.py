@@ -44,8 +44,8 @@ async def set_forcesub(client: Client, message: Message):
         )
 
     # Extract channel input, allowing for @ symbol
-    channel_input = message.command[1].lstrip('@')
-    
+    channel_input = message.command[1].lstrip("@")
+
     try:
         channel_info = await client.get_chat(channel_input)
         channel_id = channel_info.id
@@ -172,9 +172,7 @@ async def set_custom_caption(client: Client, message: Message):
         {"chat_id": chat_id}, {"$set": {"custom_caption": caption}}, upsert=True
     )
 
-    await message.reply_text(
-        "**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**"
-    )
+    await message.reply_text("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
 
 
 @app.on_message(filters.command("setphoto") & filters.group)
@@ -199,16 +197,14 @@ async def set_custom_photo(client: Client, message: Message):
         )
 
     # Get the file ID of the photo from the replied message
-    photo_id = message.reply_to_message.photo.file_id  
+    photo_id = message.reply_to_message.photo.file_id
 
     # Store the custom photo ID in MongoDB
     forcesub_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"custom_photo_id": photo_id}}, upsert=True
     )
 
-    await message.reply_text(
-        "**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**"
-    )
+    await message.reply_text("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
 
 
 async def check_forcesub(client: Client, message: Message):
@@ -224,7 +220,9 @@ async def check_forcesub(client: Client, message: Message):
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
-    custom_caption = forcesub_data.get("custom_caption", "Join the channel to participate.")
+    custom_caption = forcesub_data.get(
+        "custom_caption", "Join the channel to participate."
+    )
 
     # Default caption if no custom caption is set
     default_caption = (
@@ -265,7 +263,9 @@ async def check_forcesub(client: Client, message: Message):
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
-                caption=final_caption.format(name=message.from_user.mention, mention=channel_username),
+                caption=final_caption.format(
+                    name=message.from_user.mention, mention=channel_username
+                ),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -284,7 +284,9 @@ async def check_forcesub(client: Client, message: Message):
             )
         else:
             await message.reply_text(
-                final_caption.format(name=message.from_user.mention, mention=channel_username),
+                final_caption.format(
+                    name=message.from_user.mention, mention=channel_username
+                ),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
