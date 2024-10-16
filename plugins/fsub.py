@@ -250,11 +250,7 @@ async def check_forcesub(client: Client, message: Message):
 
         await message.reply_photo(
             photo=custom_photo_id,
-            caption=(
-                f"**👋 ʜᴇʟʟᴏ {message.from_user.mention},**\n\n"
-                f"{custom_caption}\n\n"
-                f"**[ᴄʜᴀɴɴᴇʟ]({channel_url}) ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"
-            ),
+            caption=custom_caption,
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url)]]
             ),
