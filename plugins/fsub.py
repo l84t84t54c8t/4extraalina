@@ -158,7 +158,7 @@ async def set_forcesub(client: Client, message: Message):
                 f"**👤 چالاککرا لەلایەن : {set_by_user}**"
             ),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("๏ ᴄʟᴏsᴇ ๏", callback_data="close_force_sub")]]
+                [[InlineKeyboardButton("๏ داخستن ๏", callback_data="close_force_sub")]]
             ),
         )
         await asyncio.sleep(1)
@@ -177,7 +177,7 @@ async def set_forcesub(client: Client, message: Message):
                 [
                     [
                         InlineKeyboardButton(
-                            "๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏",
+                            "๏ زیادم بکە بۆ کەناڵ وەک ئەدمین ๏",
                             url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats",
                         )
                     ]
@@ -189,7 +189,7 @@ async def set_forcesub(client: Client, message: Message):
 
 @app.on_callback_query(filters.regex("close_force_sub"))
 async def close_force_sub(client: Client, callback_query: CallbackQuery):
-    await callback_query.answer("ᴄʟᴏsᴇᴅ!")
+    await callback_query.answer("داخرا!")
     await callback_query.message.delete()
 
 
