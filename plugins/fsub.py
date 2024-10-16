@@ -143,7 +143,6 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.message.delete()
 
 
-
 @app.on_message(filters.command("setcaption") & filters.group)
 async def set_custom_caption(client: Client, message: Message):
     chat_id = message.chat.id
@@ -151,23 +150,30 @@ async def set_custom_caption(client: Client, message: Message):
 
     # Check if the user is the owner/admin or in SUDOERS
     member = await client.get_chat_member(chat_id, user_id)
-    if not (member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or user_id in SUDOERS):
-        return await message.reply_text("**Only the group owner, admins, or SUDOERS can use this command.**")
+    if not (
+        member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
+        or user_id in SUDOERS
+    ):
+        return await message.reply_text(
+            "**Only the group owner, admins, or SUDOERS can use this command.**"
+        )
 
     # Check if a caption is provided
     if len(message.command) < 2:
-        return await message.reply_text("**Please provide a caption to set as the custom force subscription caption.**")
+        return await message.reply_text(
+            "**Please provide a caption to set as the custom force subscription caption.**"
+        )
 
     caption = message.text.split(None, 1)[1]  # Extract the caption
 
     # Store the custom caption in MongoDB
     forcesub_collection.update_one(
-        {"chat_id": chat_id},
-        {"$set": {"custom_caption": caption}},
-        upsert=True
+        {"chat_id": chat_id}, {"$set": {"custom_caption": caption}}, upsert=True
     )
 
-    await message.reply_text("**Custom caption has been set successfully for force subscription.**")
+    await message.reply_text(
+        "**Custom caption has been set successfully for force subscription.**"
+    )
 
 
 @app.on_message(filters.command("setphoto") & filters.group)
@@ -177,23 +183,30 @@ async def set_custom_photo(client: Client, message: Message):
 
     # Check if the user is the owner/admin or in SUDOERS
     member = await client.get_chat_member(chat_id, user_id)
-    if not (member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR] or user_id in SUDOERS):
-        return await message.reply_text("**Only the group owner, admins, or SUDOERS can use this command.**")
+    if not (
+        member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
+        or user_id in SUDOERS
+    ):
+        return await message.reply_text(
+            "**Only the group owner, admins, or SUDOERS can use this command.**"
+        )
 
     # Check if there is a photo in the message
     if not message.photo:
-        return await message.reply_text("**Please send a photo to set it as the custom force subscription photo.**")
+        return await message.reply_text(
+            "**Please send a photo to set it as the custom force subscription photo.**"
+        )
 
     photo_id = message.photo.file_id  # Get the file ID of the photo
 
     # Store the custom photo ID in MongoDB
     forcesub_collection.update_one(
-        {"chat_id": chat_id},
-        {"$set": {"custom_photo_id": photo_id}},
-        upsert=True
+        {"chat_id": chat_id}, {"$set": {"custom_photo_id": photo_id}}, upsert=True
     )
 
-    await message.reply_text("**Custom photo has been set successfully for force subscription.**")
+    await message.reply_text(
+        "**Custom photo has been set successfully for force subscription.**"
+    )
 
 
 async def check_forcesub(client: Client, message: Message):
@@ -209,7 +222,9 @@ async def check_forcesub(client: Client, message: Message):
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
-    custom_caption = forcesub_data.get("custom_caption", "Join the channel to participate.")
+    custom_caption = forcesub_data.get(
+        "custom_caption", "Join the channel to participate."
+    )
 
     # If no custom photo is set, try to get the group photo
     if not custom_photo_id:
