@@ -18,7 +18,7 @@ fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
 
-@app.on_message(filters.command(["fsub", "join", "on"]) & filters.group)
+@app.on_message(filters.command(["fsub", "join", "on"]))
 async def set_forcesub(client: Client, message: Message):
     bot = await app.get_me()
     photobot = bot.photo.big_file_id
@@ -186,7 +186,6 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
     filters.command(
         ["/setcaption", "/setmessage", "دانانی نامە", "گۆڕینی نامە", "گۆرینی نامە"], ""
     )
-    & filters.group
 )
 async def set_custom_caption(client: Client, message: Message):
     chat_id = message.chat.id
@@ -228,7 +227,6 @@ async def set_custom_caption(client: Client, message: Message):
 
 @app.on_message(
     filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
-    & filters.group
 )
 async def set_custom_photo(client: Client, message: Message):
     chat_id = message.chat.id
@@ -370,7 +368,7 @@ async def check_forcesub(client: Client, message: Message):
         )
 
 
-@app.on_message(filters.group)
+@app.on_message(~filters.private)
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
