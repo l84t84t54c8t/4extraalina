@@ -31,43 +31,46 @@ async def set_forcesub(client: Client, message: Message):
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
         or user_id in SUDOERS
     ):
-        return await message.reply_text("**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
-        reply_markup=InlineKeyboardMarkup(
+        return await message.reply_text(
+            "**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
+            reply_markup=InlineKeyboardMarkup(
+                [
                     [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
                     ]
-                ),
-            )
+                ]
+            ),
+        )
 
     if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
         forcesub_collection.delete_one({"chat_id": chat_id})
-        return await message.reply_text("**• بە سەرکەوتوویی جۆینی ناچاری ناچالاککرا .**",
-        reply_markup=InlineKeyboardMarkup(
+        return await message.reply_text(
+            "**• بە سەرکەوتوویی جۆینی ناچاری ناچالاککرا .**",
+            reply_markup=InlineKeyboardMarkup(
+                [
                     [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
                     ]
-                ),
-            )
+                ]
+            ),
+        )
     if len(message.command) != 2:
-        return await message.reply_text("**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
-        reply_markup=InlineKeyboardMarkup(
+        return await message.reply_text(
+            "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
+            reply_markup=InlineKeyboardMarkup(
+                [
                     [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
                     ]
-                ),
-            )
+                ]
+            ),
+        )
 
     # Extract channel input, allowing for @ symbol
     channel_input = message.command[1].lstrip("@")
@@ -147,10 +150,10 @@ async def set_forcesub(client: Client, message: Message):
             photo=botphoto,
             caption=(
                 "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
-                    "- تکایە بمکە ئەدمین\n"
-                    "- لە ڕێگای دووگمەی خوارەوە\n"
-                    "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
-                    "**• /fsub + یوزەری کەناڵت**"
+                "- تکایە بمکە ئەدمین\n"
+                "- لە ڕێگای دووگمەی خوارەوە\n"
+                "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
+                "**• /fsub + یوزەری کەناڵت**"
             ),
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -172,7 +175,12 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.message.delete()
 
 
-@app.on_message(filters.command(["/setcaption", "/setmessage", "دانانی نامە", "گۆڕینی نامە", "گۆرینی نامە"], "") & filters.group)
+@app.on_message(
+    filters.command(
+        ["/setcaption", "/setmessage", "دانانی نامە", "گۆڕینی نامە", "گۆرینی نامە"], ""
+    )
+    & filters.group
+)
 async def set_custom_caption(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -183,17 +191,18 @@ async def set_custom_caption(client: Client, message: Message):
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
         or user_id in SUDOERS
     ):
-        return await message.reply_text("**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
-        reply_markup=InlineKeyboardMarkup(
+        return await message.reply_text(
+            "**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
+            reply_markup=InlineKeyboardMarkup(
+                [
                     [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
                     ]
-                ),
-            )
+                ]
+            ),
+        )
     # Check if a caption is provided
     if len(message.command) < 2:
         return await message.reply_text(
@@ -210,7 +219,10 @@ async def set_custom_caption(client: Client, message: Message):
     await message.reply_text("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
 
 
-@app.on_message(filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "") & filters.group)
+@app.on_message(
+    filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
+    & filters.group
+)
 async def set_custom_photo(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -221,17 +233,18 @@ async def set_custom_photo(client: Client, message: Message):
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
         or user_id in SUDOERS
     ):
-        return await message.reply_text("**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
-        reply_markup=InlineKeyboardMarkup(
+        return await message.reply_text(
+            "**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
+            reply_markup=InlineKeyboardMarkup(
+                [
                     [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
                     ]
-                ),
-            )
+                ]
+            ),
+        )
 
     # Check if the command is a reply to a message with a photo
     if not message.reply_to_message or not message.reply_to_message.photo:
