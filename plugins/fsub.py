@@ -220,9 +220,7 @@ async def check_forcesub(client: Client, message: Message):
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
-    custom_caption = forcesub_data.get(
-        "custom_caption", "Join the channel to participate."
-    )
+    custom_caption = forcesub_data.get("custom_caption", "Join the channel to participate.")
 
     # Default caption if no custom caption is set
     default_caption = (
@@ -235,17 +233,6 @@ async def check_forcesub(client: Client, message: Message):
 
     # Use final_caption based on the presence of custom_caption
     final_caption = custom_caption if custom_caption else default_caption
-
-    # If no custom photo is set, try to get the group photo
-    if not custom_photo_id:
-        if message.chat.photo:
-            custom_photo_id = await app.download_media(message.chat.photo.big_file_id)
-
-        # If no group photo, use the bot's own profile photo as fallback
-        if not custom_photo_id:
-            bot = await app.get_me()
-            photobot = bot.photo.big_file_id
-            custom_photo_id = await app.download_media(photobot)
 
     try:
         user_member = await app.get_chat_member(channel_id, user_id)
@@ -263,9 +250,7 @@ async def check_forcesub(client: Client, message: Message):
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
-                caption=final_caption.format(
-                    name=message.from_user.mention, mention=channel_username
-                ),
+                caption=final_caption.format(name=message.from_user.mention, mention=channel_username),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -283,10 +268,9 @@ async def check_forcesub(client: Client, message: Message):
                 ),
             )
         else:
+            # Only reply with caption if no photo is set
             await message.reply_text(
-                final_caption.format(
-                    name=message.from_user.mention, mention=channel_username
-                ),
+                final_caption.format(name=message.from_user.mention, mention=channel_username),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
