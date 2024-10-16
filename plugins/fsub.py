@@ -318,7 +318,7 @@ async def check_forcesub(client: Client, message: Message):
             channel_url = f"https://t.me/{channel_username}"
         else:
             invite_link = await app.export_chat_invite_link(channel_id)
-            channel_url = invite_link
+            channel_urls = invite_link
 
         # Send message with a photo if custom_photo_id is set, otherwise send caption only
         if custom_photo_id:
@@ -331,7 +331,7 @@ async def check_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_urls
                             )
                         ],
                         [
@@ -353,7 +353,7 @@ async def check_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_urls
                             )
                         ],
                         [
