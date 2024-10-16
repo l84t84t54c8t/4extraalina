@@ -30,7 +30,7 @@ async def set_forcesub(client: Client, message: Message):
         bot = await client.get_me()
         photobot = bot.photo.big_file_id if bot.photo else None
         if photobot:
-         botphoto = await client.download_media(photobot)
+            botphoto = await client.download_media(photobot)
 
         chat_id = message.chat.id
         user_id = message.from_user.id
@@ -110,7 +110,9 @@ async def set_forcesub(client: Client, message: Message):
             channel_id = channel_info.id
             channel_title = channel_info.title
             channel_link = await client.export_chat_invite_link(channel_id)
-            channel_username = channel_info.username if channel_info.username else channel_link
+            channel_username = (
+                channel_info.username if channel_info.username else channel_link
+            )
             channel_members_count = channel_info.members_count
 
             bot_id = (await client.get_me()).id
@@ -407,7 +409,6 @@ async def check_forcesub(client: Client, message: Message):
         return await message.reply_text(
             "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
-
 
 
 @app.on_message(~filters.private)
