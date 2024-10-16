@@ -2,7 +2,8 @@ from AlinaMusic import app
 from AlinaMusic.utils.database import is_deletion_enabled
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import PeerIdInvalid, RPCError, MessageDeleteForbidden
+from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
+
 
 # Story Deletion
 @app.on_message(filters.group & filters.story)
@@ -30,5 +31,6 @@ async def delete_story(client, message):
         print(f"Failed to delete the story: {e}")
     except MessageDeleteForbidden:
         print("Bot does not have permission to delete the story.")
+
 
 # You may have other command handlers here that should also work
