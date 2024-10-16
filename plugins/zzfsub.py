@@ -17,7 +17,6 @@ from pyrogram.types import (
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
-
 @app.on_message(filters.command(["fsub", "join", "on"]) & filters.group)
 async def set_forcesub(client: Client, message: Message):
     bot = await app.get_me()
@@ -25,8 +24,6 @@ async def set_forcesub(client: Client, message: Message):
     botphoto = await app.download_media(photobot)
     chat_id = message.chat.id
     user_id = message.from_user.id
-
-    # Check if the user has the necessary permissions (Owner/Admin)
     member = await client.get_chat_member(chat_id, user_id)
     if not (
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
@@ -44,8 +41,6 @@ async def set_forcesub(client: Client, message: Message):
                 ]
             ),
         )
-
-    # Handle disabling the force subscription
     if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
         forcesub_collection.delete_one({"chat_id": chat_id})
         return await message.reply_text(
@@ -60,16 +55,12 @@ async def set_forcesub(client: Client, message: Message):
                 ]
             ),
         )
-
     # Check if force subscription is already enabled
     existing_fsub = forcesub_collection.find_one({"chat_id": chat_id})
     if existing_fsub:
         # If already enabled, send a message and return
         return await message.reply_text(
-            f"**• چالاککراوە بۆ ئەم کەناڵە : @{existing_fsub['channel_username']} ✅**\n"
-            "- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n"
-            "- فەرمانی چالاکردن بەکاربێنە لەگەڵ یوزەری نوێ\n\n"
-            "**• بۆتی گۆرانی : @IQMCBOT**",
+            "**• جۆینی ناچاری چالاککراوە ✅**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە بە ڕێگای :\n- بەم شێوەیە : /join off\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n\n**• بۆتی گۆرانی : @IQMCBOT**",
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -80,8 +71,6 @@ async def set_forcesub(client: Client, message: Message):
                 ]
             ),
         )
-
-    # Ensure correct command structure
     if len(message.command) != 2:
         return await message.reply_text(
             "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
@@ -95,37 +84,29 @@ async def set_forcesub(client: Client, message: Message):
                 ]
             ),
         )
-
-    # Proceed with enabling force subscription
-    channel_input = message.command[1]
-
+    # Extract channel input, allowing
     try:
         channel_info = await client.get_chat(channel_input)
         channel_id = channel_info.id
         channel_title = channel_info.title
         channel_link = await app.export_chat_invite_link(channel_id)
-        channel_username = (
-            f"{channel_info.username}" if channel_info.username else channel_link
-        )
+        channel_username = f"{channel_info.username}" if channel_info.username else channel_link
         channel_members_count = channel_info.members_count
-
+        
         bot_id = (await client.get_me()).id
         bot_is_admin = False
-
-        # Check if the bot is an admin in the specified channel
         async for admin in app.get_chat_members(
             channel_id, filter=ChatMembersFilter.ADMINISTRATORS
         ):
             if admin.user.id == bot_id:
                 bot_is_admin = True
                 break
-
         if not bot_is_admin:
             await asyncio.sleep(1)
             return await message.reply_photo(
                 photo=botphoto,
                 caption=(
-                    "**• ئەدمین نیم لەو کەناڵە 🚫**\n\n"
+                    "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
                     "- تکایە بمکە ئەدمین\n"
                     "- لە ڕێگای دووگمەی خوارەوە\n"
                     "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
@@ -142,20 +123,16 @@ async def set_forcesub(client: Client, message: Message):
                     ]
                 ),
             )
-
-        # Store the force subscription data in the database
         forcesub_collection.update_one(
             {"chat_id": chat_id},
             {"$set": {"channel_id": channel_id, "channel_username": channel_username}},
             upsert=True,
         )
-
         set_by_user = (
             f"@{message.from_user.username}"
             if message.from_user.username
             else message.from_user.first_name
         )
-
         await message.reply_photo(
             photo=botphoto,
             caption=(
@@ -170,12 +147,11 @@ async def set_forcesub(client: Client, message: Message):
             ),
         )
         await asyncio.sleep(1)
-
     except Exception as e:
         await message.reply_photo(
             photo=botphoto,
             caption=(
-                "**• ئەدمین نیم لەو کەناڵە 🚫**\n\n"
+                "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
                 "- تکایە بمکە ئەدمین\n"
                 "- لە ڕێگای دووگمەی خوارەوە\n"
                 "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
