@@ -72,8 +72,8 @@ async def set_forcesub(client: Client, message: Message):
             ),
         )
 
-    # Extract channel input, allowing for @ symbol
-    channel_input = message.command[1].lstrip("@")
+    # Extract channel input, allowing
+    channel_input = message.command[1]
 
     try:
         channel_info = await client.get_chat(channel_input)
