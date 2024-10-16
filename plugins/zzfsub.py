@@ -125,7 +125,7 @@ async def set_forcesub(client: Client, message: Message):
             return await message.reply_photo(
                 photo=botphoto,
                 caption=(
-                    "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
+                    "**• ئەدمین نیم لەو کەناڵە 🚫**\n\n"
                     "- تکایە بمکە ئەدمین\n"
                     "- لە ڕێگای دووگمەی خوارەوە\n"
                     "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
@@ -175,7 +175,7 @@ async def set_forcesub(client: Client, message: Message):
         await message.reply_photo(
             photo=botphoto,
             caption=(
-                "**• کەناڵەکەیان ناتوانێتەوە 🚫.**\n\n"
+                "**• ئەدمین نیم لەو کەناڵە 🚫**\n\n"
                 "- تکایە بمکە ئەدمین\n"
                 "- لە ڕێگای دووگمەی خوارەوە\n"
                 "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
