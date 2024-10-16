@@ -313,8 +313,7 @@ async def check_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "ئێرە دابگرە بۆ جۆین کردن ✅",
-                                url="https://t.me/{channel_username}",
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url="https://t.me/{channel_username}",
                             )
                         ],
                         [
@@ -336,7 +335,7 @@ async def check_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=channel_url
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url="https://t.me/{channel_username}",
                             )
                         ],
                         [
