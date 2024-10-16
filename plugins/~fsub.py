@@ -24,7 +24,7 @@ fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
 
-@app.on_message(filters.command(["/fsub", "on.iq", "/on"],"") & filters.group)
+@app.on_message(filters.command(["/fsub", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     try:
         bot = await client.get_me()
