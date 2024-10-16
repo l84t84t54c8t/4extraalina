@@ -113,7 +113,7 @@ async def set_forcesub(client: Client, message: Message):
             caption=(
                 f"**🎉 جۆینی ناچاری بۆ گرووپی [{channel_title}]({channel_username}) چالاککرا**\n\n"
                 f"**🆔 ئایدی کەناڵ :** `{channel_id}`\n"
-                f"**🖇️ لینکی کەناڵ : [لینکی کەناڵ] ({channel_link})**\n"
+                f"**🖇️ لینکی کەناڵ :** [ɢᴇᴛ ʟɪɴᴋ]({channel_link})\n"
                 f"**📊 ژماری ئەندام : {channel_members_count}**\n"
                 f"**👤 چالاککرا لەلایەن : {set_by_user}**"
             ),
