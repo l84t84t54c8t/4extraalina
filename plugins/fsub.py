@@ -177,7 +177,7 @@ async def check_forcesub(client: Client, message: Message):
             channel_url = invite_link
         await message.reply_photo(
             photo="https://envs.sh/Tn_.jpg",
-            caption="(**✧¦ تۆ ئەندام نیت لەم کەناڵە {message.from_user.mention},•\n\n\n✧¦ ناتوانی چات بکەیت لەم گرووپە•\n\n✧¦ سەرەتا پێویستە جۆینی کەناڵ بکەیت•\n\n✧¦ ئەگەر جۆین نەکەیت ئەوا چاتەکەت دەسڕمەوە و ئاگادارتەکەمەوە•\n\n✧¦ من ئەم نامەیە دەنێرمەوە ئەگەر جۆین نەبیت\n\n✧¦ کەناڵی گرووپ {channel_username}, ♥️•**"),
+            caption=("**✧¦ تۆ ئەندام نیت لەم کەناڵە {message.from_user.mention},•\n\n\n✧¦ ناتوانی چات بکەیت لەم گرووپە•\n\n✧¦ سەرەتا پێویستە جۆینی کەناڵ بکەیت•\n\n✧¦ ئەگەر جۆین نەکەیت ئەوا چاتەکەت دەسڕمەوە و ئاگادارتەکەمەوە•\n\n✧¦ من ئەم نامەیە دەنێرمەوە ئەگەر جۆین نەبیت\n\n✧¦ کەناڵی گرووپ {channel_username}, ♥️•**"),
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
