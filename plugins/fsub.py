@@ -18,8 +18,11 @@ fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
 
-@app.on_message(filters.command(["fsub", "forcesub"]) & filters.group)
+@app.on_message(filters.command(["fsub", "join", "on"]) & filters.group)
 async def set_forcesub(client: Client, message: Message):
+    bot = await app.get_me()
+    photobot = bot.photo.big_file_id
+    botphoto = await app.download_media(photobot)
     chat_id = message.chat.id
     user_id = message.from_user.id
 
@@ -28,20 +31,43 @@ async def set_forcesub(client: Client, message: Message):
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
         or user_id in SUDOERS
     ):
-        return await message.reply_text(
-            "**Only the group owner, admins, or SUDOERS can use this command.**"
-        )
+        return await message.reply_text("**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
+        reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            )
+                        ]
+                    ]
+                ),
+            )
 
     if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
         forcesub_collection.delete_one({"chat_id": chat_id})
-        return await message.reply_text(
-            "**ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʜᴀs ʙᴇᴇɴ ᴅɪsᴀʙʟᴇᴅ ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**"
-        )
-
+        return await message.reply_text("**• بە سەرکەوتوویی جۆینی ناچاری ناچالاککرا .**",
+        reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            )
+                        ]
+                    ]
+                ),
+            )
     if len(message.command) != 2:
-        return await message.reply_text(
-            "**ᴜsᴀɢᴇ: /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ ᴏʀ ɪᴅ> ᴏʀ /ғsᴜʙ ᴏғғ ᴛᴏ ᴅɪsᴀʙʟᴇ**"
-        )
+        return await message.reply_text("**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
+        reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            )
+                        ]
+                    ]
+                ),
+            )
 
     # Extract channel input, allowing for @ symbol
     channel_input = message.command[1].lstrip("@")
@@ -69,18 +95,19 @@ async def set_forcesub(client: Client, message: Message):
         if not bot_is_admin:
             await asyncio.sleep(1)
             return await message.reply_photo(
-                photo="https://envs.sh/TnZ.jpg",
+                photo=botphoto,
                 caption=(
-                    "**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n\n"
-                    "**➲ ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n\n"
-                    "**➥ Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n\n"
-                    "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"
+                    "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
+                    "- تکایە بمکە ئەدمین\n"
+                    "- لە ڕێگای دووگمەی خوارەوە\n"
+                    "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
+                    "**• /fsub + یوزەری کەناڵت**"
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
-                                "๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏",
+                                "๏ زیادم بکە بۆ کەناڵ وەک ئەدمین ๏",
                                 url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats",
                             )
                         ]
@@ -101,13 +128,13 @@ async def set_forcesub(client: Client, message: Message):
         )
 
         await message.reply_photo(
-            photo="https://envs.sh/Tn_.jpg",
+            photo=botphoto,
             caption=(
-                f"**🎉 ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ sᴇᴛ ᴛᴏ** [{channel_title}]({channel_username}) **ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**\n\n"
-                f"**🆔 ᴄʜᴀɴɴᴇʟ ɪᴅ:** `{channel_id}`\n"
-                f"**🖇️ ᴄʜᴀɴɴᴇʟ ʟɪɴᴋ:** [ɢᴇᴛ ʟɪɴᴋ]({channel_link})\n"
-                f"**📊 ᴍᴇᴍʙᴇʀ ᴄᴏᴜɴᴛ:** {channel_members_count}\n"
-                f"**👤 sᴇᴛ ʙʏ:** {set_by_user}"
+                f"**🎉 جۆینی ناچاری بۆ [{channel_title}]({channel_username}) چالاککرا**\n\n"
+                f"**🆔 ئایدی کەناڵ :** `{channel_id}`\n"
+                f"**🖇️ لینکی کەناڵ :** [کەناڵ]({channel_link})\n"
+                f"**📊 ژماری ئەندام : {channel_members_count}**\n"
+                f"**👤 چالاککرا لەلایەن : {set_by_user}**"
             ),
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("๏ ᴄʟᴏsᴇ ๏", callback_data="close_force_sub")]]
@@ -117,12 +144,13 @@ async def set_forcesub(client: Client, message: Message):
 
     except Exception as e:
         await message.reply_photo(
-            photo="https://envs.sh/TnZ.jpg",
+            photo=botphoto,
             caption=(
-                "**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n\n"
-                "**➲ ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n\n"
-                "**➥ Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n\n"
-                "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"
+                "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
+                    "- تکایە بمکە ئەدمین\n"
+                    "- لە ڕێگای دووگمەی خوارەوە\n"
+                    "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
+                    "**• /fsub + یوزەری کەناڵت**"
             ),
             reply_markup=InlineKeyboardMarkup(
                 [
@@ -144,7 +172,7 @@ async def close_force_sub(client: Client, callback_query: CallbackQuery):
     await callback_query.message.delete()
 
 
-@app.on_message(filters.command("setcaption") & filters.group)
+@app.on_message(filters.command(["/setcaption", "/setmessage", "دانانی نامە", "گۆڕینی نامە", "گۆرینی نامە"], "") & filters.group)
 async def set_custom_caption(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -155,10 +183,17 @@ async def set_custom_caption(client: Client, message: Message):
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
         or user_id in SUDOERS
     ):
-        return await message.reply_text(
-            "**Only the group owner, admins, or SUDOERS can use this command.**"
-        )
-
+        return await message.reply_text("**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
+        reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            )
+                        ]
+                    ]
+                ),
+            )
     # Check if a caption is provided
     if len(message.command) < 2:
         return await message.reply_text(
@@ -175,7 +210,7 @@ async def set_custom_caption(client: Client, message: Message):
     await message.reply_text("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
 
 
-@app.on_message(filters.command("setphoto") & filters.group)
+@app.on_message(filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "") & filters.group)
 async def set_custom_photo(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -186,9 +221,17 @@ async def set_custom_photo(client: Client, message: Message):
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
         or user_id in SUDOERS
     ):
-        return await message.reply_text(
-            "**Only the group owner, admins, or SUDOERS can use this command.**"
-        )
+        return await message.reply_text("**• ناتوانی فەرمان بەکاربهێنیت**\n- تەنیا خاوەنی گرووپ و ئەدمینەکان\n- ئەم فەرمانە بەکابێنن",
+        reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            )
+                        ]
+                    ]
+                ),
+            )
 
     # Check if the command is a reply to a message with a photo
     if not message.reply_to_message or not message.reply_to_message.photo:
@@ -220,9 +263,7 @@ async def check_forcesub(client: Client, message: Message):
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
-    custom_caption = forcesub_data.get(
-        "custom_caption", "Join the channel to participate."
-    )
+    custom_caption = forcesub_data.get("custom_caption")
 
     # Default caption if no custom caption is set
     default_caption = (
@@ -299,7 +340,7 @@ async def check_forcesub(client: Client, message: Message):
     except ChatAdminRequired:
         forcesub_collection.delete_one({"chat_id": chat_id})
         return await message.reply_text(
-            "**🚫 I'ᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜᴇ ғᴏʀᴄᴇᴅ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ᴄʜᴀɴɴᴇʟ. ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʜᴀs ʙᴇᴇɴ ᴅɪsᴀʙʟᴇᴅ.**"
+            "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
 
 
