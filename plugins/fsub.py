@@ -331,8 +331,7 @@ async def check_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "ئێرە دابگرە بۆ جۆین کردن ✅",
-                                url=invite_link
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=invite_link
                             )
                         ],
                         [
@@ -354,8 +353,7 @@ async def check_forcesub(client: Client, message: Message):
                     [
                         [
                             InlineKeyboardButton(
-                                "ئێرە دابگرە بۆ جۆین کردن ✅",
-                                url=invite_link
+                                "ئێرە دابگرە بۆ جۆین کردن ✅", url=invite_link
                             )
                         ],
                         [
