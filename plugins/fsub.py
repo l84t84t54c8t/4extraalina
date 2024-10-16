@@ -58,6 +58,24 @@ async def set_forcesub(client: Client, message: Message):
                 ]
             ),
         )
+
+    # Check if force subscription is already enabled
+    existing_fsub = forcesub_collection.find_one({"chat_id": chat_id})
+    if existing_fsub:
+        # If already enabled, send a message and return
+        return await message.reply_text(
+            "**• چالاککراوە بۆ ئەم کەناڵە : @{channel_username} ✅**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- فەرمانی چالاکردن بەکاربێنە لەگەڵ یوزەری نوێ\n\n**• بۆتی گۆرانی : @IQMCBOT**",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
+                    ]
+                ]
+            ),
+        )
+
     if len(message.command) != 2:
         return await message.reply_text(
             "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
@@ -314,7 +332,7 @@ async def check_forcesub(client: Client, message: Message):
                         [
                             InlineKeyboardButton(
                                 "ئێرە دابگرە بۆ جۆین کردن ✅",
-                                url="https://t.me/channel_username",
+                                url=channel_url,
                             )
                         ],
                         [
@@ -337,7 +355,7 @@ async def check_forcesub(client: Client, message: Message):
                         [
                             InlineKeyboardButton(
                                 "ئێرە دابگرە بۆ جۆین کردن ✅",
-                                url="https://t.me/channel_username",
+                                url=channel_url,
                             )
                         ],
                         [
