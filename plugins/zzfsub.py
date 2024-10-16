@@ -26,6 +26,7 @@ async def set_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
 
+    # Check if the user has the necessary permissions (Owner/Admin)
     member = await client.get_chat_member(chat_id, user_id)
     if not (
         member.status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]
@@ -44,6 +45,7 @@ async def set_forcesub(client: Client, message: Message):
             ),
         )
 
+    # Handle disabling the force subscription
     if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
         forcesub_collection.delete_one({"chat_id": chat_id})
         return await message.reply_text(
@@ -59,6 +61,27 @@ async def set_forcesub(client: Client, message: Message):
             ),
         )
 
+    # Check if force subscription is already enabled
+    existing_fsub = forcesub_collection.find_one({"chat_id": chat_id})
+    if existing_fsub:
+        # If already enabled, send a message and return
+        return await message.reply_text(
+            f"**• چالاککراوە بۆ ئەم کەناڵە : @{existing_fsub['channel_username']} ✅**\n"
+            "- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n"
+            "- فەرمانی چالاکردن بەکاربێنە لەگەڵ یوزەری نوێ\n\n"
+            "**• بۆتی گۆرانی : @IQMCBOT**",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
+                    ]
+                ]
+            ),
+        )
+
+    # Ensure correct command structure
     if len(message.command) != 2:
         return await message.reply_text(
             "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
@@ -73,7 +96,7 @@ async def set_forcesub(client: Client, message: Message):
             ),
         )
 
-    # Extract channel input, allowing
+    # Proceed with enabling force subscription
     channel_input = message.command[1]
 
     try:
@@ -89,6 +112,7 @@ async def set_forcesub(client: Client, message: Message):
         bot_id = (await client.get_me()).id
         bot_is_admin = False
 
+        # Check if the bot is an admin in the specified channel
         async for admin in app.get_chat_members(
             channel_id, filter=ChatMembersFilter.ADMINISTRATORS
         ):
@@ -119,26 +143,7 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        # Move the force subscription check here
-        existing_fsub = forcesub_collection.find_one({"chat_id": chat_id})
-        if existing_fsub:
-            # If already enabled, send a message and return
-            return await message.reply_text(
-                f"**• چالاککراوە بۆ ئەم کەناڵە : @{channel_username} ✅**\n"
-                "- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n"
-                "- فەرمانی چالاکردن بەکاربێنە لەگەڵ یوزەری نوێ\n\n"
-                "**• بۆتی گۆرانی : @IQMCBOT**",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
-                    ]
-                ),
-            )
-
+        # Store the force subscription data in the database
         forcesub_collection.update_one(
             {"chat_id": chat_id},
             {"$set": {"channel_id": channel_id, "channel_username": channel_username}},
@@ -170,7 +175,7 @@ async def set_forcesub(client: Client, message: Message):
         await message.reply_photo(
             photo=botphoto,
             caption=(
-                "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
+                "**• کەناڵەکەیان ناتوانێتەوە 🚫.**\n\n"
                 "- تکایە بمکە ئەدمین\n"
                 "- لە ڕێگای دووگمەی خوارەوە\n"
                 "- دواتر فەرمانی جۆین دووبارە بکەوە\n\n"
