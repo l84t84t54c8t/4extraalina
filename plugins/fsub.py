@@ -220,7 +220,9 @@ async def check_forcesub(client: Client, message: Message):
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
-    custom_caption = forcesub_data.get("custom_caption", "Join the channel to participate.")
+    custom_caption = forcesub_data.get(
+        "custom_caption", "Join the channel to participate."
+    )
 
     # Default caption if no custom caption is set
     default_caption = (
@@ -250,7 +252,9 @@ async def check_forcesub(client: Client, message: Message):
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
-                caption=final_caption.format(name=message.from_user.mention, mention=channel_username),
+                caption=final_caption.format(
+                    name=message.from_user.mention, mention=channel_username
+                ),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -270,7 +274,9 @@ async def check_forcesub(client: Client, message: Message):
         else:
             # Only reply with caption if no photo is set
             await message.reply_text(
-                final_caption.format(name=message.from_user.mention, mention=channel_username),
+                final_caption.format(
+                    name=message.from_user.mention, mention=channel_username
+                ),
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
