@@ -76,7 +76,7 @@ async def set_forcesub(client: Client, message: Message):
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە بە ڕێگای :\n- بەم شێوەیە : /join off\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n\n**• بۆتی گۆرانی : @IQMCBOT**",
+                "**• جۆینی ناچاری چالاککراوە ✅**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە بە ڕێگای :\n- بەم شێوەیە :\n- /join یان /on + off\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n\n**• بۆتی گۆرانی : @IQMCBOT**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
