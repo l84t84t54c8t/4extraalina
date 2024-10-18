@@ -24,7 +24,7 @@ fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
 
-@app.on_message(filters.command(["/fsub", "on.iq", "/on"], "") & filters.group)
+@app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     try:
         bot = await client.get_me()
@@ -76,7 +76,7 @@ async def set_forcesub(client: Client, message: Message):
         if existing_fsub:
             # If already enabled, send a message and return
             return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە بە ڕێگای :\n- بەم شێوەیە :\n- /join یان /on + off\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n\n**• بۆتی گۆرانی : @IQMCBOT**",
+                "**• جۆینی ناچاری چالاککراوە ✅**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n\n**• بۆتی گۆرانی : @IQMCBOT**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
