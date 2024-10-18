@@ -411,7 +411,7 @@ async def check_forcesub(client: Client, message: Message):
         )
 
 
-@app.on_message(filters.command(["/fsub_stats"]) & SUDOERS)
+@app.on_message(filters.command(["/fsubs"]) & filters.user(SUDOERS))
 async def get_fsub_stats(client: Client, message: Message):
     try:
         # Count the number of groups where Force Subscription is enabled
