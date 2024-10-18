@@ -417,7 +417,17 @@ async def get_fsub_stats(client: Client, message: Message):
         # Count the number of groups where Force Subscription is enabled
         enabled_fsubs = forcesub_collection.count_documents({})
 
-        await message.reply_text(f"**• جۆینی ناچاری**\n- بۆ  {enabled_fsubs} گرووپ")
+        await message.reply_text(f"**• جۆینی ناچاری**\n- بۆ  {enabled_fsubs} گرووپ",
+        reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                            )
+                        ]
+                    ]
+                ),
+            )
     except Exception as e:
         logging.error(f"Error fetching Force Subscription stats: {e}")
         await message.reply_text("An error occurred while fetching stats.")
