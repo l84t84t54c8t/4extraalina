@@ -451,7 +451,6 @@ async def leave_a_chat(client, message):
             "wlc",
             "وەرە",
             "بڕۆ",
-            "join",
             "dll",
             "help",
             "جۆین",
