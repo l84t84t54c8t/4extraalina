@@ -418,7 +418,7 @@ async def get_fsub_stats(client: Client, message: Message):
         enabled_fsubs = forcesub_collection.count_documents({})
 
         await message.reply_text(
-            f"**• جۆینی ناچاری**\n- بۆ  {enabled_fsubs} گرووپ",
+            f"**• چالاکی جۆینی ناچاری بۆتی ئەلینا**\n\n- بۆ  {enabled_fsubs} گرووپ چالاککراوە",
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
