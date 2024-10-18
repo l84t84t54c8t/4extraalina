@@ -434,26 +434,32 @@ async def get_fsub_stats(client: Client, message: Message):
         await message.reply_text("An error occurred while fetching stats.")
 
 
-@app.on_message(filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS)
+@app.on_message(
+    filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS
+)
 async def get_fsub_stats(client: Client, message: Message):
     # Fetch all groups where FSub is enabled from the database
     enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
-    
+
     if enabled_groups.count() == 0:
         return await message.reply_text("**• جۆینی ناچاری چالاک نەکراوە**")
 
     # Prepare the response message
     text = "**• زانیاری گرووپ و کەناڵی جۆینی ناچاری :**\n\n"
-    
+
     for group in enabled_groups:
         chat_id = group["chat_id"]
-        group_info = await client.get_chat(chat_id)  # Fetch group information from Telegram
-        
+        group_info = await client.get_chat(
+            chat_id
+        )  # Fetch group information from Telegram
+
         group_title = group_info.title
         group_username = group_info.username if group_info.username else "N/A"
-        
+
         channel_id = group["channel_id"]
-        channel_info = await client.get_chat(channel_id)  # Fetch channel information from Telegram
+        channel_info = await client.get_chat(
+            channel_id
+        )  # Fetch channel information from Telegram
         channel_title = channel_info.title
         channel_username = channel_info.username if channel_info.username else "N/A"
 
@@ -466,19 +472,19 @@ async def get_fsub_stats(client: Client, message: Message):
             f"**ئایدی کەناڵ :** `{channel_id}`\n"
             f"**یوزەری کەناڵ : @{channel_username if channel_username != 'N/A' else 'None'}**\n\n"
         )
-    
-    await message.reply_text(text,
-    reply_markup=InlineKeyboardMarkup(
+
+    await message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                        )
-                    ]
+                    InlineKeyboardButton(
+                        "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                    )
                 ]
-            ),
-        )
-    
+            ]
+        ),
+    )
 
 
 @app.on_message(filters.group)
