@@ -440,8 +440,8 @@ async def get_fsub_stats(client: Client, message: Message):
 async def get_fsub_stats(client: Client, message: Message):
     # Fetch all groups where FSub is enabled from the database
     enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
-
-    if enabled_groups.count() == 0:
+    
+    if forcesub_collection.count_documents({"channel_id": {"$exists": True}}) == 0:
         return await message.reply_text("**• جۆینی ناچاری چالاک نەکراوە**")
 
     # Prepare the response message
