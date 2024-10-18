@@ -410,6 +410,19 @@ async def check_forcesub(client: Client, message: Message):
             "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
 
+@app.on_message(filters.command(["/fsub_stats"])& SUDOERS)
+async def get_fsub_stats(client: Client, message: Message):
+    try:
+        # Count the number of groups where Force Subscription is enabled
+        enabled_fsubs = forcesub_collection.count_documents({})
+        
+        await message.reply_text(
+            f"**• Force Subscription is enabled in {enabled_fsubs} group(s)**"
+        )
+    except Exception as e:
+        logging.error(f"Error fetching Force Subscription stats: {e}")
+        await message.reply_text("An error occurred while fetching stats.")
+
 
 @app.on_message(filters.group)
 async def enforce_forcesub(client: Client, message: Message):
