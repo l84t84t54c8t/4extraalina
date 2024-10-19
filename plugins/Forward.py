@@ -6,6 +6,8 @@ from pyrogram.errors import MessageDeleteForbidden
 
 from utils.permissions import adminsOnly
 
+associated = "hh"
+
 # MongoDB collection for settings
 forwarddb = mongodb.forward  # Ensure you have a collection named 'forward'
 
