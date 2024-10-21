@@ -38,7 +38,7 @@ async def toggle_delete(_, message):
             await message.reply_text("**• سڕینەوەی ستۆری پێشتر چالاککراوە ✅**")
 
 
-@app.on_message(filters.command("getstory") & filters.group)
+@app.on_message(filters.command(["getstory", "ناردنی ستۆری"], "") & filters.group)
 @adminsOnly("can_delete_messages")
 async def check_forwarded_deletion(client, message):
     if await joinch(message):
