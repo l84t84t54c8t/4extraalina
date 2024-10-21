@@ -2,7 +2,7 @@ import re
 import time
 
 from AlinaMusic import app
-from AlinaMusic.utils.afkdb import add_afk, is_afk, remove_afk
+from AlinaMusic.utils.database import add_afk, is_afk, remove_afk
 from AlinaMusic.utils.readable_time import get_readable_time
 from pyrogram import filters
 from pyrogram.enums import MessageEntityType
