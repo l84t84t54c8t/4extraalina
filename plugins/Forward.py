@@ -1,12 +1,13 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
+from config import MUST_JOIN2
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden
+from pyrogram.errors import UserNotParticipant
 
 from utils.permissions import adminsOnly
 
-associated = "hh"
 
 # MongoDB collection for settings
 forwarddb = mongodb.forward  # Ensure you have a collection named 'forward'
@@ -33,6 +34,34 @@ async def is_deletion_enabled(chat_id: int) -> bool:
         return False  # Otherwise, return disabled
     return data.get("forwarded_message_deletion", True)  # Default to True if not set
 
+async def joinch(message):
+    if not MUST_JOIN2:
+        return
+    try:
+        await app.get_chat_member(MUST_JOIN2, message.from_user.id)
+    except UserNotParticipant:
+        if MUST_JOIN2.isalpha():
+            link = "https://t.me/" + MUST_JOIN2
+        else:
+            chat_info = await app.get_chat(MUST_JOIN2)
+            link = chat_info.invite_link
+        try:
+            await message.reply(
+                f"**• You must join the group\n• To be able to play songs\n• Bot Group : « @{MUST_JOIN2} »\n\n• پێویستە جۆینی گرووپ بکەیت\n• بۆ ئەوەی بتوانی گۆرانی پەخش بکەیت\n• گرووپی بۆت : « @{MUST_JOIN2} »**",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton("• جۆینی کەناڵ بکە •", url=f"{link}"),
+                        ]
+                    ]
+                ),
+                disable_web_page_preview=True,
+            )
+            return True
+        except Exception as e:
+            print(e)
+    except Exception as e:
+        print(e)
 
 # Function to delete forwarded messages only from members
 @app.on_message(filters.forwarded)
@@ -61,6 +90,8 @@ async def delete_forwarded_messages(app, message):
 @app.on_message(filters.command("forward") & filters.group)
 @adminsOnly("can_delete_messages")
 async def toggle_forwarded_deletion(client, message):
+    if await joinch(message):
+        return
     action = message.command[1].lower() if len(message.command) > 1 else None
 
     if action not in ["on", "off"]:
@@ -85,9 +116,11 @@ async def toggle_forwarded_deletion(client, message):
 
 
 # Command to check if forwarded message deletion is enabled
-@app.on_message(filters.command("getforward") & filters.group)
+@app.on_message(filters.command(["/getforward", "ناردنی ڕێکڵام"], "") & filters.group)
 @adminsOnly("can_delete_messages")
 async def check_forwarded_deletion(client, message):
+    if await joinch(message):
+        return
     # Check if deletion is enabled for the chat
     deletion_status = await is_deletion_enabled(message.chat.id)
 
