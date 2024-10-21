@@ -1,5 +1,5 @@
 from AlinaMusic import app
-from AlinaMusic.utils.nightmodedb import (
+from AlinaMusic.utils.database import (
     get_nightchats,
     nightdb,
     nightmode_off,
