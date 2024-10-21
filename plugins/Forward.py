@@ -47,7 +47,7 @@ async def joinch(message):
             else:
                 chat_info = await app.get_chat(MUST_JOIN2)
                 link = chat_info.invite_link
-            
+
             # Send the invite message
             await message.reply(
                 f"**• You must join the group\n• To use the command\n• Bot Group : « @{MUST_JOIN2} »**",
@@ -61,6 +61,7 @@ async def joinch(message):
             print(f"Error fetching join link: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 # Function to delete forwarded messages only from members
 @app.on_message(filters.forwarded)
