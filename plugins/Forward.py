@@ -37,31 +37,30 @@ async def joinch(message):
     if not MUST_JOIN2:
         return
     try:
+        # Check if the user is a participant in the channel/group
         await app.get_chat_member(MUST_JOIN2, message.from_user.id)
     except UserNotParticipant:
-        if MUST_JOIN2.isalpha():
-            link = "https://t.me/" + MUST_JOIN2
-        else:
-            chat_info = await app.get_chat(MUST_JOIN2)
-            link = chat_info.invite_link
         try:
+            # Check if MUST_JOIN2 is a valid username or get invite link for private chats
+            if MUST_JOIN2.startswith("@"):
+                link = "https://t.me/" + MUST_JOIN2.strip("@")
+            else:
+                chat_info = await app.get_chat(MUST_JOIN2)
+                link = chat_info.invite_link
+            
+            # Send the invite message
             await message.reply(
-                f"**• You must join the group\n• To be able to use command\n• Bot Group : « @{MUST_JOIN2} »\n\n• پێویستە جۆینی گرووپ بکەیت\n• بۆ ئەوەی بتوانی فەرمان بەکاربھێنیت\n• گرووپی بۆت : « @{MUST_JOIN2} »**",
+                f"**• You must join the group\n• To use the command\n• Bot Group : « @{MUST_JOIN2} »**",
                 reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton("• جۆینی کەناڵ بکە •", url=f"{link}"),
-                        ]
-                    ]
+                    [[InlineKeyboardButton("• Join the Channel •", url=link)]]
                 ),
                 disable_web_page_preview=True,
             )
             return True
         except Exception as e:
-            print(e)
+            print(f"Error fetching join link: {e}")
     except Exception as e:
-        print(e)
-
+        print(f"An error occurred: {e}")
 
 # Function to delete forwarded messages only from members
 @app.on_message(filters.forwarded)
