@@ -46,7 +46,7 @@ async def joinch(message):
             link = chat_info.invite_link
         try:
             await message.reply(
-                f"**• You must join the group\n• To be able to play songs\n• Bot Group : « @{MUST_JOIN2} »\n\n• پێویستە جۆینی گرووپ بکەیت\n• بۆ ئەوەی بتوانی گۆرانی پەخش بکەیت\n• گرووپی بۆت : « @{MUST_JOIN2} »**",
+                f"**• You must join the group\n• To be able to use command\n• Bot Group : « @{MUST_JOIN2} »\n\n• پێویستە جۆینی گرووپ بکەیت\n• بۆ ئەوەی بتوانی فەرمان بەکاربھێنیت\n• گرووپی بۆت : « @{MUST_JOIN2} »**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
