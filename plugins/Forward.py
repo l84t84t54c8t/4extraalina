@@ -52,7 +52,7 @@ async def joinch(message):
             await message.reply(
                 f"**• You must join the group\n• To use the command\n• Bot Group : « @{MUST_JOIN2} »\n\n• پێویستە جۆینی گرووپ بکەیت\n• بۆ ئەوەی بتوانی فەرمان بەکاربھێنیت\n• گرووپی بۆت : « @{MUST_JOIN2} »**",
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("• Join the Channel •", url=link)]]
+                    [[InlineKeyboardButton("• جۆینی گرووپ بکە •", url=link)]]
                 ),
                 disable_web_page_preview=True,
             )
