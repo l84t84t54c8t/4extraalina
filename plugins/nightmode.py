@@ -1,3 +1,10 @@
+from AlinaMusic import app
+from AlinaMusic.utils.nightmodedb import (
+    get_nightchats,
+    nightdb,
+    nightmode_off,
+    nightmode_on,
+)
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import enums, filters
 from pyrogram.types import (
@@ -5,14 +12,6 @@ from pyrogram.types import (
     ChatPermissions,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-)
-
-from AlinaMusic import app
-from AlinaMusic.utils.nightmodedb import (
-    get_nightchats,
-    nightdb,
-    nightmode_off,
-    nightmode_on,
 )
 
 CLOSE_CHAT = ChatPermissions(
@@ -45,7 +44,7 @@ buttons = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton("๏ ناچالاککردن ๏", callback_data="rm_night"),
-        ]
+        ],
     ]
 )
 add_buttons = InlineKeyboardMarkup(
@@ -83,9 +82,7 @@ async def nightcb(_, query: CallbackQuery):
     if user_id in administrators:
         if data == "add_night":
             if check_night:
-                await query.message.edit_caption(
-                    "**• دۆخی شەو پێشتر چالاککراوە**"
-                )
+                await query.message.edit_caption("**• دۆخی شەو پێشتر چالاککراوە**")
             elif not check_night:
                 await nightmode_on(chat_id)
                 await query.message.edit_caption(
@@ -98,9 +95,7 @@ async def nightcb(_, query: CallbackQuery):
                     "**• دۆخی شەول لەم گرووپە سڕدرایەوە لە داتابەیسی بۆت**"
                 )
             elif not check_night:
-                await query.message.edit_caption(
-                    "**• دۆخی شەو پێشتر ناچالاککراوە**"
-                )
+                await query.message.edit_caption("**• دۆخی شەو پێشتر ناچالاککراوە**")
 
 
 async def start_nightmode():
