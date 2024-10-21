@@ -1,13 +1,12 @@
 import re
 import time
 
-from pyrogram import filters
-from pyrogram.enums import MessageEntityType
-from pyrogram.types import Message
-
 from AlinaMusic import app
 from AlinaMusic.utils.afkdb import add_afk, is_afk, remove_afk
 from AlinaMusic.utils.readable_time import get_readable_time
+from pyrogram import filters
+from pyrogram.enums import MessageEntityType
+from pyrogram.types import Message
 
 
 @app.on_message(filters.command(["afk", "brb"], prefixes=["/", "!"]))
