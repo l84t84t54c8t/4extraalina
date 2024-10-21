@@ -3,11 +3,9 @@ from AlinaMusic.core.mongo import mongodb
 from config import MUST_JOIN2
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import MessageDeleteForbidden
-from pyrogram.errors import UserNotParticipant
+from pyrogram.errors import MessageDeleteForbidden, UserNotParticipant
 
 from utils.permissions import adminsOnly
-
 
 # MongoDB collection for settings
 forwarddb = mongodb.forward  # Ensure you have a collection named 'forward'
@@ -33,6 +31,7 @@ async def is_deletion_enabled(chat_id: int) -> bool:
             return True
         return False  # Otherwise, return disabled
     return data.get("forwarded_message_deletion", True)  # Default to True if not set
+
 
 async def joinch(message):
     if not MUST_JOIN2:
@@ -62,6 +61,7 @@ async def joinch(message):
             print(e)
     except Exception as e:
         print(e)
+
 
 # Function to delete forwarded messages only from members
 @app.on_message(filters.forwarded)
