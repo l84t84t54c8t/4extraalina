@@ -94,7 +94,7 @@ async def set_forcesub(client: Client, message: Message):
 
         if len(message.command) != 2:
             return await message.reply_text(
-                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
+                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
