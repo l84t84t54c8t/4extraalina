@@ -499,7 +499,7 @@ async def get_fsub_stats(client: Client, message: Message):
     )
 
 
-@app.on_message(filters.group)
+@app.on_message(filters.group, group=30)
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
