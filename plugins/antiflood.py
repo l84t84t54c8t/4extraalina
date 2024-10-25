@@ -175,7 +175,6 @@ flood_count = {}
 
 
 @app.on_message(filters.group, group=31)
-@app.on_message(filters.group, group=31)
 async def flood_detector(client, message: Message):
     chat_id = message.chat.id
 
