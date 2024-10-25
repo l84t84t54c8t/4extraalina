@@ -175,8 +175,14 @@ flood_count = {}
 
 
 @app.on_message(filters.group, group=31)
+@app.on_message(filters.group, group=31)
 async def flood_detector(client, message: Message):
     chat_id = message.chat.id
+
+    # Check if message.from_user is not None
+    if message.from_user is None:
+        return
+
     user_id = message.from_user.id
 
     settings = await get_chat_flood_settings(chat_id)
