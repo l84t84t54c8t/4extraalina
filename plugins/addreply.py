@@ -4,42 +4,58 @@ from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 
 # MongoDB collection for custom replies
-custom_reply_db = (
-    mongodb.custom_replies
-)  # Ensure you have a collection named 'custom_replies'
+custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
 
-
-# Command to add a new custom reply (only for bot owner)
+# Command to add a new custom reply with any type of content
 @app.on_message(filters.command("addreply") & SUDOERS)
 async def add_custom_reply(client, message):
-    try:
-        # Command format: /addreply <trigger_word> <response_type> <response_content>
-        parts = message.text.split(maxsplit=3)
-        if len(parts) < 4:
-            await message.reply_text(
-                "Usage: /addreply <trigger_word> <response_type> <response_content>"
-            )
-            return
+    # Command format: reply to any content with /addreply <trigger_word>
+    if not message.reply_to_message:
+        await message.reply_text("Please reply to the content you want to add as a reply.")
+        return
 
-        trigger_word = parts[1]
-        response_type = parts[2]
-        response_content = parts[3]  # All remaining content after the third split
+    parts = message.text.split(maxsplit=1)
+    if len(parts) < 2:
+        await message.reply_text("Usage: /addreply <trigger_word>")
+        return
 
-        # Insert into MongoDB
-        update_data = {
-            "trigger_word": trigger_word,
-            "response_type": response_type,
-            "response_content": response_content,
-        }
-        await custom_reply_db.update_one(
-            {"trigger_word": trigger_word}, {"$set": update_data}, upsert=True
-        )
+    trigger_word = parts[1]
+    reply_message = message.reply_to_message
 
-        await message.reply_text(f"Reply added for trigger word '{trigger_word}'!")
-    except Exception as e:
-        await message.reply_text("Error adding reply.")
-        print(e)
+    # Capture message type and content
+    if reply_message.text:
+        response_type = "text"
+        response_content = reply_message.text
+    elif reply_message.photo:
+        response_type = "photo"
+        response_content = reply_message.photo.file_id
+    elif reply_message.sticker:
+        response_type = "sticker"
+        response_content = reply_message.sticker.file_id
+    elif reply_message.document:
+        response_type = "document"
+        response_content = reply_message.document.file_id
+    elif reply_message.audio:
+        response_type = "audio"
+        response_content = reply_message.audio.file_id
+    elif reply_message.animation:
+        response_type = "animation"
+        response_content = reply_message.animation.file_id
+    else:
+        await message.reply_text("Unsupported message type.")
+        return
 
+    # Insert into MongoDB
+    update_data = {
+        "trigger_word": trigger_word,
+        "response_type": response_type,
+        "response_content": response_content,
+    }
+    await custom_reply_db.update_one(
+        {"trigger_word": trigger_word}, {"$set": update_data}, upsert=True
+    )
+
+    await message.reply_text(f"Reply added for trigger word '{trigger_word}'!")
 
 # Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
