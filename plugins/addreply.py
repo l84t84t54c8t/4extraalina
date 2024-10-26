@@ -4,10 +4,7 @@ from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 
 # MongoDB collection for custom replies
-custom_reply_db = (
-    mongodb.custom_replies
-)  # Ensure you have a collection named 'custom_replies'
-
+custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
 
 # Command to add a new custom reply (only for bot owner)
 @app.on_message(filters.command("addreply") & SUDOERS)
@@ -21,7 +18,9 @@ async def add_custom_reply(client, message):
             )
             return
 
-        trigger_word, response_type, response_content = parts[1], parts[2], parts[3]
+        trigger_word = parts[1]
+        response_type = parts[2]
+        response_content = parts[3]  # All remaining content after the third split
 
         # Insert into MongoDB
         update_data = {
@@ -38,16 +37,11 @@ async def add_custom_reply(client, message):
         await message.reply_text("Error adding reply.")
         print(e)
 
-
-# Detect trigger words only when used in a reply
+# Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
 async def reply_to_trigger_word(client, message):
-    # Ensure the message is a reply
-    if not message.reply_to_message:
-        return
-
     try:
-        # Check if the trigger word exists in the database
+        # Check if the message text matches a trigger word in the database
         trigger_data = await custom_reply_db.find_one({"trigger_word": message.text})
         if trigger_data:
             response_type = trigger_data["response_type"]
@@ -55,18 +49,18 @@ async def reply_to_trigger_word(client, message):
 
             # Reply based on the response type
             if response_type == "text":
-                await message.reply_to_message.reply_text(response_content)
+                await message.reply_text(response_content)
             elif response_type == "photo":
-                await message.reply_to_message.reply_photo(response_content)
+                await message.reply_photo(response_content)
             elif response_type == "document":
-                await message.reply_to_message.reply_document(response_content)
+                await message.reply_document(response_content)
             elif response_type == "audio":
-                await message.reply_to_message.reply_audio(response_content)
+                await message.reply_audio(response_content)
             elif response_type == "animation":
-                await message.reply_to_message.reply_animation(response_content)
+                await message.reply_animation(response_content)
             elif response_type == "sticker":
-                await message.reply_to_message.reply_sticker(response_content)
+                await message.reply_sticker(response_content)
             else:
-                await message.reply_to_message.reply_text("Unknown response type.")
+                await message.reply_text("Unknown response type.")
     except Exception as e:
         print(e)
