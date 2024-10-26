@@ -104,7 +104,6 @@ async def check_auth_token():
             "cookiescheck",
         ]
     )
-    & filters.private
     & SUDOERS
 )
 async def list_formats(client, message):
