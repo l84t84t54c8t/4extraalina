@@ -4,7 +4,10 @@ from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 
 # MongoDB collection for custom replies
-custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
+custom_reply_db = (
+    mongodb.custom_replies
+)  # Ensure you have a collection named 'custom_replies'
+
 
 # Command to add a new custom reply (only for bot owner)
 @app.on_message(filters.command("addreply") & SUDOERS)
@@ -36,6 +39,7 @@ async def add_custom_reply(client, message):
     except Exception as e:
         await message.reply_text("Error adding reply.")
         print(e)
+
 
 # Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
