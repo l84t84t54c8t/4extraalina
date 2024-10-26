@@ -1,21 +1,28 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from pyrogram import filters, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import InlineKeyboardButton, InlineKeyboardMarkup, filters
 
 # MongoDB collection for custom replies
-custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
+custom_reply_db = (
+    mongodb.custom_replies
+)  # Ensure you have a collection named 'custom_replies'
+
 
 # Command to add a new custom reply with multiple buttons
 @app.on_message(filters.command("addreply") & SUDOERS)
 async def add_custom_reply(client, message):
     if not message.reply_to_message:
-        await message.reply_text("Please reply to the content you want to add as a reply.")
+        await message.reply_text(
+            "Please reply to the content you want to add as a reply."
+        )
         return
 
     parts = message.text.split(maxsplit=1)
     if len(parts) < 2:
-        await message.reply_text("Usage: /addreply <trigger_word> <button_text:url;button_text:url>")
+        await message.reply_text(
+            "Usage: /addreply <trigger_word> <button_text:url;button_text:url>"
+        )
         return
 
     trigger_word = parts[1].split()[0]  # Get the trigger word from the command
@@ -45,12 +52,14 @@ async def add_custom_reply(client, message):
         return
 
     # Check for buttons in the command after the trigger word
-    button_data = parts[1][len(trigger_word):].strip()  # Get everything after the trigger word
+    button_data = parts[1][
+        len(trigger_word) :
+    ].strip()  # Get everything after the trigger word
     buttons = []
     if button_data:
-        button_pairs = button_data.split(';')
+        button_pairs = button_data.split(";")
         for pair in button_pairs:
-            button_parts = pair.split(':')
+            button_parts = pair.split(":")
             if len(button_parts) == 2:
                 button_text, url = button_parts[0].strip(), button_parts[1].strip()
                 buttons.append([InlineKeyboardButton(button_text, url=url)])
@@ -67,6 +76,7 @@ async def add_custom_reply(client, message):
     )
 
     await message.reply_text(f"Reply added for trigger word '{trigger_word}'!")
+
 
 # Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
@@ -88,17 +98,22 @@ async def reply_to_trigger_word(client, message):
             elif response_type == "photo":
                 await message.reply_photo(response_content, reply_markup=reply_markup)
             elif response_type == "document":
-                await message.reply_document(response_content, reply_markup=reply_markup)
+                await message.reply_document(
+                    response_content, reply_markup=reply_markup
+                )
             elif response_type == "audio":
                 await message.reply_audio(response_content, reply_markup=reply_markup)
             elif response_type == "animation":
-                await message.reply_animation(response_content, reply_markup=reply_markup)
+                await message.reply_animation(
+                    response_content, reply_markup=reply_markup
+                )
             elif response_type == "sticker":
                 await message.reply_sticker(response_content, reply_markup=reply_markup)
             else:
                 await message.reply_text("Unknown response type.")
     except Exception as e:
         print(e)
+
 
 # Command to delete an existing custom reply
 @app.on_message(filters.command("delreply") & SUDOERS)
