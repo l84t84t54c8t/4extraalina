@@ -5,7 +5,10 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # MongoDB collection for custom replies
-custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
+custom_reply_db = (
+    mongodb.custom_replies
+)  # Ensure you have a collection named 'custom_replies'
+
 
 # Function to show the panel for adding or deleting replies
 @app.on_message(filters.command("panel") & SUDOERS)
@@ -17,16 +20,23 @@ async def show_panel(client, message):
     reply_markup = InlineKeyboardMarkup(buttons)
     await message.reply_text("Select an option:", reply_markup=reply_markup)
 
+
 # Callback query handler for the panel
 @app.on_callback_query(filters.regex("add_reply"))
 async def add_reply_panel(client, callback_query):
     await callback_query.answer()
-    await callback_query.message.reply_text("Please reply to a message with the format:\n`<trigger_word> <button_text:url;button_text:url>`")
+    await callback_query.message.reply_text(
+        "Please reply to a message with the format:\n`<trigger_word> <button_text:url;button_text:url>`"
+    )
+
 
 @app.on_callback_query(filters.regex("del_reply"))
 async def del_reply_panel(client, callback_query):
     await callback_query.answer()
-    await callback_query.message.reply_text("Please reply to the message containing the trigger word you want to delete.")
+    await callback_query.message.reply_text(
+        "Please reply to the message containing the trigger word you want to delete."
+    )
+
 
 # Command to add a new custom reply with multiple buttons
 @app.on_message(filters.reply & filters.text & SUDOERS)
@@ -34,7 +44,9 @@ async def add_custom_reply(client, message):
     if message.reply_to_message:
         parts = message.text.split(maxsplit=1)
         if len(parts) < 2:
-            await message.reply_text("Usage: <trigger_word> <button_text:url;button_text:url>")
+            await message.reply_text(
+                "Usage: <trigger_word> <button_text:url;button_text:url>"
+            )
             return
 
         trigger_word = parts[0].strip()  # Get the trigger word from the message text
@@ -87,6 +99,7 @@ async def add_custom_reply(client, message):
 
         await message.reply_text(f"Reply added for trigger word '{trigger_word}'!")
 
+
 # Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
 async def reply_to_trigger_word(client, message):
@@ -107,17 +120,22 @@ async def reply_to_trigger_word(client, message):
             elif response_type == "photo":
                 await message.reply_photo(response_content, reply_markup=reply_markup)
             elif response_type == "document":
-                await message.reply_document(response_content, reply_markup=reply_markup)
+                await message.reply_document(
+                    response_content, reply_markup=reply_markup
+                )
             elif response_type == "audio":
                 await message.reply_audio(response_content, reply_markup=reply_markup)
             elif response_type == "animation":
-                await message.reply_animation(response_content, reply_markup=reply_markup)
+                await message.reply_animation(
+                    response_content, reply_markup=reply_markup
+                )
             elif response_type == "sticker":
                 await message.reply_sticker(response_content, reply_markup=reply_markup)
             else:
                 await message.reply_text("Unknown response type.")
     except Exception as e:
         print(e)
+
 
 # Command to delete an existing custom reply
 @app.on_message(filters.reply & filters.command("delreply") & SUDOERS)
@@ -128,9 +146,14 @@ async def delete_custom_reply(client, message):
         # Remove from MongoDB
         result = await custom_reply_db.delete_one({"trigger_word": trigger_word})
         if result.deleted_count > 0:
-            await message.reply_text(f"Reply for trigger word '{trigger_word}' deleted!")
+            await message.reply_text(
+                f"Reply for trigger word '{trigger_word}' deleted!"
+            )
         else:
-            await message.reply_text(f"No reply found for trigger word '{trigger_word}'.")
+            await message.reply_text(
+                f"No reply found for trigger word '{trigger_word}'."
+            )
+
 
 """
 from AlinaMusic import app
