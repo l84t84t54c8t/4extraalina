@@ -1,7 +1,13 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from pyrogram import InlineKeyboardButton, InlineKeyboardMarkup, filters
+from pyrogram import filters
+from pyrogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 
 # MongoDB collection for custom replies
 custom_reply_db = (
