@@ -5,20 +5,19 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # MongoDB collection for custom replies
-custom_reply_db = (
-    mongodb.custom_replies
-)  # Ensure you have a collection named 'custom_replies'
-
+custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
 
 # Command to add a new custom reply with multiple buttons
-@app.on_message(filters.command("addreply") & SUDOERS)
+@app.on_message(filters.reply & filters.command("addreply") & SUDOERS)
 async def add_custom_reply(client, message):
+    # Ensure the message is a reply to another message
     if not message.reply_to_message:
         await message.reply_text(
             "Please reply to the content you want to add as a reply."
         )
         return
 
+    # Split the command text to extract trigger word and button data
     parts = message.text.split(maxsplit=1)
     if len(parts) < 2:
         await message.reply_text(
@@ -53,9 +52,7 @@ async def add_custom_reply(client, message):
         return
 
     # Check for buttons in the command after the trigger word
-    button_data = parts[1][
-        len(trigger_word) :
-    ].strip()  # Get everything after the trigger word
+    button_data = parts[1][len(trigger_word):].strip()  # Get everything after the trigger word
     buttons = []
     if button_data:
         button_pairs = button_data.split(";")
@@ -99,15 +96,11 @@ async def reply_to_trigger_word(client, message):
             elif response_type == "photo":
                 await message.reply_photo(response_content, reply_markup=reply_markup)
             elif response_type == "document":
-                await message.reply_document(
-                    response_content, reply_markup=reply_markup
-                )
+                await message.reply_document(response_content, reply_markup=reply_markup)
             elif response_type == "audio":
                 await message.reply_audio(response_content, reply_markup=reply_markup)
             elif response_type == "animation":
-                await message.reply_animation(
-                    response_content, reply_markup=reply_markup
-                )
+                await message.reply_animation(response_content, reply_markup=reply_markup)
             elif response_type == "sticker":
                 await message.reply_sticker(response_content, reply_markup=reply_markup)
             else:
@@ -117,14 +110,14 @@ async def reply_to_trigger_word(client, message):
 
 
 # Command to delete an existing custom reply
-@app.on_message(filters.command("delreply") & SUDOERS)
+@app.on_message(filters.reply & filters.command("delreply") & SUDOERS)
 async def delete_custom_reply(client, message):
-    parts = message.text.split(maxsplit=1)
-    if len(parts) < 2:
-        await message.reply_text("Usage: /delreply <trigger_word>")
+    if not message.reply_to_message:
+        await message.reply_text("Please reply to the message containing the trigger word you want to delete.")
         return
 
-    trigger_word = parts[1]
+    # The message should contain the trigger word to delete
+    trigger_word = message.reply_to_message.text
 
     # Remove from MongoDB
     result = await custom_reply_db.delete_one({"trigger_word": trigger_word})
