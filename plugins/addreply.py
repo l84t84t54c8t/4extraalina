@@ -5,23 +5,18 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # MongoDB collection for custom replies
-custom_reply_db = (
-    mongodb.custom_replies
-)  # Ensure you have a collection named 'custom_replies'
-
+custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
 
 # Command to add a new custom reply with buttons
 @app.on_message(filters.command("addreply") & SUDOERS)
 async def add_custom_reply(client, message):
     if not message.reply_to_message:
-        await message.reply_text(
-            "Please reply to the content you want to add as a reply."
-        )
+        await message.reply_text("Please reply to the content you want to add as a reply.")
         return
 
-    parts = message.text.split(maxsplit=1)
+    parts = message.text.split(maxsplit=2)  # Allow up to 2 splits: trigger word and buttons
     if len(parts) < 2:
-        await message.reply_text("Usage: /addreply <trigger_word> <button_text|url>")
+        await message.reply_text("Usage: /addreply <trigger_word> [<button_text>:<url>]")
         return
 
     trigger_word = parts[1]
@@ -52,29 +47,27 @@ async def add_custom_reply(client, message):
 
     # Check for buttons in the command
     button_data = parts[2] if len(parts) > 2 else None
-    buttons = None
+    buttons = []
     if button_data:
-        # Assuming the button data format is "<button_text>:<url>"
-        button_parts = button_data.split(":")
-        if len(button_parts) == 2:
-            button_text, url = button_parts[0], button_parts[1]
-            buttons = InlineKeyboardMarkup(
-                [[InlineKeyboardButton(button_text, url=url)]]
-            )
+        button_pairs = button_data.split(';')  # Expecting button definitions separated by semicolons
+        for pair in button_pairs:
+            button_parts = pair.split(':')
+            if len(button_parts) == 2:
+                button_text, url = button_parts[0].strip(), button_parts[1].strip()
+                buttons.append([InlineKeyboardButton(button_text, url=url)])
 
     # Insert into MongoDB
     update_data = {
         "trigger_word": trigger_word,
         "response_type": response_type,
         "response_content": response_content,
-        "buttons": button_data if buttons else None,
+        "buttons": buttons if buttons else None,
     }
     await custom_reply_db.update_one(
         {"trigger_word": trigger_word}, {"$set": update_data}, upsert=True
     )
 
     await message.reply_text(f"Reply added for trigger word '{trigger_word}'!")
-
 
 # Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
@@ -87,24 +80,26 @@ async def reply_to_trigger_word(client, message):
             response_content = trigger_data["response_content"]
             buttons = trigger_data.get("buttons")
 
+            # Create the InlineKeyboardMarkup if buttons exist
+            reply_markup = InlineKeyboardMarkup(buttons) if buttons else None
+
             # Reply based on the response type
             if response_type == "text":
-                await message.reply_text(response_content, reply_markup=buttons)
+                await message.reply_text(response_content, reply_markup=reply_markup)
             elif response_type == "photo":
-                await message.reply_photo(response_content, reply_markup=buttons)
+                await message.reply_photo(response_content, reply_markup=reply_markup)
             elif response_type == "document":
-                await message.reply_document(response_content, reply_markup=buttons)
+                await message.reply_document(response_content, reply_markup=reply_markup)
             elif response_type == "audio":
-                await message.reply_audio(response_content, reply_markup=buttons)
+                await message.reply_audio(response_content, reply_markup=reply_markup)
             elif response_type == "animation":
-                await message.reply_animation(response_content, reply_markup=buttons)
+                await message.reply_animation(response_content, reply_markup=reply_markup)
             elif response_type == "sticker":
-                await message.reply_sticker(response_content, reply_markup=buttons)
+                await message.reply_sticker(response_content, reply_markup=reply_markup)
             else:
                 await message.reply_text("Unknown response type.")
     except Exception as e:
         print(e)
-
 
 # Command to delete an existing custom reply
 @app.on_message(filters.command("delreply") & SUDOERS)
@@ -122,3 +117,14 @@ async def delete_custom_reply(client, message):
         await message.reply_text(f"Reply for trigger word '{trigger_word}' deleted!")
     else:
         await message.reply_text(f"No reply found for trigger word '{trigger_word}'.")
+
+
+# Command to list all custom replies
+@app.on_message(filters.command("listreplies") & SUDOERS)
+async def list_custom_replies(client, message):
+    replies = await custom_reply_db.find({}).to_list(length=None)  # Fetch all replies
+    if replies:
+        reply_list = "\n".join([reply["trigger_word"] for reply in replies])
+        await message.reply_text(f"Custom replies:\n{reply_list}")
+    else:
+        await message.reply_text("No custom replies found.")
