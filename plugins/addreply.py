@@ -4,7 +4,6 @@ from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-
 # MongoDB collection for custom replies
 custom_reply_db = (
     mongodb.custom_replies
@@ -133,4 +132,3 @@ async def delete_custom_reply(client, message):
         await message.reply_text(f"Reply for trigger word '{trigger_word}' deleted!")
     else:
         await message.reply_text(f"No reply found for trigger word '{trigger_word}'.")
-
