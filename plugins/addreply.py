@@ -4,15 +4,19 @@ from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-
 # MongoDB collection for custom replies
-custom_reply_db = mongodb.custom_replies  # Ensure you have a collection named 'custom_replies'
+custom_reply_db = (
+    mongodb.custom_replies
+)  # Ensure you have a collection named 'custom_replies'
+
 
 # Command to add a new custom reply with buttons
 @app.on_message(filters.command("addreply") & SUDOERS)
 async def add_custom_reply(client, message):
     if not message.reply_to_message:
-        await message.reply_text("Please reply to the content you want to add as a reply.")
+        await message.reply_text(
+            "Please reply to the content you want to add as a reply."
+        )
         return
 
     parts = message.text.split(maxsplit=1)
@@ -51,10 +55,12 @@ async def add_custom_reply(client, message):
     buttons = None
     if button_data:
         # Assuming the button data format is "<button_text>:<url>"
-        button_parts = button_data.split(':')
+        button_parts = button_data.split(":")
         if len(button_parts) == 2:
             button_text, url = button_parts[0], button_parts[1]
-            buttons = InlineKeyboardMarkup([[InlineKeyboardButton(button_text, url=url)]])
+            buttons = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(button_text, url=url)]]
+            )
 
     # Insert into MongoDB
     update_data = {
@@ -68,6 +74,7 @@ async def add_custom_reply(client, message):
     )
 
     await message.reply_text(f"Reply added for trigger word '{trigger_word}'!")
+
 
 # Automatically reply when a trigger word is detected
 @app.on_message(filters.text & (filters.group | filters.private))
@@ -97,6 +104,7 @@ async def reply_to_trigger_word(client, message):
                 await message.reply_text("Unknown response type.")
     except Exception as e:
         print(e)
+
 
 # Command to delete an existing custom reply
 @app.on_message(filters.command("delreply") & SUDOERS)
