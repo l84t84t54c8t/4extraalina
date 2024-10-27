@@ -15,7 +15,7 @@ from pyrogram.types import (
     Message,
 )
 
-from .Forward import joinch
+from AlinaMusic.plugins.play.play import joinch
 
 # Set up basic logging
 logging.basicConfig(
