@@ -3,7 +3,7 @@ from AlinaMusic.utils.database import is_deletion_enabled, set_deletion_feature
 from AlinaMusic.utils.permissions import adminsOnly
 from pyrogram import filters
 
-from .Forward import joinch
+from AlinaMusic.plugins.play.play import joinch
 
 
 # Command to enable or disable story deletion
