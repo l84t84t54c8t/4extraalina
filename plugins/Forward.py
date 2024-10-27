@@ -1,10 +1,9 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.plugins.play.play import joinch
-from config import MUST_JOIN2
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import MessageDeleteForbidden, UserNotParticipant
+from pyrogram.errors import MessageDeleteForbidden
 
 from utils.permissions import adminsOnly
 
