@@ -3,12 +3,8 @@ from datetime import datetime
 from AlinaMusic import app
 from config import OWNER_ID as owner_id
 from pyrogram import filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 from strings.filters import command
 
 

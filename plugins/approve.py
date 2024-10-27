@@ -8,6 +8,8 @@
 # All rights reserved.
 #
 
+from asyncio import sleep
+
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
@@ -16,7 +18,8 @@ from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors.exceptions.bad_request_400 import UserAlreadyParticipant
-from pyrogram.types import ChatJoinRequest, ChatPrivileges
+from pyrogram.types import (ChatJoinRequest, ChatPrivileges,
+                            InlineKeyboardButton, InlineKeyboardMarkup)
 
 from utils.permissions import adminsOnly, member_permissions
 
@@ -112,10 +115,6 @@ async def approval_cb(client, cb):
         "**پەسەندکردنی ئۆتۆماتیکی لەم گرووپە : چالاکە**", reply_markup=keyboard
     )
 
-
-from asyncio import sleep
-
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Dictionary to track approval tasks by chat_id
 approval_tasks = {}

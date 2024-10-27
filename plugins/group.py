@@ -230,7 +230,7 @@ async def deletechatphoto(_, message):
                     message.from_user.mention
                 )
             )
-    except:
+    except BaseException:
         await msg.edit(
             "**پێویستە ڕۆڵی دەستکاری کردنی زانیاری گرووپت هەبێت بۆ لادانی وێنەی گرووپ**"
         )
@@ -271,7 +271,7 @@ async def setchatphoto(_, message):
                     "**هەندێك جیاوازی و هەڵە ڕوویدا وێنەیەکی تر تاقیبکەوە!**"
                 )
 
-        except:
+        except BaseException:
             await msg.edit(
                 "**پێویستە ڕۆڵی دەستکاری کردنی زانیاری گرووپت هەبێت بۆ دانانی وێنەی گرووپ**"
             )
@@ -408,7 +408,7 @@ async def leave_a_chat(client, message):
     chat = message.command[1]
     try:
         chat = int(chat)
-    except:
+    except BaseException:
         chat = chat
     try:
         buttons = [[InlineKeyboardButton("گرووپی بۆت", url=f"https://t.me/IQSUPP")]]

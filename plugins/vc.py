@@ -8,11 +8,8 @@ from pyrogram import filters
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.raw import base
 from pyrogram.raw.functions.channels import GetFullChannel
-from pyrogram.raw.functions.phone import (
-    CreateGroupCall,
-    DiscardGroupCall,
-    GetGroupParticipants,
-)
+from pyrogram.raw.functions.phone import (CreateGroupCall, DiscardGroupCall,
+                                          GetGroupParticipants)
 from pyrogram.types import Message
 
 

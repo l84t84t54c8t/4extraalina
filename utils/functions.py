@@ -14,13 +14,13 @@ MARKDOWN = """
 {GROUPNAME} - ɢʀᴏᴜᴘ's ɴᴀᴍᴇ
 {NAME} - ᴜsᴇʀ ɴᴀᴍᴇ
 {ID} - ᴜsᴇʀ ɪᴅ
-{FIRSTNAME} - ᴜsᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ 
+{FIRSTNAME} - ᴜsᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ
 {SURNAME} - ɪғ ᴜsᴇʀ ʜᴀs sᴜʀɴᴀᴍᴇ sᴏ ᴛʜɪs ᴡɪʟʟ sʜᴏᴡ sᴜʀɴᴀᴍᴇ ᴇʟsᴇ ɴᴏᴛʜɪɴɢ
 {USERNAME} - ᴜsᴇʀ ᴜsᴇʀɴᴀᴍᴇ
 
 {TIME} - ᴛᴏᴅᴀʏ  ᴛɪᴍᴇ
-{DATE} - ᴛᴏᴅᴀʏ ᴅᴀᴛᴇ 
-{WEEKDAY} - ᴛᴏᴅᴀʏ ᴡᴇᴇᴋᴅᴀʏ 
+{DATE} - ᴛᴏᴅᴀʏ ᴅᴀᴛᴇ
+{WEEKDAY} - ᴛᴏᴅᴀʏ ᴡᴇᴇᴋᴅᴀʏ
 
 <b><u>NOTE:</u></b> ғɪʟʟɪɴɢs ᴏɴʟʏ ᴡᴏʀᴋs ɪɴ ᴡᴇʟᴄᴏᴍᴇ ᴍᴏᴅᴜʟᴇ.
 
@@ -44,7 +44,7 @@ MARKDOWN = """
 
 <u>ᴇxᴀᴍᴘʟᴇ:</u>
 
-<b>example</b>  
+<b>example</b>
 <blockquote><i>button with markdown</i> <code>formatting</code> ~ [button text, https://google.com]</blockquote>
 """
 WELCOMEHELP = """
@@ -58,20 +58,20 @@ WELCOMEHELP = """
 
 <b>ᴛᴏ sᴇᴛ ᴀ ᴘʜᴏᴛᴏ ᴏʀ ɢɪғ ᴀs ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ. ᴀᴅᴅ ʏᴏᴜʀ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ ᴀs ᴄᴀᴘᴛɪᴏɴ ᴛᴏ ᴛʜᴇ ᴘʜᴏᴛᴏ ᴏʀ ɢɪғ. ᴛʜᴇ ᴄᴀᴘᴛɪᴏɴ ᴍᴜsᴇ ʙᴇ ɪɴ ᴛʜᴇ ғᴏʀᴍᴀᴛ ɢɪᴠᴇɴ ʙᴇʟᴏᴡ.</b>
 
-ғᴏʀ ᴛᴇxᴛ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ ᴊᴜsᴛ sᴇɴᴅ ᴛʜᴇ ᴛᴇxᴛ. ᴛʜᴇɴ ʀᴇᴘʟʏ ᴡɪᴛʜ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ 
+ғᴏʀ ᴛᴇxᴛ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ ᴊᴜsᴛ sᴇɴᴅ ᴛʜᴇ ᴛᴇxᴛ. ᴛʜᴇɴ ʀᴇᴘʟʏ ᴡɪᴛʜ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ
 
 ᴛʜᴇ ғᴏʀᴍᴀᴛ sʜᴏᴜʟᴅ ʙᴇ sᴏᴍᴇᴛʜɪɴɢ ʟɪᴋᴇ ʙᴇʟᴏᴡ.
 
 {GROUPNAME} - ɢʀᴏᴜᴘ's ɴᴀᴍᴇ
 {NAME} - ᴜsᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ + sᴜʀɴᴀᴍᴇ
 {ID} - ᴜsᴇʀ ɪᴅ
-{FIRSTNAME} - ᴜsᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ 
+{FIRSTNAME} - ᴜsᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ
 {SURNAME} - ɪғ ᴜsᴇʀ ʜᴀs sᴜʀɴᴀᴍᴇ sᴏ ᴛʜɪs ᴡɪʟʟ sʜᴏᴡ sᴜʀɴᴀᴍᴇ ᴇʟsᴇ ɴᴏᴛʜɪɴɢ
 {USERNAME} - ᴜsᴇʀ ᴜsᴇʀɴᴀᴍᴇ
 
 {TIME} - ᴛᴏᴅᴀʏ  ᴛɪᴍᴇ
-{DATE} - ᴛᴏᴅᴀʏ ᴅᴀᴛᴇ 
-{WEEKDAY} - ᴛᴏᴅᴀʏ ᴡᴇᴇᴋᴅᴀʏ 
+{DATE} - ᴛᴏᴅᴀʏ ᴅᴀᴛᴇ
+{WEEKDAY} - ᴛᴏᴅᴀʏ ᴡᴇᴇᴋᴅᴀʏ
 
 
 ~ #This separater (~) should be there between text and buttons, remove this comment also

@@ -217,7 +217,7 @@ async def chat_watcher_func(_, message):
                         photo=f"downloads/{userid}.jpg",
                         caption=f"**{user_name[:25]}** ɪs ʙᴀᴄᴋ ᴏɴʟɪɴᴇ ᴀɴᴅ ᴡᴀs ᴀᴡᴀʏ ғᴏʀ {seenago}\n\nʀᴇᴀsᴏɴ: `{reasonafk}`\n\n",
                     )
-        except:
+        except BaseException:
             msg += f"**{user_name[:25]}** ɪs ʙᴀᴄᴋ ᴏɴʟɪɴᴇ\n\n"
 
     if message.reply_to_message:
@@ -262,7 +262,7 @@ async def chat_watcher_func(_, message):
                             )
                 except Exception:
                     msg += f"**{replied_first_name}** ɪs ᴀғᴋ,\nᴩᴀᴛᴀ ɴɪ ʙᴄ ᴋᴀʙ sᴇ\n\n"
-        except:
+        except BaseException:
             pass
 
     if message.entities:
@@ -277,7 +277,7 @@ async def chat_watcher_func(_, message):
                     if user.id == replied_user_id:
                         j += 1
                         continue
-                except:
+                except BaseException:
                     j += 1
                     continue
                 verifier, reasondb = await is_afk(user.id)
@@ -316,7 +316,7 @@ async def chat_watcher_func(_, message):
                                     photo=f"downloads/{user.id}.jpg",
                                     caption=f"**{user.first_name[:25]}** ɪs ᴀғᴋ sɪɴᴄᴇ {seenago}\n\nʀᴇᴀsᴏɴ: `{reasonafk}`\n\n",
                                 )
-                    except:
+                    except BaseException:
                         msg += f"**{user.first_name[:25]}** ɪs ᴀғᴋ\n\n"
             elif (entity[j].type) == MessageEntityType.TEXT_MENTION:
                 try:
@@ -325,7 +325,7 @@ async def chat_watcher_func(_, message):
                         j += 1
                         continue
                     first_name = entity[j].user.first_name
-                except:
+                except BaseException:
                     j += 1
                     continue
                 verifier, reasondb = await is_afk(user_id)
@@ -362,13 +362,13 @@ async def chat_watcher_func(_, message):
                                     photo=f"downloads/{user_id}.jpg",
                                     caption=f"**{first_name[:25]}** ɪs ᴀғᴋ sɪɴᴄᴇ {seenago}\n\nʀᴇᴀsᴏɴ: `{reasonafk}`\n\n",
                                 )
-                    except:
+                    except BaseException:
                         msg += f"**{first_name[:25]}** ɪs ᴀғᴋ\n\n"
             j += 1
     if msg != "":
         try:
             send = await message.reply_text(msg, disable_web_page_preview=True)
-        except:
+        except BaseException:
             return
 
 

@@ -47,7 +47,8 @@ def remove_media(client, message: Message):
     replied_message = message.reply_to_message
 
     if replied_message.video:
-        # If the replied message is a video, remove either the audio or the video depending on the command
+        # If the replied message is a video, remove either the audio or the
+        # video depending on the command
         if len(message.command) > 1:
             command = message.command[1].lower()
             if command == "video" or command == "ڤیدیۆ" or command == "ڤیدیو":

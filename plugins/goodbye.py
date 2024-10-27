@@ -8,16 +8,11 @@ from AlinaMusic.utils.functions import check_format, extract_text_and_keyb
 from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.errors import ChatAdminRequired
-from pyrogram.types import Chat, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import (Chat, InlineKeyboardButton, InlineKeyboardMarkup,
+                            Message)
 
-from utils import (
-    del_goodbye,
-    get_goodbye,
-    is_greetings_on,
-    set_goodbye,
-    set_greetings_off,
-    set_greetings_on,
-)
+from utils import (del_goodbye, get_goodbye, is_greetings_on, set_goodbye,
+                   set_greetings_off, set_greetings_on)
 from utils.error import capture_err
 from utils.permissions import adminsOnly
 

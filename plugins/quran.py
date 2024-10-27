@@ -163,7 +163,7 @@ async def show_quran(c, cq):
                 ]
             )
         )
-    except:
+    except BaseException:
         await Alina.skip_stream(cq.message.chat.id, quran[number]["sounds"][i]["url"])
         await cq.edit_message_reply_markup(
             ikm(

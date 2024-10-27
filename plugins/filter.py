@@ -2,17 +2,10 @@ import datetime
 import re
 
 from AlinaMusic import app
-from AlinaMusic.utils.database import (
-    deleteall_filters,
-    get_filter,
-    get_filters_names,
-    save_filter,
-)
-from AlinaMusic.utils.functions import (
-    check_format,
-    extract_text_and_keyb,
-    get_data_and_name,
-)
+from AlinaMusic.utils.database import (deleteall_filters, get_filter,
+                                       get_filters_names, save_filter)
+from AlinaMusic.utils.functions import (check_format, extract_text_and_keyb,
+                                        get_data_and_name)
 from AlinaMusic.utils.keyboard import ikb
 from config import BANNED_USERS
 from pyrogram import filters
@@ -362,7 +355,7 @@ async def global_filters_response(_, message):
             continue
 
         # Check if the filter should trigger (you can modify this logic)
-        pattern = r"( |^|[^\w])" + re.escape(filter_name) + r"( |$|[^\w])"
+        pattern = r"( |^|[^\\w])" + re.escape(filter_name) + r"( |$|[^\\w])"
         if re.search(pattern, text, flags=re.IGNORECASE):
             data_type = global_filter["type"]
             data = global_filter["data"]

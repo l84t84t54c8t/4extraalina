@@ -34,7 +34,8 @@ async def ban_members(chat_id, user_id, bot_permission, total_members, msg):
                             pass  # Ignore if edit fails
 
             except FloodWait as e:
-                await asyncio.sleep(e.x)  # Wait for the flood time and continue
+                # Wait for the flood time and continue
+                await asyncio.sleep(e.x)
             except Exception:
                 failed_count += 1
 

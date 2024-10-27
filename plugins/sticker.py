@@ -8,14 +8,9 @@ from typing import List
 from AlinaMusic import app
 from PIL import Image
 from pyrogram import Client, errors, filters, raw
-from pyrogram.errors import (
-    PeerIdInvalid,
-    ShortnameOccupyFailed,
-    StickerEmojiInvalid,
-    StickerPngDimensions,
-    StickerPngNopng,
-    UserIsBlocked,
-)
+from pyrogram.errors import (PeerIdInvalid, ShortnameOccupyFailed,
+                             StickerEmojiInvalid, StickerPngDimensions,
+                             StickerPngNopng, UserIsBlocked)
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 

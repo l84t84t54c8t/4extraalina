@@ -6,24 +6,17 @@ from typing import Dict, Union
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from AlinaMusic.utils.functions import (
-    extract_user,
-    extract_user_and_reason,
-    time_converter,
-)
+from AlinaMusic.utils.functions import (extract_user, extract_user_and_reason,
+                                        time_converter)
 from AlinaMusic.utils.keyboard import ikb
 from config import BANNED_USERS
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus, ChatType
-from pyrogram.errors import ChatAdminRequired, InviteHashExpired, UserNotParticipant
-from pyrogram.types import (
-    CallbackQuery,
-    ChatPermissions,
-    ChatPrivileges,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.errors import (ChatAdminRequired, InviteHashExpired,
+                             UserNotParticipant)
+from pyrogram.types import (CallbackQuery, ChatPermissions, ChatPrivileges,
+                            InlineKeyboardButton, InlineKeyboardMarkup,
+                            Message)
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
@@ -337,7 +330,8 @@ async def promoteFunc(_, message: Message):
 # Handle callback to check and toggle admin powers
 @app.on_callback_query(filters.regex(r"^check_powers_(\d+)"))
 async def check_powers_callback(_, query: CallbackQuery):
-    user_id = int(query.data.split("_")[2])  # Ensure we extract the user_id correctly
+    # Ensure we extract the user_id correctly
+    user_id = int(query.data.split("_")[2])
     bot = (await app.get_chat_member(query.message.chat.id, app.id)).privileges
     user_privileges = (
         await app.get_chat_member(query.message.chat.id, user_id)

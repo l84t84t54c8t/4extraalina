@@ -50,7 +50,7 @@ async def couples(app, message):
         try:
             await app.resolve_peer(OWNER_ID[0])
             OWNER = OWNER_ID[0]
-        except:
+        except BaseException:
             OWNER = f"tg://openmessage?user_id={OWNER_ID[0]}"
 
         img1 = Image.open(f"{p1}")

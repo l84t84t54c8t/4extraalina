@@ -278,7 +278,7 @@ async def azkar():
         for i in chat:
             try:
                 await app.send_message(i, random.choice(azkar))
-            except:
+            except BaseException:
                 pass
 
 

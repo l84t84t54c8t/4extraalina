@@ -1,18 +1,10 @@
 from AlinaMusic import app
-from AlinaMusic.utils.database import (
-    get_nightchats,
-    nightdb,
-    nightmode_off,
-    nightmode_on,
-)
+from AlinaMusic.utils.database import (get_nightchats, nightdb, nightmode_off,
+                                       nightmode_on)
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import enums, filters
-from pyrogram.types import (
-    CallbackQuery,
-    ChatPermissions,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
+from pyrogram.types import (CallbackQuery, ChatPermissions,
+                            InlineKeyboardButton, InlineKeyboardMarkup)
 
 CLOSE_CHAT = ChatPermissions(
     can_send_messages=False,

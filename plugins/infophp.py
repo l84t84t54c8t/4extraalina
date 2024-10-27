@@ -7,10 +7,14 @@ from pyrogram.types import *
 from strings.filters import command
 
 # Function to get font and resize text
-get_font = lambda font_size, font_path: ImageFont.truetype(font_path, font_size)
-resize_text = lambda text_size, text: (
-    (text[:text_size] + "...").upper() if len(text) > text_size else text.upper()
-)
+
+
+def get_font(font_size, font_path):
+    return ImageFont.truetype(font_path, font_size)
+
+
+def resize_text(text_size, text):
+    return (text[:text_size] + "...").upper() if len(text) > text_size else text.upper()
 
 
 async def get_userinfo_img(

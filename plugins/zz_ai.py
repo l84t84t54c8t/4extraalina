@@ -78,7 +78,8 @@ async def react_with_random_emoji(client, message):
         emoji = random.choice(EMOJI_LIST)
         await app.send_reaction(message.chat.id, message.id, emoji)
     except Exception as e:
-        # If sending the reaction fails, just log the error silently and continue
+        # If sending the reaction fails, just log the error silently and
+        # continue
         print(f"Failed to send reaction: {str(e)}")
 
 
@@ -153,7 +154,8 @@ def truncate_text(text, max_words=50):
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
-    await react_with_random_emoji(client, message)  # Attempt to send a reaction
+    # Attempt to send a reaction
+    await react_with_random_emoji(client, message)
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
     user_input = message.text

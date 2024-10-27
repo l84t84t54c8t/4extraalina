@@ -71,7 +71,7 @@ async def check_cookies(video_url):
         with YoutubeDL(opts) as ytdl:
             ytdl.extract_info(video_url, download=False)
         return True
-    except:
+    except BaseException:
         return False
 
 
@@ -88,7 +88,7 @@ async def check_auth_token():
         with YoutubeDL(opts) as ytdl:
             ytdl.extract_info(video_url, download=False)
         return True
-    except:
+    except BaseException:
         return False
 
 

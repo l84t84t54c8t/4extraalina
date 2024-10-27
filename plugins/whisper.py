@@ -1,12 +1,8 @@
 from AlinaMusic import app as app
 from pyrogram import enums, filters, idle
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InlineQueryResultArticle,
-    InlineQueryResultPhoto,
-    InputTextMessageContent,
-)
+from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                            InlineQueryResultArticle, InlineQueryResultPhoto,
+                            InputTextMessageContent)
 
 ######################
 LOG = -1002038090920  #
@@ -116,12 +112,12 @@ async def get_whisper(app, query):
         await query.answer(msg.text, show_alert=True)
         try:
             await query.edit_message_reply_markup(reply_markup)
-        except:
+        except BaseException:
             pass
         try:
             alert0 = f"📭 {query.from_user.mention} کرایەوە @all چرپەنامە"
             await app.send_message(from_user, alert0)
-        except:
+        except BaseException:
             pass
         return
 
@@ -131,7 +127,7 @@ async def get_whisper(app, query):
             await query.answer(msg.text, show_alert=True)
             try:
                 await query.edit_message_reply_markup(reply_markup)
-            except:
+            except BaseException:
                 pass
             return
 
@@ -152,7 +148,7 @@ async def get_whisper(app, query):
             await query.answer("🔒 ئەم چرپەیە بۆتۆ نییە بەڕێزم", show_alert=True)
             try:
                 await app.send_message(from_user, alert)
-            except:
+            except BaseException:
                 pass
             return
 
@@ -178,7 +174,7 @@ idle()
 
 __MODULE__ = "Wʜɪsᴘᴇʀ"
 __HELP__ = """
-**Wʜɪsᴘᴇʀ** 
+**Wʜɪsᴘᴇʀ**
 
 - Tʜɪs ᴄᴏᴍᴍᴀɴᴅ ᴜsᴇᴅ ᴛᴏ sᴇɴᴅ ᴀ sᴇᴄʀᴇᴛ ᴍᴇssᴀɢᴇ ɪɴ ɢʀᴏᴜᴘs ᴛʜᴀᴛ ᴏɴʟʏ ᴀ ᴅᴇsɪɢɴᴀᴛᴇᴅ ᴘᴇʀsᴏɴ ᴄᴀɴ ᴏᴘᴇɴ
 

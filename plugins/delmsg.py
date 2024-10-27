@@ -3,12 +3,8 @@ from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import filters
 from pyrogram.errors import UserNotParticipant
-from pyrogram.types import (
-    ChatPrivileges,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (ChatPrivileges, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from utils.permissions import adminsOnly
 

@@ -10,12 +10,8 @@ from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
-from pyrogram.types import (
-    Chat,
-    ChatMemberUpdated,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
+from pyrogram.types import (Chat, ChatMemberUpdated, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
 
 from utils import del_welcome, get_welcome, set_welcome
 from utils.error import capture_err

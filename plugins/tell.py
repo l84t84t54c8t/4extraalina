@@ -53,7 +53,7 @@ def calculate_math(client, message):
     try:
         result = eval(expression)
         response = f"ᴛʜᴇ ʀᴇsᴜʟᴛ ɪs : {result}"
-    except:
+    except BaseException:
         response = "ɪɴᴠᴀʟɪᴅ ᴇxᴘʀᴇssɪᴏɴ"
     message.reply(response)
 

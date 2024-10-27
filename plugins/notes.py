@@ -3,18 +3,10 @@ from inspect import getfullargspec
 from re import findall
 
 from AlinaMusic import app
-from AlinaMusic.utils.database import (
-    delete_note,
-    deleteall_notes,
-    get_note,
-    get_note_names,
-    save_note,
-)
-from AlinaMusic.utils.functions import (
-    check_format,
-    extract_text_and_keyb,
-    get_data_and_name,
-)
+from AlinaMusic.utils.database import (delete_note, deleteall_notes, get_note,
+                                       get_note_names, save_note)
+from AlinaMusic.utils.functions import (check_format, extract_text_and_keyb,
+                                        get_data_and_name)
 from AlinaMusic.utils.keyboard import ikb
 from config import BANNED_USERS
 from pyrogram import filters

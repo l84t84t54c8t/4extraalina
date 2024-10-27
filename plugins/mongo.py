@@ -54,7 +54,7 @@ async def mongo_check_command(client, message: Message):
         )
 
 
-# ==============================[⚠️ DELETE DATABASE ⚠️]=======================================
+# ==============================[⚠️ DELETE DATABASE ⚠️]===================
 
 
 def delete_collection(client, db_name, col_name):
@@ -180,7 +180,7 @@ async def delete_db_command(client, message: Message):
         await message.reply(f"**Failed to delete databases Try to delete by count**")
 
 
-# ==============================[⚠️ CHECK DATABASE ⚠️]=======================================
+# ==============================[⚠️ CHECK DATABASE ⚠️]====================
 
 
 # Environment variable for the MongoDB URL
@@ -228,7 +228,7 @@ async def check_db_command(client, message: Message):
         await message.reply(f"**Failed to check databases:** {e}")
 
 
-# ============================================[ ⚠️ TRANSFER DATABASE ⚠️ ]===============================
+# ============================================[ ⚠️ TRANSFER DATABASE ⚠️ ]=
 
 mongo_url_pattern = re.compile(r"mongodb(?:\+srv)?:\/\/[^\s]+")
 

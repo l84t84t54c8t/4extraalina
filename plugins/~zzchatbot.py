@@ -6,12 +6,8 @@ from deep_translator import GoogleTranslator
 from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatAction
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 translator = GoogleTranslator()
 chatdb = MongoClient(MONGO_URL)
@@ -457,7 +453,7 @@ __HELP__ = f"""**
 
 ➻ /chatbot - سمسمی - ᴏᴘᴇɴs ᴏᴘᴛɪᴏns ᴛᴏ ᴇɴᴀʙʟᴇ ᴏʀ ᴅɪsᴀʙʟᴇ ᴛʜᴇ ᴄʜᴀᴛʙᴏᴛ.
 ──────────────
-➻ /chatbotlang, /chatbotlanguage, /setchatbotlang - ᴏᴘᴇɴs ᴀ ᴍᴇɴᴜ ᴛᴏ sᴇʟᴇᴄᴛ ᴛʜᴇ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ.  
+➻ /chatbotlang, /chatbotlanguage, /setchatbotlang - ᴏᴘᴇɴs ᴀ ᴍᴇɴᴜ ᴛᴏ sᴇʟᴇᴄᴛ ᴛʜᴇ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ.
 ──────────────
 ➻ /resetlang, /nolang - ʀᴇsᴇᴛs ᴛʜᴇ ʙᴏᴛ's ʟᴀɴɢᴜᴀɢᴇ ᴛᴏ ᴍɪxᴇᴅ ʟᴀɴɢᴜᴀɢᴇ.
 ──────────────

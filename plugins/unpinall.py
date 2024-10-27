@@ -25,7 +25,7 @@ async def unpin_callbacc(client, CallbackQuery):
     msg_id = CallbackQuery.data.split("=")[1]
     try:
         msg_id = int(msg_id)
-    except:
+    except BaseException:
         if msg_id == "yes":
             await client.unpin_all_chat_messages(chat_id)
             textt = "**هەموو نامە هەڵواسراوەکان، پینکراوەکانم لادا🖤•**"

@@ -30,7 +30,8 @@ async def is_deletion_enabled(chat_id: int) -> bool:
             await set_deletion_feature(chat_id, True)  # Enable by default
             return True
         return False  # Otherwise, return disabled
-    return data.get("forwarded_message_deletion", True)  # Default to True if not set
+    # Default to True if not set
+    return data.get("forwarded_message_deletion", True)
 
 
 # Function to delete forwarded messages only from members
@@ -72,14 +73,16 @@ async def toggle_forwarded_deletion(client, message):
 
     if action == "off":
         if not await is_deletion_enabled(message.chat.id):
-            await set_deletion_feature(message.chat.id, True)  # Enable deletion
+            # Enable deletion
+            await set_deletion_feature(message.chat.id, True)
             await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام داخرا ❌**")
         else:
             await message.reply("**• ناردنی ڕێکڵام پێشتر داخراوە ❌**")
 
     elif action == "on":
         if await is_deletion_enabled(message.chat.id):
-            await set_deletion_feature(message.chat.id, False)  # Disable deletion
+            # Disable deletion
+            await set_deletion_feature(message.chat.id, False)
             await message.reply("**• بە سەرکەوتوویی ناردنی ڕێکڵام کرایەوە ✅**")
         else:
             await message.reply("**• ناردنی ڕێکڵام پێشتر کراوەتەوە ✅**")

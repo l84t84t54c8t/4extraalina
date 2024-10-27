@@ -5,13 +5,9 @@ from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import UserAdminInvalid, UserNotParticipant
-from pyrogram.types import (
-    CallbackQuery,
-    ChatPermissions,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, ChatPermissions,
+                            InlineKeyboardButton, InlineKeyboardMarkup,
+                            Message)
 
 from utils.permissions import member_permissions
 
