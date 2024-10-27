@@ -315,8 +315,6 @@ async def set_custom_photo(client: Client, message: Message):
 
 async def check_forcesub(client: Client, message: Message):
     if message.from_user is None:
-        # Handle the case where from_user is None
-        print("Message does not have a user associated with it")
         return False  # Exit early if no user is associated with the message
 
     user_id = message.from_user.id
