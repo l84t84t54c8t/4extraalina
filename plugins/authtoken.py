@@ -4,10 +4,11 @@ import os
 import random
 from typing import Union
 
-from AlinaMusic import app
-from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
 from yt_dlp import YoutubeDL
+
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 
 
 def get_random_cookie():
@@ -18,7 +19,6 @@ def get_random_cookie():
     return random.choice(txt_files)
 
 
-# Simplified YouTube downloader class with auth token
 class YouTubeAuthDownloader:
     def __init__(self):
         self.base_url = "https://www.youtube.com/watch?v="
@@ -107,33 +107,30 @@ async def check_auth_token():
     & SUDOERS
 )
 async def list_formats(client, message):
-    ok = await message.reply_text("**Checking Cookies & auth token...**")
+    status_message = "**Status:**\n\n"
+    status_message += "Cookies: Checking...\nAuth Token: Checking..."
+    status_msg = await message.reply_text(status_message)
 
-    video_url = "https://www.youtube.com/watch?v=LLF3GMfNEYU"
+    cookie_status = await check_cookies("https://www.youtube.com/watch?v=LLF3GMfNEYU")
+    status_message = "**Status:**\n\n"
+    status_message += f"Cookies: {'✅ Alive' if cookie_status else '❌ Dead'}\nAuth Token: Checking..."
+    await status_msg.edit_text(status_message)
 
-    auth_token_status = await check_auth_token()
-    cookie_status = await check_cookies(video_url)
+    use_token = await check_auth_token()
+    status_message = "**Status:**\n\n"
+    status_message += f"Cookies: {'✅ Alive' if cookie_status else '❌ Dead'}\n"
+    status_message += f"Auth Token: {'✅ Alive' if use_token else '❌ Dead'}"
+    await status_msg.edit_text(status_message)
 
-    status_message = "**Token and Cookie Status:**\n\n"
-    if auth_token_status:
-        status_message += "✅ Auth token is active.\n"
-    else:
-        status_message += "❌ Auth token is inactive.\n"
-
-    if cookie_status:
-        status_message += "✅ Cookies are active.\n\n"
-    else:
-        status_message += "❌ Cookies are inactive.\n\n"
-
-    if not auth_token_status:
-        status_message += "**Create a new Auth token...**"
-        await ok.delete()
-        await message.reply_text(status_message)
+    if not use_token:
+        status_message += "\n\n**Generating a new Auth token...**"
+        await status_msg.edit_text(status_message)
         try:
-            os.system(f"yt-dlp --username oauth2 --password '' -F {video_url}")
-            await message.reply_text("✅ Successfully generated a new token.")
+            os.system(
+                f"yt-dlp --username oauth2 --password '' -F https://www.youtube.com/watch?v=LLF3GMfNEYU"
+            )
+            await message.reply_text(f"\n**✅ Successfully generated a new token.**")
         except Exception as ex:
-            await message.reply_text(f"**Failed to generate a new token:** {str(ex)}")
-    else:
-        await ok.delete()
-        await message.reply_text(status_message)
+            await message.reply_text(
+                f"\n**❌ Failed to generate a new token: {str(ex)}**"
+            )
