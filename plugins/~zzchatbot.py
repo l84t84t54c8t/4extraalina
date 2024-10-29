@@ -191,30 +191,24 @@ def generate_language_buttons(languages):
     buttons = []
     current_row = []
     for lang, code in languages.items():
-        current_row.append(
-            InlineKeyboardButton(lang.capitalize(), callback_data=f"setlang_{code}")
-        )
-        if len(current_row) == 4:
+        current_row.append(InlineKeyboardButton(lang.capitalize(), callback_data=f'setlang_{code}'))
+        if len(current_row) == 4:  
             buttons.append(current_row)
-            current_row = []
-    if current_row:
+            current_row = []  
+    if current_row:  
         buttons.append(current_row)
     return InlineKeyboardMarkup(buttons)
-
 
 def get_chat_language(chat_id):
     chat_lang = lang_db.find_one({"chat_id": chat_id})
     return chat_lang["language"] if chat_lang and "language" in chat_lang else None
 
 
-@nexichat.on_message(
-    filters.command(["chatbotlang", "chatbotlanguage", "setchatbotlang"])
-)
+@nexichat.on_message(filters.command(["chatbotlang", "chatbotlanguage", "setchatbotlang"]))
 async def set_language(client: Client, message: Message):
     await message.reply_text(
         "ᴘʟᴇᴀsᴇ sᴇʟᴇᴄᴛ ʏᴏᴜʀ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ:",
-        reply_markup=generate_language_buttons(languages),
-    )
+        reply_markup=generate_language_buttons(languages))
 
 
 @nexichat.on_callback_query(filters.regex(r"setlang_"))
@@ -222,115 +216,79 @@ async def language_selection_callback(client: Client, callback_query):
     lang_code = callback_query.data.split("_")[1]
     chat_id = callback_query.message.chat.id
     if lang_code in languages.values():  # Ensure lang_code is valid
-        lang_db.update_one(
-            {"chat_id": chat_id}, {"$set": {"language": lang_code}}, upsert=True
-        )
-        await callback_query.answer(
-            f"ʏᴏᴜʀ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇᴛ ᴛᴏ {lang_code.title()}.", show_alert=True
-        )
-        reply_markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(f"sᴇʟᴇᴄᴛ ʟᴀɴɢᴜᴀɢᴇ", callback_data="choose_lang")]]
-        )
-        await callback_query.message.edit_text(
-            f"ʏᴏᴜʀ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇᴛ ᴛᴏ {lang_code.title()}.",
-            reply_markup=reply_markup,
-        )
+        lang_db.update_one({"chat_id": chat_id}, {"$set": {"language": lang_code}}, upsert=True)
+        await callback_query.answer(f"ʏᴏᴜʀ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇᴛ ᴛᴏ {lang_code.title()}.", show_alert=True)
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f"sᴇʟᴇᴄᴛ ʟᴀɴɢᴜᴀɢᴇ", callback_data="choose_lang")]])
+        await callback_query.message.edit_text(f"ʏᴏᴜʀ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴇᴛ ᴛᴏ {lang_code.title()}.", reply_markup=reply_markup)
     else:
         await callback_query.answer("Invalid language selection.", show_alert=True)
-
 
 @nexichat.on_message(filters.command(["resetlang", "nolang"]))
 async def set_language(client: Client, message: Message):
     chat_id = message.chat.id
-    lang_db.update_one(
-        {"chat_id": chat_id}, {"$set": {"language": "nolang"}}, upsert=True
-    )
-    await message.reply_text(
-        f"**Bot language has been reset in this chat, now mix language is using.**"
-    )
+    lang_db.update_one({"chat_id": chat_id}, {"$set": {"language": "nolang"}}, upsert=True)
+    await message.reply_text(f"**Bot language has been reset in this chat, now mix language is using.**")
 
 
 @nexichat.on_callback_query(filters.regex("nolang"))
 async def language_selection_callback(client: Client, callback_query):
     chat_id = callback_query.message.chat.id
-    lang_db.update_one(
-        {"chat_id": chat_id}, {"$set": {"language": "nolang"}}, upsert=True
-    )
-    await callback_query.answer(
-        "Bot language has been reset in this chat, now mix language is using.",
-        show_alert=True,
-    )
-    await callback_query.message.edit_text(
-        f"**Bot language has been reset in this chat, now mix language is using.**"
-    )
-
+    lang_db.update_one({"chat_id": chat_id}, {"$set": {"language": "nolang"}}, upsert=True)
+    await callback_query.answer("Bot language has been reset in this chat, now mix language is using.", show_alert=True)
+    await callback_query.message.edit_text(f"**Bot language has been reset in this chat, now mix language is using.**")
 
 @nexichat.on_callback_query(filters.regex("choose_lang"))
 async def language_selection_callback(client: Client, callback_query):
     chat_id = callback_query.message.chat.id
-    await callback_query.answer(
-        "Choose chatbot language for this chat.", show_alert=True
-    )
-    await callback_query.message.edit_text(
-        f"**Bot language has been reset in this chat, now mix language is using.**",
-        reply_markup=generate_language_buttons(languages),
-    )
-
-
+    await callback_query.answer("Choose chatbot language for this chat.", show_alert=True)
+    await callback_query.message.edit_text(f"**Bot language has been reset in this chat, now mix language is using.**", reply_markup=generate_language_buttons(languages))
+    
 @nexichat.on_message(filters.command(["/chatbot", "سمسمی"], ""))
 async def chaton(client: Client, message: Message):
     await message.reply_text(
-        f"**گرووپ : {message.chat.title}\nدووگمەکانی خوارەوە داگرە بۆ کاراکردنی سمسمی**",
+        f"**• گرووپ : {message.chat.title}**\n- فەرمانی سمسمی وەڵامدانەوە\n- دووگمەکانی خوارەوە هەڵبژێرە",
         reply_markup=InlineKeyboardMarkup(CHATBOT_ON),
     )
-
-
-@nexichat.on_message(
-    (filters.text | filters.sticker | filters.photo | filters.video | filters.audio)
-)
+  
+@nexichat.on_message((filters.text | filters.sticker | filters.photo | filters.video | filters.audio))
 async def chatbot_response(client: Client, message: Message):
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
         return
 
     if message.text:
-        if any(
-            message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]
-        ):
+        if any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]):
             return
 
-    if message.reply_to_message and message.reply_to_message.from_user and nexichat.id:
-        if message.reply_to_message.from_user.id == nexichat.id:
-            await client.send_chat_action(message.chat.id, ChatAction.TYPING)
+    if (message.reply_to_message and message.reply_to_message.from_user.id == nexichat.id):
+        await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-            reply_data = await get_reply(message.text if message.text else "")
+        reply_data = await get_reply(message.text if message.text else "")
+        
+        if reply_data:
+            response_text = reply_data["text"]
+            chat_lang = get_chat_language(message.chat.id)
 
-            if reply_data:
-                response_text = reply_data["text"]
-                chat_lang = get_chat_language(message.chat.id)
-
-                if not chat_lang or chat_lang == "en":
-                    translated_text = response_text
-                else:
-                    translated_text = GoogleTranslator(
-                        source="auto", target=chat_lang
-                    ).translate(response_text)
-                if reply_data["check"] == "sticker":
-                    await message.reply_sticker(reply_data["text"])
-                elif reply_data["check"] == "photo":
-                    await message.reply_photo(reply_data["text"])
-                elif reply_data["check"] == "video":
-                    await message.reply_video(reply_data["text"])
-                elif reply_data["check"] == "audio":
-                    await message.reply_audio(reply_data["text"])
-                else:
-                    await message.reply_text(translated_text)
+            
+            if not chat_lang or chat_lang == "en":
+                translated_text = response_text  
             else:
-                await message.reply_text("**what??**")
+                translated_text = GoogleTranslator(source='auto', target=chat_lang).translate(response_text)
+            if reply_data["check"] == "sticker":
+                await message.reply_sticker(reply_data["text"])
+            elif reply_data["check"] == "photo":
+                await message.reply_photo(reply_data["text"])
+            elif reply_data["check"] == "video":
+                await message.reply_video(reply_data["text"])
+            elif reply_data["check"] == "audio":
+                await message.reply_audio(reply_data["text"])
+            else:
+                await message.reply_text(translated_text)
+        else:
+            await message.reply_text("**what??**")
 
     if message.reply_to_message:
         await save_reply(message.reply_to_message, message)
-
 
 async def save_reply(original_message: Message, reply_message: Message):
     if reply_message.sticker:
@@ -410,7 +368,6 @@ async def save_reply(original_message: Message, reply_message: Message):
                 }
             )
 
-
 async def get_reply(word: str):
     is_chat = list(chatai.find({"word": word}))
     if not is_chat:
@@ -420,32 +377,27 @@ async def get_reply(word: str):
         return random_reply
     return None
 
-
 @nexichat.on_callback_query()
 async def cb_handler(_, query: CallbackQuery):
-    chat_id = query.message.chat.id
-    chat_status = status_db.find_one({"chat_id": chat_id})
-
-    # Default to enabled if status is not found
-    if chat_status is None:
-        status_db.insert_one({"chat_id": chat_id, "status": "enabled"})
-        chat_status = {"status": "enabled"}
-
+    
     if query.data == "enable_chatbot":
-        # Always treat the chatbot as enabled unless explicitly disabled
-        if chat_status.get("status") != "disabled":
-            await query.answer("سمسمی چالاککرا ✅", show_alert=True)
-            await query.edit_message_text(
-                f"**گرووپ : {query.message.chat.title}\n**سمسمی چالاککرا**"
-            )
+        chat_id = query.message.chat.id
+        action = query.data
+        status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "enabled"}})
+        await query.answer("سمسمی چالاککرا ✅", show_alert=True)
+        await query.edit_message_text(
+            f"**گرووپ : {query.message.chat.title}\nسمسمی چالاککرا**"
+        )
 
     elif query.data == "disable_chatbot":
+        chat_id = query.message.chat.id
+        action = query.data
         status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "disabled"}})
         await query.answer("Chatbot disabled!", show_alert=True)
         await query.edit_message_text(
-            f"**گرووپ : {query.message.chat.title}\n**سمسمی ناچالاککرا**"
+            f"**گرووپ : {query.message.chat.title}\nسمسمی ناچالاککرا**"
         )
-
+    
 
 __MODULE__ = "ᴄʜᴀᴛʙᴏᴛ"
 __HELP__ = f"""**
