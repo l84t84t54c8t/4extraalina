@@ -425,10 +425,15 @@ async def get_reply(word: str):
 
 @nexichat.on_callback_query()
 async def cb_handler(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    chat_status = status_db.find_one({"chat_id": chat_id})
+
+    # If no status is set for this chat, enable the chatbot by default
+    if chat_status is None:
+        status_db.insert_one({"chat_id": chat_id, "status": "enabled"})
+        chat_status = {"status": "enabled"}
 
     if query.data == "enable_chatbot":
-        chat_id = query.message.chat.id
-        action = query.data
         status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "enabled"}})
         await query.answer("سمسمی چالاککرا ✅", show_alert=True)
         await query.edit_message_text(
@@ -436,13 +441,12 @@ async def cb_handler(_, query: CallbackQuery):
         )
 
     elif query.data == "disable_chatbot":
-        chat_id = query.message.chat.id
-        action = query.data
         status_db.update_one({"chat_id": chat_id}, {"$set": {"status": "disabled"}})
         await query.answer("Chatbot disabled!", show_alert=True)
         await query.edit_message_text(
             f"**گرووپ : {query.message.chat.title}\nسمسمی ناچالاککرا**"
         )
+
 
 
 __MODULE__ = "ᴄʜᴀᴛʙᴏᴛ"
