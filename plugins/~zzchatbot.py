@@ -448,7 +448,6 @@ async def cb_handler(_, query: CallbackQuery):
         )
 
 
-
 __MODULE__ = "ᴄʜᴀᴛʙᴏᴛ"
 __HELP__ = f"""**
 ๏ ʜᴇʀᴇ ᴀʀᴇ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅs ғᴏʀ {nexichat.mention}:
