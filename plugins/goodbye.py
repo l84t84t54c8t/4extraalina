@@ -171,7 +171,9 @@ async def set_goodbye_func(_, message):
         )
 
 
-@app.on_message(filters.command(["delgoodbye", "deletegoodbye"]) & ~filters.private, group=33)
+@app.on_message(
+    filters.command(["delgoodbye", "deletegoodbye"]) & ~filters.private, group=33
+)
 @adminsOnly("can_change_info")
 async def del_goodbye_func(_, message):
     chat_id = message.chat.id
