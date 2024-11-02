@@ -41,7 +41,7 @@ async def handle_left_member(member, chat):
         return
 
 
-@app.on_message(filters.left_chat_member & filters.group, group=6)
+@app.on_message(filters.left_chat_member & filters.group, group=31)
 @capture_err
 async def goodbye(_, m: Message):
     if m.from_user:
@@ -108,7 +108,7 @@ async def send_left_message(chat: Chat, user_id: int, delete: bool = False):
         )
 
 
-@app.on_message(filters.command("setgoodbye") & ~filters.private)
+@app.on_message(filters.command("setgoodbye") & ~filters.private, group=32)
 @adminsOnly("can_change_info")
 async def set_goodbye_func(_, message):
     usage = "Yᴏᴜ ɴᴇᴇᴅ ᴛᴏ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴛᴇxᴛ, ɢɪғ ᴏʀ ᴘʜᴏᴛᴏ ᴛᴏ sᴇᴛ ɪᴛ ᴀs ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ.\n\nᴏᴛᴇs: ᴄᴀᴘᴛɪᴏɴ ʀᴇǫᴜɪʀᴇᴅ ғᴏʀ ɢɪғ ᴀɴᴅ ᴘʜᴏᴛᴏ."
@@ -171,7 +171,7 @@ async def set_goodbye_func(_, message):
         )
 
 
-@app.on_message(filters.command(["delgoodbye", "deletegoodbye"]) & ~filters.private)
+@app.on_message(filters.command(["delgoodbye", "deletegoodbye"]) & ~filters.private, group=33)
 @adminsOnly("can_change_info")
 async def del_goodbye_func(_, message):
     chat_id = message.chat.id
@@ -179,7 +179,7 @@ async def del_goodbye_func(_, message):
     await message.reply_text("Gᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ʜᴀs ʙᴇᴇɴ Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ")
 
 
-@app.on_message(filters.command("goodbye") & ~filters.private)
+@app.on_message(filters.command("goodbye") & ~filters.private, group=34)
 @adminsOnly("can_change_info")
 async def goodbye(client, message: Message):
     command = message.text.split()
