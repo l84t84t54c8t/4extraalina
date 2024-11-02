@@ -17,7 +17,7 @@ from utils.permissions import adminsOnly, member_permissions
 from .notes import extract_urls
 
 
-@app.on_message(filters.command("filter") & filters.group & ~BANNED_USERS)
+@app.on_message(filters.command("filter") & filters.group & ~BANNED_USERS, group=26)
 @adminsOnly("can_change_info")
 async def save_filters(_, message):
     try:
@@ -101,7 +101,7 @@ async def save_filters(_, message):
         )
 
 
-@app.on_message(filters.command("filters") & filters.group & ~BANNED_USERS)
+@app.on_message(filters.command("filters") & filters.group & ~BANNED_USERS, group=28)
 @capture_err
 async def get_filters(_, message):
     _filters = await get_filters_names(message.chat.id)
@@ -121,7 +121,7 @@ async def get_filters(_, message):
     & ~filters.via_bot
     & ~filters.forwarded
     & ~BANNED_USERS,
-    group=1,
+    group=27,
 )
 @capture_err
 async def filters_response(_, message):
@@ -216,7 +216,7 @@ async def filters_response(_, message):
             return  # Avoid filter spam
 
 
-@app.on_message(filters.command("stopall") & filters.group & ~BANNED_USERS)
+@app.on_message(filters.command("stopall") & filters.group & ~BANNED_USERS, group=28)
 @adminsOnly("can_change_info")
 async def stop_all(_, message):
     _filters = await get_filters_names(message.chat.id)
