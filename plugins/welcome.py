@@ -58,6 +58,7 @@ async def welcome(_, user: ChatMemberUpdated):
     chat = user.chat
     return await handle_new_member(member, chat)
 
+
 async def send_welcome_message(chat: Chat, user_id: int, delete: bool = False):
     welcome, raw_text, file_id = await get_welcome(chat.id)
     tz = pytz.timezone("Asia/Baghdad")
@@ -192,6 +193,7 @@ async def set_welcome_func(_, message):
             )
     except UnboundLocalError:
         return await message.reply_text("**تەنیا پشتگیری وێنە و گیف و ڤیدیۆ دەکات**")
+
 
 @app.on_message(
     filters.command(
