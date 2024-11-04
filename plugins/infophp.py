@@ -4,7 +4,7 @@ from AlinaMusic import app as Hiroko
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import enums
 from pyrogram.types import *
-from strings.filters import command
+from string.filters import command
 
 # Function to get font and resize text
 
