@@ -4,7 +4,7 @@ from AlinaMusic.utils.alina_ban import admin_filter
 from AlinaMusic.utils.database import add_served_chat, get_served_chats
 from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from strings.filters import command
+from strings.filter import command
 
 # Initialize
 
