@@ -1,4 +1,4 @@
-from string.filter import command
+from strings.filter import command
 from typing import Optional, Union
 
 from AlinaMusic import app as Hiroko
