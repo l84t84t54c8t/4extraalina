@@ -5,7 +5,7 @@ from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import add_served_chat, get_assistant
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from strings.filters import command
+from strings.filter import command
 
 # --------------------------------------------------------------------------------- #
 
