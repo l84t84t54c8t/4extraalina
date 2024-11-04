@@ -1,6 +1,6 @@
 from AlinaMusic import app
 from gpytranslate import Translator
-from strings.filters import command
+from strings.filter import command
 
 # .......
 
