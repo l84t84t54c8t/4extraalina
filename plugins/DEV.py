@@ -6,7 +6,7 @@ from config import USER_OWNER
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from strings.filters import command
+from strings.filter import command
 
 
 @app.on_message(command(["/source", "سۆرس"]))
