@@ -5,7 +5,7 @@ from config import OWNER_ID as owner_id
 from pyrogram import filters
 from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
                             InlineKeyboardMarkup, Message)
-from strings.filters import command
+from strings.filter import command
 
 
 def content(msg: Message) -> [None, str]:
