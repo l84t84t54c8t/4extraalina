@@ -4,7 +4,7 @@ import re
 from AlinaMusic import app
 from pyrogram import Client
 from pyrogram.types import Message
-from strings.filters import command
+from strings.filter import command
 
 
 @app.on_message(command("ز"))
