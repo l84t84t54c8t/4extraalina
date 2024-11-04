@@ -4,7 +4,7 @@ from asyncio import sleep
 from AlinaMusic import app
 from pyrogram import enums, filters
 from pyrogram.types import Message
-from strings.filters import command
+from strings.filter import command
 
 
 @app.on_message(
