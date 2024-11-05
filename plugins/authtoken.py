@@ -1,10 +1,9 @@
 import os
 
-from pyrogram import filters
-from yt_dlp import YoutubeDL
-
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
+from pyrogram import filters
+from yt_dlp import YoutubeDL
 
 
 async def check_cookies(video_url):
@@ -18,7 +17,7 @@ async def check_cookies(video_url):
         with YoutubeDL(opts) as ytdl:
             ytdl.extract_info(video_url, download=False)
         return True
-    except:
+    except BaseException:
         return False
 
 
@@ -35,7 +34,7 @@ async def check_auth_token():
         with YoutubeDL(opts) as ytdl:
             ytdl.extract_info(video_url, download=False)
         return True
-    except:
+    except BaseException:
         return False
 
 
