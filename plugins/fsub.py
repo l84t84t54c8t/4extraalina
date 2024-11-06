@@ -307,6 +307,7 @@ async def set_custom_photo(client: Client, message: Message):
 
     await message.reply_text("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
 
+
 @app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS)
 async def get_fsub_stats(client: Client, message: Message):
     if await joinch(message):
@@ -385,6 +386,7 @@ async def get_fsub_stats(client: Client, message: Message):
             ]
         ),
     )
+
 
 async def check_forcesub(client: Client, message: Message):
     if message.from_user is None:
@@ -491,11 +493,11 @@ async def check_forcesub(client: Client, message: Message):
             "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
 
+
 @app.on_message(filters.group, group=30)
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
-
 
 
 __MODULE__ = "ғsᴜʙ"
