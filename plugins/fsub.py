@@ -1,7 +1,7 @@
 import asyncio
 import logging
-import pyrogram
 
+import pyrogram
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.plugins.play.play import joinch
@@ -508,7 +508,6 @@ __HELP__ = """**
 /fsub <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ ᴏʀ ɪᴅ> - sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.
 /fsub off - ᴅɪsᴀʙʟᴇ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**
 """
-
 
 
 """
