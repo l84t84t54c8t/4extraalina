@@ -6,6 +6,30 @@ from pyrogram import filters
 from yt_dlp import YoutubeDL
 
 
+import os
+import random
+
+# Define the function to get a cookie file
+def get_random_cookie():
+    # Replace with the actual path of your cookie file(s)
+    cookie_files = "cookies/cookies.txt"
+    return random.choice(cookie_files)  # Choose a random file
+
+async def check_cookies(video_url):
+    cookie_file = get_random_cookie()  # Now this function is defined
+    opts = {
+        "format": "bestaudio",
+        "quiet": True,
+        "cookiefile": cookie_file,
+    }
+    try:
+        with YoutubeDL(opts) as ytdl:
+            ytdl.extract_info(video_url, download=False)
+        return True
+    except BaseException:
+        return False
+
+
 async def check_cookies(video_url):
     cookie_file = get_random_cookie()
     opts = {
