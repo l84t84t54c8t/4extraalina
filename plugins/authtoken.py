@@ -46,7 +46,7 @@ async def check_cookies(video_url):
 
 
 async def check_auth_token():
-    video_url = "https://www.youtube.com/watch?v=LLF3GMfNEYU"
+    video_url = "https://youtu.be/9LIt0Wak5nU?si=SAKO0a-u6wH08A6d"
     auth_token = os.getenv("TOKEN_DATA")
     opts = {
         "format": "bestaudio",
@@ -67,7 +67,7 @@ async def cookies_status(client, message):
     status_message = "**Cookie Status:**\nChecking..."
     status_msg = await message.reply_text(status_message)
 
-    cookie_status = await check_cookies("https://www.youtube.com/watch?v=LLF3GMfNEYU")
+    cookie_status = await check_cookies("https://youtu.be/9LIt0Wak5nU?si=SAKO0a-u6wH08A6d")
     status_message = "**Cookie Status:**\n"
     status_message += "✅ Alive" if cookie_status else "❌ Dead"
     await status_msg.edit_text(status_message)
@@ -88,7 +88,7 @@ async def auth_token_status(client, message):
         await status_msg.edit_text(status_message)
         try:
             os.system(
-                f"yt-dlp --username oauth2 --password '' -F https://www.youtube.com/watch?v=LLF3GMfNEYU"
+                f"yt-dlp --username oauth2 --password '' -F https://youtu.be/9LIt0Wak5nU?si=SAKO0a-u6wH08A6d"
             )
             await message.reply_text("**✅ Successfully generated a new token.**")
         except Exception as ex:
