@@ -8,6 +8,7 @@ from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
+from pyrogram.errors import ChatAdminRequired, UserNotParticipant
 from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
                             InlineKeyboardMarkup, Message)
 
@@ -420,7 +421,7 @@ async def check_forcesub(client: Client, message: Message):
 
     try:
         # Check if the user is a member of the channel
-        user_member = await app.get_chat_member(channel_id, user_id)
+        user_member = await client.get_chat_member(channel_id, user_id)
         if user_member:
             return  # User is a member, no further action needed
     except UserNotParticipant:
@@ -432,7 +433,7 @@ async def check_forcesub(client: Client, message: Message):
         if channel_username:
             channel_url = f"https://t.me/{channel_username}"
         else:
-            invite_link = await app.export_chat_invite_link(channel_id)
+            invite_link = await client.export_chat_invite_link(channel_id)
             channel_url = invite_link
 
         # Send message with photo if custom_photo_id is available, otherwise
