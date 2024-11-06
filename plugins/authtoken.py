@@ -67,7 +67,9 @@ async def cookies_status(client, message):
     status_message = "**Cookie Status:**\nChecking..."
     status_msg = await message.reply_text(status_message)
 
-    cookie_status = await check_cookies("https://youtu.be/9LIt0Wak5nU?si=SAKO0a-u6wH08A6d")
+    cookie_status = await check_cookies(
+        "https://youtu.be/9LIt0Wak5nU?si=SAKO0a-u6wH08A6d"
+    )
     status_message = "**Cookie Status:**\n"
     status_message += "✅ Alive" if cookie_status else "❌ Dead"
     await status_msg.edit_text(status_message)
