@@ -307,6 +307,84 @@ async def set_custom_photo(client: Client, message: Message):
 
     await message.reply_text("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
 
+@app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS)
+async def get_fsub_stats(client: Client, message: Message):
+    if await joinch(message):
+        return
+    try:
+        # Count the number of groups where Force Subscription is enabled
+        enabled_fsubs = forcesub_collection.count_documents({})
+
+        await message.reply_text(
+            f"**• چالاکی جۆینی ناچاری بۆتی ئەلینا**\n\n- بۆ  {enabled_fsubs} گرووپ چالاککراوە",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        )
+                    ]
+                ]
+            ),
+        )
+    except Exception as e:
+        logging.error(f"Error fetching Force Subscription stats: {e}")
+        await message.reply_text("An error occurred while fetching stats.")
+
+
+@app.on_message(
+    filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS
+)
+async def get_fsub_stats(client: Client, message: Message):
+    if await joinch(message):
+        return
+    # Fetch all groups where FSub is enabled from the database
+    enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
+
+    if forcesub_collection.count_documents({"channel_id": {"$exists": True}}) == 0:
+        return await message.reply_text("**• جۆینی ناچاری چالاک نەکراوە**")
+
+    # Prepare the response message
+    text = "**• زانیاری گرووپ و کەناڵی جۆینی ناچاری :**\n\n"
+
+    for group in enabled_groups:
+        chat_id = group["chat_id"]
+        group_info = await client.get_chat(
+            chat_id
+        )  # Fetch group information from Telegram
+
+        group_title = group_info.title
+        group_username = group_info.username if group_info.username else "N/A"
+
+        channel_id = group["channel_id"]
+        channel_info = await client.get_chat(
+            channel_id
+        )  # Fetch channel information from Telegram
+        channel_title = channel_info.title
+        channel_username = channel_info.username if channel_info.username else "N/A"
+
+        # Append group and channel details to the message
+        text += (
+            f"**ناوی گرووپ : {group_title}**\n"
+            f"**ئایدی گرووپ :** `{chat_id}`\n"
+            f"**یوزەری گرووپ : @{group_username if group_username != 'N/A' else 'None'}**\n\n"
+            f"**ناوی کەناڵ : {channel_title}**\n"
+            f"**ئایدی کەناڵ :** `{channel_id}`\n"
+            f"**یوزەری کەناڵ : @{channel_username if channel_username != 'N/A' else 'None'}**\n\n"
+        )
+
+    await message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                    )
+                ]
+            ]
+        ),
+    )
 
 async def check_forcesub(client: Client, message: Message):
     if message.from_user is None:
@@ -413,91 +491,11 @@ async def check_forcesub(client: Client, message: Message):
             "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
 
-
-@app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS)
-async def get_fsub_stats(client: Client, message: Message):
-    if await joinch(message):
-        return
-    try:
-        # Count the number of groups where Force Subscription is enabled
-        enabled_fsubs = forcesub_collection.count_documents({})
-
-        await message.reply_text(
-            f"**• چالاکی جۆینی ناچاری بۆتی ئەلینا**\n\n- بۆ  {enabled_fsubs} گرووپ چالاککراوە",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                        )
-                    ]
-                ]
-            ),
-        )
-    except Exception as e:
-        logging.error(f"Error fetching Force Subscription stats: {e}")
-        await message.reply_text("An error occurred while fetching stats.")
-
-
-@app.on_message(
-    filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS
-)
-async def get_fsub_stats(client: Client, message: Message):
-    if await joinch(message):
-        return
-    # Fetch all groups where FSub is enabled from the database
-    enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
-
-    if forcesub_collection.count_documents({"channel_id": {"$exists": True}}) == 0:
-        return await message.reply_text("**• جۆینی ناچاری چالاک نەکراوە**")
-
-    # Prepare the response message
-    text = "**• زانیاری گرووپ و کەناڵی جۆینی ناچاری :**\n\n"
-
-    for group in enabled_groups:
-        chat_id = group["chat_id"]
-        group_info = await client.get_chat(
-            chat_id
-        )  # Fetch group information from Telegram
-
-        group_title = group_info.title
-        group_username = group_info.username if group_info.username else "N/A"
-
-        channel_id = group["channel_id"]
-        channel_info = await client.get_chat(
-            channel_id
-        )  # Fetch channel information from Telegram
-        channel_title = channel_info.title
-        channel_username = channel_info.username if channel_info.username else "N/A"
-
-        # Append group and channel details to the message
-        text += (
-            f"**ناوی گرووپ : {group_title}**\n"
-            f"**ئایدی گرووپ :** `{chat_id}`\n"
-            f"**یوزەری گرووپ : @{group_username if group_username != 'N/A' else 'None'}**\n\n"
-            f"**ناوی کەناڵ : {channel_title}**\n"
-            f"**ئایدی کەناڵ :** `{channel_id}`\n"
-            f"**یوزەری کەناڵ : @{channel_username if channel_username != 'N/A' else 'None'}**\n\n"
-        )
-
-    await message.reply_text(
-        text,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                    )
-                ]
-            ]
-        ),
-    )
-
-
 @app.on_message(filters.group, group=30)
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
+
 
 
 __MODULE__ = "ғsᴜʙ"
