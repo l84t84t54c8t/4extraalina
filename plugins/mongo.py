@@ -38,7 +38,7 @@ async def mongo_check_command(client, message: Message):
                     result += f"  `{col_name}` ({db[col_name].count_documents({})} documents)\n"
 
         if len(result) > 4096:
-            paste_url = await VIPbin(result)
+            paste_url = await Alinabin(result)
             await ok.delete()
             await message.reply(
                 f"**The database list is too long to send here. You can view it at:** {paste_url}"
@@ -215,7 +215,7 @@ async def check_db_command(client, message: Message):
 
             # Check if message exceeds Telegram's limit
             if len(result) > 4096:  # Telegram's message length limit is 4096 characters
-                paste_url = await VIPbin(result)
+                paste_url = await Alinabin(result)
                 await message.reply(
                     f"**The database list is too long to send here. You can view it at:** {paste_url}"
                 )
