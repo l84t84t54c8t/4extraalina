@@ -8,7 +8,6 @@ from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
-from pyrogram.errors import ChatAdminRequired, UserNotParticipant
 from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
                             InlineKeyboardMarkup, Message)
 
@@ -425,8 +424,12 @@ async def check_forcesub(client: Client, message: Message):
         if user_member:
             return  # User is a member, no further action needed
     except pyrogram.errors.UserNotParticipant:
-        # If user is not a participant, delete the message and send force sub message
-        if message.from_user.id == client.get_me().id or message.chat.permissions.can_delete_messages:
+        # If user is not a participant, delete the message and send force sub
+        # message
+        if (
+            message.from_user.id == client.get_me().id
+            or message.chat.permissions.can_delete_messages
+        ):
             await message.delete()
 
         # Create the channel link (username or invite link)
@@ -436,7 +439,8 @@ async def check_forcesub(client: Client, message: Message):
             invite_link = await client.export_chat_invite_link(channel_id)
             channel_url = invite_link
 
-        # Send message with photo if custom_photo_id is available, otherwise send caption only
+        # Send message with photo if custom_photo_id is available, otherwise
+        # send caption only
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
