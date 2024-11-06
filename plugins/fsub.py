@@ -1,7 +1,6 @@
 import asyncio
 import logging
 
-import pyrogram
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.plugins.play.play import joinch
