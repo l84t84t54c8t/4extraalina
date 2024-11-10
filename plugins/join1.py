@@ -48,3 +48,5 @@ async def must_join_channel(app: Client, msg: Message):
                 pass
     except ChatAdminRequired:
         print(f"****بۆت بکە ئەدمین لە کەناڵی**: {MUST_JOINN}!")
+    except KeyError as e:
+        print(f"Username not found: {e}")
