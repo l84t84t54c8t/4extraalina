@@ -6,7 +6,7 @@ from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden,
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 
-@app.on_message(filters.incoming & filters.private, group=-1)
+@app.on_message(filters.incoming & filters.private)
 async def must_join_channel(app: Client, msg: Message):
     if not MUST_JOIN:
         return
