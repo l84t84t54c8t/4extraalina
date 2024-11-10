@@ -1,7 +1,8 @@
 from AlinaMusic import app
 from config import MUST_JOIN, MUST_JOIN2  # Assuming two separate channel vars
 from pyrogram import Client, filters
-from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden, UserNotParticipant)
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden,
+                             UserNotParticipant)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 # --------------------------
