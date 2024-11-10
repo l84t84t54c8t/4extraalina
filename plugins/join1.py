@@ -1,8 +1,10 @@
+from AlinaMusic import app
 from config import MUST_JOIN
 from pyrogram import Client, filters
-from pyrogram.errors import ChatAdminRequired, ChatWriteForbidden, UserNotParticipant
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden,
+                             UserNotParticipant)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from AlinaMusic import app
+
 
 @app.on_message(filters.incoming & filters.private, group=-1)
 async def must_join_channel(app: Client, msg: Message):
@@ -28,7 +30,9 @@ async def must_join_channel(app: Client, msg: Message):
                         [
                             [
                                 InlineKeyboardButton(
-                                    f"{channel_name}", url=link  # Use the channel name in the button text
+                                    # Use the channel name in the button text
+                                    f"{channel_name}",
+                                    url=link,
                                 ),
                             ]
                         ]
