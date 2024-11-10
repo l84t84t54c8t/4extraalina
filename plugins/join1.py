@@ -21,7 +21,6 @@ async def must_join_channel(app: Client, msg: Message):
                 link = f"https://t.me/{channel}"
             else:
                 chat_info = await app.get_chat(channel)
-                name = chat_info.first_name
                 link = chat_info.invite_link
             try:
                 await msg.reply(
@@ -35,7 +34,7 @@ async def must_join_channel(app: Client, msg: Message):
                         [
                             [
                                 InlineKeyboardButton(
-                                    name, url=link
+                                    "Join Channel", url=link
                                 ),
                             ]
                         ]
@@ -47,6 +46,4 @@ async def must_join_channel(app: Client, msg: Message):
             except ChatWriteForbidden:
                 pass
     except ChatAdminRequired:
-        print(f"****بۆت بکە ئەدمین لە کەناڵی**: {MUST_JOINN}!")
-    except KeyError as e:
-        print(f"Username not found: {e}")
+        print(f"**Bot needs admin permissions in the channel**: {channel}!")
