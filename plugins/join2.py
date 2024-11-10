@@ -17,16 +17,20 @@ async def must_join_channel(app: Client, msg: Message):
             try:
                 if MUST_JOIN2.isalpha():
                     link = f"https://t.me/{MUST_JOIN2}"
+                    chat_info = await app.get_chat(MUST_JOIN2)
+                    name = chat_info.title
                 else:
                     chat_info = await app.get_chat(MUST_JOIN2)
                     link = chat_info.invite_link
+                    name = chat_info.title
 
-                await msg.reply(
+                try:
+                    await msg.reply(
                     f"**• Sorry . . {msg.from_user.mention}\n• You must first join the group to use me\n• Group: « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی گرووپ بکەیت بۆ بەکارهێنانم\n• گرووپ : « @{MUST_JOIN2} »**",
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton("𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=link),
+                                InlineKeyboardButton(name, url=link),
                             ]
                         ]
                     ),
