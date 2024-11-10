@@ -1,8 +1,10 @@
 from AlinaMusic import app
 from config import MUST_JOIN, MUST_JOIN2  # Assuming two separate channel vars
 from pyrogram import Client, filters
-from pyrogram.errors import ChatAdminRequired, ChatWriteForbidden, UserNotParticipant
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden,
+                             UserNotParticipant)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+
 
 @app.on_message(filters.incoming & filters.private, group=-1)  # Higher priority
 async def must_join_channel(app: Client, msg: Message):
@@ -14,7 +16,11 @@ async def must_join_channel(app: Client, msg: Message):
             except UserNotParticipant:
                 # Generate the link and name for MUST_JOIN
                 chat_info1 = await app.get_chat(MUST_JOIN)
-                link1 = f"https://t.me/{MUST_JOIN}" if MUST_JOIN.isalpha() else chat_info1.invite_link
+                link1 = (
+                    f"https://t.me/{MUST_JOIN}"
+                    if MUST_JOIN.isalpha()
+                    else chat_info1.invite_link
+                )
                 name1 = chat_info1.title
 
                 try:
@@ -37,7 +43,11 @@ async def must_join_channel(app: Client, msg: Message):
             except UserNotParticipant:
                 # Generate the link and name for MUST_JOIN2
                 chat_info2 = await app.get_chat(MUST_JOIN2)
-                link2 = f"https://t.me/{MUST_JOIN2}" if MUST_JOIN2.isalpha() else chat_info2.invite_link
+                link2 = (
+                    f"https://t.me/{MUST_JOIN2}"
+                    if MUST_JOIN2.isalpha()
+                    else chat_info2.invite_link
+                )
                 name2 = chat_info2.title
 
                 try:
