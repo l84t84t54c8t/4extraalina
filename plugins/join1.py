@@ -1,16 +1,13 @@
 from AlinaMusic import app
 from config import MUST_JOIN, MUST_JOIN2  # Assuming two separate channel vars
 from pyrogram import Client, filters
-from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden,
-                             UserNotParticipant)
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden, UserNotParticipant)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 # --------------------------
 
-# ------------------------
 
-
-@app.on_message(filters.incoming & filters.private, group=-2)
+@app.on_message(filters.incoming & filters.private, group=-1)  # Higher priority
 async def must_join_channel(app: Client, msg: Message):
     try:
         # Check for the first required channel (MUST_JOIN)
@@ -32,7 +29,7 @@ async def must_join_channel(app: Client, msg: Message):
                     await msg.reply(
                         f"**• You must join the group\n• To be able to use command\n• Bot Group : « {name1} »\n\n• پێویستە جۆینی کەناڵ بکەیت\n• بۆ ئەوەی بتوانی فەرمان بەکاربھێنیت\n• گرووپی بۆت : « {name1} »**",
                         reply_markup=InlineKeyboardMarkup(
-                            [[InlineKeyboardButton(f"• Join {name1} •", url=link1)]]
+                            [[InlineKeyboardButton(f"• {name1} •", url=link1)]]
                         ),
                         disable_web_page_preview=True,
                     )
@@ -60,7 +57,7 @@ async def must_join_channel(app: Client, msg: Message):
                     await msg.reply(
                         f"**• You must join the group\n• To be able to use command\n• Bot Group : « {name2} »\n\n• پێویستە جۆینی گرووپ بکەیت\n• بۆ ئەوەی بتوانی فەرمان بەکاربھێنیت\n• گرووپی بۆت : « {name2} »**",
                         reply_markup=InlineKeyboardMarkup(
-                            [[InlineKeyboardButton(f"• Join {name2} •", url=link2)]]
+                            [[InlineKeyboardButton(f"• {name2} •", url=link2)]]
                         ),
                         disable_web_page_preview=True,
                     )
