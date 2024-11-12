@@ -20,7 +20,9 @@ async def must_join_channel(app: Client, msg: Message):
                 link = "https://t.me/" + MUST_JOIN2
             else:
                 chat_info = await app.get_chat(MUST_JOIN2)
-                link = chat_info.invite_link # Re-assign channel_name if a title is available
+                link = (
+                    chat_info.invite_link
+                )  # Re-assign channel_name if a title is available
             try:
                 await msg.reply(
                     f"**• Sorry . . {msg.from_user.mention}\n• You must first join group to use me\n• Group : « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی گرووپ بکەیت بۆ بەکارهێنانم\n• گرووپ : «  @{MUST_JOIN2} »**",
