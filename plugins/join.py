@@ -21,7 +21,7 @@ async def must_join_channel(app: Client, msg: Message):
             else:
                 chat_info = await app.get_chat(MUST_JOIN2)
                 link = chat_info.invite_link
-                channel_name = (
+                channel_name1 = (
                     chat_info.title
                 )  # Re-assign channel_name if a title is available
 
@@ -31,7 +31,7 @@ async def must_join_channel(app: Client, msg: Message):
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton(channel_name, url=link),
+                                InlineKeyboardButton(channel_name1, url=link),
                             ]
                         ]
                     ),
