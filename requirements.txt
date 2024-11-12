@@ -1,14 +1,11 @@
 apscheduler
-bing-image-urls
 gTTS
 googlesearch-python
 deep_translator
 pyfiglet
 lexica-api
 MukeshAPI
-telegraph
 uuid
-git+https://github.com/Vivekkumar-IN/TheApi@main
 mpv
 wget
 gpytranslate
@@ -16,4 +13,4 @@ phonenumbers
 pydub
 SpeechRecognition
 nekos.py
-SafoneAPI
+git+https://github.com/Vivekkumar-IN/TheApi@main
