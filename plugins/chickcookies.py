@@ -1,3 +1,4 @@
+import yt_dlp
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import filters
