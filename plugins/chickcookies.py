@@ -22,7 +22,7 @@ def check_cookies():
         return False  # If there's an error, cookies are likely invalid or expired
 
 # Command to check cookies in your bot
-@app.on_message(filters.command("check_cookies") & )
+@app.on_message(filters.command("check_cookies") & SUDOERS )
 async def check_cookies_command(client, message):
     if check_cookies():
         await message.reply_text("✅ The cookies file is valid and working!")
