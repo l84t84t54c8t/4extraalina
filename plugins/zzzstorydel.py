@@ -6,7 +6,7 @@ from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
 
 
 # Story Deletion
-@app.on_message(filters.group, group=40)
+@app.on_message(filters.story)
 async def delete_story(client, message):
     chat_id = message.chat.id
 
