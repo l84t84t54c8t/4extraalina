@@ -9,6 +9,7 @@ MukeshAPI
 uuid
 mpv
 wget
+telegraph
 gpytranslate
 phonenumbers
 pydub
