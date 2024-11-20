@@ -1,6 +1,6 @@
 from AlinaMusic import app
-from AlinaMusic.misc import SUDOERS
 from AlinaMusic.core.mongo import mongodb
+from AlinaMusic.misc import SUDOERS
 from pyrogram import Client, filters
 
 abuse_words_db = mongodb.abuse_words
