@@ -1,4 +1,5 @@
 from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, filters
 
@@ -28,7 +29,7 @@ async def is_abuse_present(text: str):
     return any(word in text.lower() for word in abuse_cache)
 
 
-@app.on_message(filters.command("blockword") & filters.user(OWNER_ID))
+@app.on_message(filters.command("blockword") & SUDOERS)
 async def block_word(client: Client, message: Message):
     try:
         if len(message.command) < 2:
@@ -43,7 +44,7 @@ async def block_word(client: Client, message: Message):
         await message.reply_text(f"Error: {e}")
 
 
-@app.on_message(filters.command("unblockword") & filters.user(OWNER_ID))
+@app.on_message(filters.command("unblockword") & SUDOERS)
 async def unblock_word(client: Client, message: Message):
     try:
         if len(message.command) < 2:
@@ -67,7 +68,7 @@ async def unblock_word(client: Client, message: Message):
         await message.reply_text(f"Error: {e}")
 
 
-@app.on_message(filters.command("blockedw") & filters.user(OWNER_ID))
+@app.on_message(filters.command("blockedw") & SUDOERS)
 async def list_blocked_words(client: Client, message: Message):
     try:
         global abuse_cache
