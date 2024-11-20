@@ -3,6 +3,7 @@ import logging
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
+from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.plugins.play.play import joinch
 from config import MONGO_DB_URI
 from pymongo import MongoClient
@@ -17,8 +18,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-fsubdb = MongoClient(MONGO_DB_URI)
-forcesub_collection = fsubdb.status_db.status
+forcesub_collection = mongodb.status_db.status
 
 
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
