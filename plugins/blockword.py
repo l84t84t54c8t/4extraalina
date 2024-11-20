@@ -1,4 +1,5 @@
 from AlinaMusic.core.mongo import mongodb
+from AlinaMusic import app
 from pyrogram import Client, filters
 
 abuse_words_db = mongodb.abuse_words
@@ -27,7 +28,7 @@ async def is_abuse_present(text: str):
     return any(word in text.lower() for word in abuse_cache)
 
 
-@nexichat.on_message(filters.command("blockword") & filters.user(OWNER_ID))
+@app.on_message(filters.command("blockword") & filters.user(OWNER_ID))
 async def block_word(client: Client, message: Message):
     try:
         if len(message.command) < 2:
@@ -42,7 +43,7 @@ async def block_word(client: Client, message: Message):
         await message.reply_text(f"Error: {e}")
 
 
-@nexichat.on_message(filters.command("unblockword") & filters.user(OWNER_ID))
+@app.on_message(filters.command("unblockword") & filters.user(OWNER_ID))
 async def unblock_word(client: Client, message: Message):
     try:
         if len(message.command) < 2:
@@ -66,7 +67,7 @@ async def unblock_word(client: Client, message: Message):
         await message.reply_text(f"Error: {e}")
 
 
-@nexichat.on_message(filters.command("blockedw") & filters.user(OWNER_ID))
+@app.on_message(filters.command("blockedw") & filters.user(OWNER_ID))
 async def list_blocked_words(client: Client, message: Message):
     try:
         global abuse_cache
