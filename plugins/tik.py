@@ -30,5 +30,5 @@ async def Start(app, message):
         )
         await app.send_video(message.chat.id, vid, caption=f"{tit}")
 
-    except BaseException:
+    except Exception:
         pass
