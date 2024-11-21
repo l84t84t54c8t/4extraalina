@@ -1,37 +1,40 @@
 import requests
+from pyrogram import Client, filters
 from AlinaMusic import app
-from pyrogram import filters
 
-
-@app.on_message(filters.command(["ig", "instagram", "reel"]))
+@app.on_message(filters.command(["ig", "instagram", "reel"]) & filters.text)
 async def download_instagram_video(client, message):
-    if len(message.command) < 2:
-        await message.reply_text(
-            "Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇ Iɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ"
-        )
-        return
-    a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
-    url = message.text.split()[1]
-    api_url = (
-        f"https://nodejs-1xn1lcfy3-jobians.vercel.app/v2/downloader/instagram?url={url}"
-    )
+    text = message.text.split(maxsplit=1)[1] if len(message.command) > 1 else None
 
-    response = requests.get(api_url)
-    data = response.json()
+    if text and "instagram.com" in text:
+        # Sending a loading message
+        loading_message = await message.reply_text("**← دادەبەزێت کەمێک چاوەڕێ بکە ...!**")
+        
+        # Prepare data for the API
+        json_data = {"url": text}
+        api_url = "https://insta.savetube.me/downloadPostVideo"
 
-    if data["status"]:
-        video_url = data["data"][0]["url"]
-        await a.delete()
-        await client.send_video(message.chat.id, video_url)
+        try:
+            # Making the API request
+            response = requests.post(api_url, json=json_data)
+            response_data = response.json()
+            
+            # Check if the API returned a valid URL
+            if "url" in response_data and response_data["url"]:
+                video_url = response_data["url"]
+                
+                # Sending the video
+                await client.send_video(
+                    chat_id=message.chat.id,
+                    video=video_url,
+                    caption="- @IQMCBOT .",
+                )
+            else:
+                await message.reply_text("**هیچ شتێک نەدۆزراوە**")
+        except Exception as e:
+            await message.reply_text(f"**هەڵە: {e}**")
+        finally:
+            # Deleting the loading message
+            await loading_message.delete()
     else:
-        await a.edit("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
-
-
-__MODULE__ = "Rᴇᴇʟ"
-__HELP__ = """
-**ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ:**
-
-• `/ig [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
-• `/instagram [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
-• `/reel [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
-"""
+        await message.reply_text("**تکایە بەستەری ئینستاگرام بە دروستی بنێرە**")
