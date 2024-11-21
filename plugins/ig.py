@@ -1,9 +1,8 @@
-import requests
 from AlinaMusic import app
 from pyrogram import filters
-from pyrogram import Client, filters
 import instaloader
 import os
+import shutil  # To clean up the directory
 
 # Create an Instaloader instance
 loader = instaloader.Instaloader()
@@ -17,28 +16,45 @@ async def download_instagram(client, message):
             await message.reply_text("Please provide an Instagram post URL.\nUsage: `/download_instagram <url>`")
             return
 
-        # Extract URL
+        # Extract URL from the command
         url = message.command[1]
         
-        # Download the video
-        await message.reply_text("Downloading the Instagram video... Please wait.")
-        post = instaloader.Post.from_shortcode(loader.context, url.split("/")[-2])
-        
-        if not post.is_video:
-            await message.reply_text("This URL does not contain a video.")
+        # Validate URL
+        if not "instagram.com" in url:
+            await message.reply_text("Invalid URL. Please provide a valid Instagram post URL.")
             return
-        
-        # Save the video
-        video_file = f"{post.shortcode}.mp4"
-        loader.download_post(post, target="downloads")
-        video_path = os.path.join("downloads", video_file)
+
+        await message.reply_text("Downloading the Instagram video... Please wait.")
+
+        # Extract shortcode from URL
+        shortcode = url.split("/")[-2]
+        post = instaloader.Post.from_shortcode(loader.context, shortcode)
+
+        if not post.is_video:
+            await message.reply_text("The provided URL does not contain a video.")
+            return
+
+        # Download the video to a target folder
+        target_folder = "downloads"
+        loader.download_post(post, target=target_folder)
+
+        # Locate the video file in the downloaded folder
+        video_file = None
+        for file in os.listdir(target_folder):
+            if file.endswith(".mp4"):
+                video_file = os.path.join(target_folder, file)
+                break
+
+        if not video_file:
+            await message.reply_text("Failed to locate the downloaded video.")
+            return
 
         # Send the video to the user
-        await client.send_video(chat_id=message.chat.id, video=video_path)
-        await message.reply_text("Here is your downloaded Instagram video!")
-        
-        # Clean up
-        os.remove(video_path)
+        await client.send_video(chat_id=message.chat.id, video=video_file, caption="Here is your downloaded Instagram video!")
+
+        # Clean up the downloads folder
+        shutil.rmtree(target_folder)
+
     except Exception as e:
-        await message.reply_text(f"Failed to download video: {e}")
-        print(e)
+        await message.reply_text(f"An error occurred while processing your request: {e}")
+        print(f"Error: {e}")
