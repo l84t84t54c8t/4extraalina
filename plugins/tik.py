@@ -1,7 +1,8 @@
+import re
 import requests
-from AlinaMusic import app
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from AlinaMusic import app
+
 
 # Regex to match only TikTok links
 tiktok_regex = r"(https?://(?:www\.)?tiktok\.com/[\w\-/]+)"
@@ -17,41 +18,18 @@ async def Start(app, message):
         tit = url["data"]["title"]
         vid = url["data"]["play"]
         ava = url["data"]["author"]["avatar"]
+        ##
         name = url["data"]["music_info"]["author"]
         time = url["data"]["duration"]
         sh = url["data"]["share_count"]
         com = url["data"]["comment_count"]
         wat = url["data"]["play_count"]
-
-        # Send photo with caption
         await app.send_photo(
             message.chat.id,
             ava,
-            caption=(
-                f"**✧ ¦ ناو : {name}\n"
-                f"✧ ¦ وڵات : {region}\n\n"
-                f"✧ ¦ ژمارەی بینەر : {wat}\n"
-                f"✧ ¦ ژمارەی کۆمێنت : {com}\n"
-                f"✧ ¦ ژمارەی شەیرەکان : {sh}\n"
-                f"✧ ¦ درێژی ڤیدیۆ : {time}**"
-            ),
+            caption=f"**✧ ¦ ناو : {name}\n✧ ¦ وڵات : {region}\n\n✧ ¦ ژمارەی بینەر : {wat}\n✧ ¦ ژمارەی کۆمێنت : {com}\n✧ ¦ ژمارەی شەیرەکان : {sh}\n✧ ¦ درێژی ڤیدیۆ : {time}**",
         )
+        await app.send_video(message.chat.id, vid, caption=f"{tit}")
 
-        # Send video with title
-        await app.send_video(
-            message.chat.id,
-            vid,
-            caption=f"{tit}",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=_["S_B_4"],
-                            url=f"{SUPPORT_CHANNEL}",
-                        )
-                    ]
-                ]
-            ),
-        )
-    except Exception as e:
-        print(f"Error: {e}")
+    except:
+        pass
