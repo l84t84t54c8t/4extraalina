@@ -1,6 +1,7 @@
 import requests
-from pyrogram import Client, filters
 from AlinaMusic import app
+from pyrogram import filters
+
 
 @app.on_message(filters.command(["ig", "instagram", "reel"]) & filters.text)
 async def download_instagram_video(client, message):
@@ -8,8 +9,10 @@ async def download_instagram_video(client, message):
 
     if text and "instagram.com" in text:
         # Sending a loading message
-        loading_message = await message.reply_text("**← دادەبەزێت کەمێک چاوەڕێ بکە ...!**")
-        
+        loading_message = await message.reply_text(
+            "**← دادەبەزێت کەمێک چاوەڕێ بکە ...!**"
+        )
+
         # Prepare data for the API
         json_data = {"url": text}
         api_url = "https://insta.savetube.me/downloadPostVideo"
@@ -18,11 +21,11 @@ async def download_instagram_video(client, message):
             # Making the API request
             response = requests.post(api_url, json=json_data)
             response_data = response.json()
-            
+
             # Check if the API returned a valid URL
             if "url" in response_data and response_data["url"]:
                 video_url = response_data["url"]
-                
+
                 # Sending the video
                 await client.send_video(
                     chat_id=message.chat.id,
