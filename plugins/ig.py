@@ -1,70 +1,61 @@
-import os
-import shutil  # To clean up the directory
+import re
 
-import instaloader
-from AlinaMusic import app
+import requests
+from config import LOG_GROUP_ID
 from pyrogram import filters
-
-# Create an Instaloader instance
-loader = instaloader.Instaloader()
-
-# Regex to match Instagram URLs
-instagram_url_pattern = r"(https?://(?:www\.)?instagram\.com/[-a-zA-Z0-9@:%._\+~#=]{2,256}/[-a-zA-Z0-9@:%._\+~#=]+)"
-
-# Login credentials for Instagram
-USERNAME = "xv.7amo"
-PASSWORD = "7amo754531@##@"
-
-# Log in to Instagram
-try:
-    loader.login(USERNAME, PASSWORD)
-except instaloader.exceptions.BadCredentialsException:
-    print("Invalid Instagram credentials. Please check your username and password.")
+from AlinaMusic import app
 
 
-@app.on_message(filters.regex(instagram_url_pattern))
-async def download_instagram(client, message):
+@app.on_message(filters.command(["ig", "instagram", "reel"]))
+async def download_instagram_video(client, message):
+    if len(message.command) < 2:
+        await message.reply_text(
+            "Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇ Iɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ"
+        )
+        return
+    url = message.text.split()[1]
+    if not re.match(
+        re.compile(r"^(https?://)?(www\.)?(instagram\.com|instagr\.am)/.*$"), url
+    ):
+        return await message.reply_text(
+            "Tʜᴇ ᴘʀᴏᴠɪᴅᴇᴅ URL ɪs ɴᴏᴛ ᴀ ᴠᴀʟɪᴅ Iɴsᴛᴀɢʀᴀᴍ URL😅😅"
+        )
+    a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
+    api_url = f"https://insta-dl.hazex.workers.dev/?url={url}"
+
+    response = requests.get(api_url)
     try:
-        url = message.matches[0].group(0)
-        await message.reply_text("Downloading the Instagram video... Please wait.")
-
-        # Extract shortcode
-        shortcode = url.split("/")[-2]
-
-        # Authenticate and fetch post
-        post = instaloader.Post.from_shortcode(loader.context, shortcode)
-
-        if not post.is_video:
-            await message.reply_text("The provided URL does not contain a video.")
-            return
-
-        # Proceed with downloading
-        target_folder = "downloads"
-        loader.download_post(post, target=target_folder)
-
-        video_file = None
-        for file in os.listdir(target_folder):
-            if file.endswith(".mp4"):
-                video_file = os.path.join(target_folder, file)
-                break
-
-        if not video_file:
-            await message.reply_text("Failed to locate the downloaded video.")
-            return
-
-        await client.send_video(
-            chat_id=message.chat.id,
-            video=video_file,
-            caption="Here is your downloaded Instagram video!",
-        )
-        shutil.rmtree(target_folder)
-
-    except instaloader.exceptions.LoginRequiredException:
-        await message.reply_text(
-            "Authentication required to access this post. Please update the bot with valid credentials."
-        )
+        result = response.json()
+        data = result["result"]
     except Exception as e:
-        await message.reply_text(
-            f"An error occurred while processing your request: {e}"
-        )
-        print(f"Error: {e}")
+        f = f"Eʀʀᴏʀ :\n{e}"
+        try:
+            await a.edit(f)
+        except Exception:
+            await message.reply_text(f)
+            return await app.send_message(LOG_GROUP_ID, f)
+        return await app.send_message(LOG_GROUP_ID, f)
+    if not result["error"]:
+        video_url = data["url"]
+        duration = data["duration"]
+        quality = data["quality"]
+        type = data["extension"]
+        size = data["formattedSize"]
+        caption = f"**Dᴜʀᴀᴛɪᴏɴ :** {duration}\n**Qᴜᴀʟɪᴛʏ :** {quality}\n**Tʏᴘᴇ :** {type}\n**Sɪᴢᴇ :** {size}"
+        await a.delete()
+        await message.reply_video(video_url, caption=caption)
+    else:
+        try:
+            return await a.edit("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
+        except Exception:
+            return await message.reply_text("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
+
+
+__MODULE__ = "Rᴇᴇʟ"
+__HELP__ = """
+**ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ:**
+
+• `/ig [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
+• `/instagram [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
+• `/reel [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
+"""
