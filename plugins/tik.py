@@ -1,8 +1,6 @@
-import re
 import requests
-from pyrogram import filters
 from AlinaMusic import app
-
+from pyrogram import filters
 
 # Regex to match only TikTok links
 tiktok_regex = r"(https?://(?:www\.)?tiktok\.com/[\w\-/]+)"
@@ -31,5 +29,5 @@ async def Start(app, message):
         )
         await app.send_video(message.chat.id, vid, caption=f"{tit}")
 
-    except:
+    except BaseException:
         pass
