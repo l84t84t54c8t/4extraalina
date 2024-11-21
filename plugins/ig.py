@@ -36,7 +36,9 @@ async def download_instagram_video(app, message):
             "**@EHS4SS - جۆینی ئەم کەناڵە شازە بکە♥️⚡️**"
         )
         await app.send_video(
-            message.chat.id, video, caption=caption,
+            message.chat.id,
+            video,
+            caption=caption,
         )
 
     except Exception as e:
