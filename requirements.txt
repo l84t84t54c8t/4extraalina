@@ -10,6 +10,7 @@ uuid
 mpv
 wget
 telegraph
+instaloader
 gpytranslate
 phonenumbers
 pydub
