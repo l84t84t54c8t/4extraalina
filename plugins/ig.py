@@ -1,61 +1,62 @@
-import re
+import os
+import shutil  # To clean up the directory
 
-import requests
+import instaloader
 from AlinaMusic import app
-from config import LOG_GROUP_ID
 from pyrogram import filters
 
+# Create an Instaloader instance
+loader = instaloader.Instaloader()
 
-@app.on_message(filters.command(["ig", "instagram", "reel"]))
-async def download_instagram_video(client, message):
-    if len(message.command) < 2:
-        await message.reply_text(
-            "Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇ Iɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ"
-        )
-        return
-    url = message.text.split()[1]
-    if not re.match(
-        re.compile(r"^(https?://)?(www\.)?(instagram\.com|instagr\.am)/.*$"), url
-    ):
-        return await message.reply_text(
-            "Tʜᴇ ᴘʀᴏᴠɪᴅᴇᴅ URL ɪs ɴᴏᴛ ᴀ ᴠᴀʟɪᴅ Iɴsᴛᴀɢʀᴀᴍ URL😅😅"
-        )
-    a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
-    api_url = f"https://insta-dl.hazex.workers.dev/?url={url}"
+# Regex to match Instagram URLs
+instagram_url_pattern = r"(https?://(?:www\.)?instagram\.com/[-a-zA-Z0-9@:%._\+~#=]{2,256}/[-a-zA-Z0-9@:%._\+~#=]+)"
 
-    response = requests.get(api_url)
+# Login credentials for Instagram
+# Handler to download Instagram video via link
+
+@app.on_message(filters.regex(instagram_url_pattern))
+async def download_instagram(client, message):
     try:
-        result = response.json()
-        data = result["result"]
+        # Extract the URL from the message
+        url = message.matches[0].group(0)
+
+        await message.reply_text("**← کەمێک چاوەڕێ بکە .. ڤیدیۆ دادەبەزێت ...**")
+
+        # Extract shortcode from URL
+        shortcode = url.split("/")[-2]
+        post = instaloader.Post.from_shortcode(loader.context, shortcode)
+
+        if not post.is_video:
+            await message.reply_text("**ئەو لینکەی بەمنت داوە ڤیدیۆ نییە**")
+            return
+
+        # Download the video to a target folder
+        target_folder = "downloads"
+        loader.download_post(post, target=target_folder)
+
+        # Locate the video file in the downloaded folder
+        video_file = None
+        for file in os.listdir(target_folder):
+            if file.endswith(".mp4"):
+                video_file = os.path.join(target_folder, file)
+                break
+
+        if not video_file:
+            await message.reply_text("**شکستی هێنا لە دۆزینەوەی ڤیدیۆکە**")
+            return
+
+        # Send the video to the user
+        await client.send_video(
+            chat_id=message.chat.id,
+            video=video_file,
+            caption="**✅ ꒐ بە سەرکەوتوویی داگرترا\n🎸 ꒐ @IQMCBOT**",
+        )
+
+        # Clean up the downloads folder
+        shutil.rmtree(target_folder)
+
     except Exception as e:
-        f = f"Eʀʀᴏʀ :\n{e}"
-        try:
-            await a.edit(f)
-        except Exception:
-            await message.reply_text(f)
-            return await app.send_message(LOG_GROUP_ID, f)
-        return await app.send_message(LOG_GROUP_ID, f)
-    if not result["error"]:
-        video_url = data["url"]
-        duration = data["duration"]
-        quality = data["quality"]
-        type = data["extension"]
-        size = data["formattedSize"]
-        caption = f"**Dᴜʀᴀᴛɪᴏɴ :** {duration}\n**Qᴜᴀʟɪᴛʏ :** {quality}\n**Tʏᴘᴇ :** {type}\n**Sɪᴢᴇ :** {size}"
-        await a.delete()
-        await message.reply_video(video_url, caption=caption)
-    else:
-        try:
-            return await a.edit("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
-        except Exception:
-            return await message.reply_text("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
-
-
-__MODULE__ = "Rᴇᴇʟ"
-__HELP__ = """
-**ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ:**
-
-• `/ig [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
-• `/instagram [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
-• `/reel [URL]`: ᴅᴏᴡɴʟᴏᴀᴅ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟs. Pʀᴏᴠɪᴅᴇ ᴛʜᴇ ɪɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ.
-"""
+        await message.reply_text(
+            f"An error occurred while processing your request: {e}"
+        )
+        print(f"Error: {e}")
