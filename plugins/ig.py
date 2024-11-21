@@ -1,63 +1,39 @@
-import os
-import shutil  # To clean up the directory
-
-import instaloader
+import requests
+import re
+from pyrogram import Client, filters
 from AlinaMusic import app
-from pyrogram import filters
 
-# Create an Instaloader instance
-loader = instaloader.Instaloader()
-
-# Regex to match Instagram URLs
+# Regex pattern to match Instagram URLs
 instagram_url_pattern = r"(https?://(?:www\.)?instagram\.com/[-a-zA-Z0-9@:%._\+~#=]{2,256}/[-a-zA-Z0-9@:%._\+~#=]+)"
-
-# Login credentials for Instagram
-# Handler to download Instagram video via link
 
 
 @app.on_message(filters.regex(instagram_url_pattern))
-async def download_instagram(client, message):
+async def download_instagram_video(client, message):
     try:
-        # Extract the URL from the message
-        url = message.matches[0].group(0)
+        # Extract the Instagram link from the message
+        link = re.search(instagram_url_pattern, message.text).group(1)
 
-        await message.reply_text("**← کەمێک چاوەڕێ بکە .. ڤیدیۆ دادەبەزێت ...**")
+        # Make a request to fetch the video
+        json_data = {'url': link}
+        response = requests.post('https://insta.savetube.me/downloadPostVideo', json=json_data).json()
 
-        # Extract shortcode from URL
-        shortcode = url.split("/")[-2]
-        post = instaloader.Post.from_shortcode(loader.context, shortcode)
+        # Extract video and thumbnail
+        thu = response['post_video_thumbnail']
+        video = response['post_video_url']
 
-        if not post.is_video:
-            await message.reply_text("**ئەو لینکەی بەمنت داوە ڤیدیۆ نییە**")
-            return
+        # Send thumbnail as a photo
+        await message.reply_photo(
+            thu,
+            caption="*ڤیدیۆکە دابەزاندنی دەستپێدەکات...*\n\n⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙄𝙌 - @MGIMT")
 
-        # Download the video to a target folder
-        target_folder = "downloads"
-        loader.download_post(post, target=target_folder)
-
-        # Locate the video file in the downloaded folder
-        video_file = None
-        for file in os.listdir(target_folder):
-            if file.endswith(".mp4"):
-                video_file = os.path.join(target_folder, file)
-                break
-
-        if not video_file:
-            await message.reply_text("**شکستی هێنا لە دۆزینەوەی ڤیدیۆکە**")
-            return
-
-        # Send the video to the user
-        await client.send_video(
-            chat_id=message.chat.id,
-            video=video_file,
-            caption="**✅ ꒐ بە سەرکەوتوویی داگرترا\n🎸 ꒐ @IQMCBOT**",
+        # Send video directly
+        caption = (
+            "**بە سەرکەوتوویی داگرترا لەلایەن :\n**"
+            "**⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙄𝙌 - @MGIMT\n\n**"
+            "**@EHS4SS - جۆینی ئەم کەناڵە شازە بکە♥️⚡️**"
         )
-
-        # Clean up the downloads folder
-        shutil.rmtree(target_folder)
+        await app.send_video(message.chat.id, video, caption=caption, parse_mode="markdown")
 
     except Exception as e:
-        await message.reply_text(
-            f"An error occurred while processing your request: {e}"
-        )
         print(f"Error: {e}")
+        await message.reply("**ببورە، هەڵەیەک ڕوویدا! تکایە دوبارە هەوڵدەوە.**")
