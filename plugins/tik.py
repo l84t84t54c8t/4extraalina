@@ -1,12 +1,14 @@
 import requests
 from AlinaMusic import app
+from config import SUPPORT_CHANNEL
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram import filters
 
-# Regex to match only TikTok links
-tiktok_regex = r"(https?://(?:www\.)?tiktok\.com/[\w\-/]+)"
-
-
-@app.on_message(filters.regex(tiktok_regex))
+@app.on_message(
+    filters.regex(
+        r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
+    )
+)
 async def Start(app, message):
     try:
         msg = message.text
@@ -27,7 +29,18 @@ async def Start(app, message):
             ava,
             caption=f"**✧ ¦ ناو : {name}\n✧ ¦ وڵات : {region}\n\n✧ ¦ ژمارەی بینەر : {wat}\n✧ ¦ ژمارەی کۆمێنت : {com}\n✧ ¦ ژمارەی شەیرەکان : {sh}\n✧ ¦ درێژی ڤیدیۆ : {time}**",
         )
-        await app.send_video(message.chat.id, vid, caption=f"{tit}")
+        await app.send_video(message.chat.id, vid, caption=f"{tit}",
+        reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text=_["S_B_4"],
+                            url=f"{SUPPORT_CHANNEL}",
+                        )
+                    ]
+                ]
+            ),
+        )
 
     except BaseException:
         pass
