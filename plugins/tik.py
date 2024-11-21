@@ -30,21 +30,7 @@ async def Start(app, message):
             ava,
             caption=f"**✧ ¦ ناو : {name}\n✧ ¦ وڵات : {region}\n\n✧ ¦ ژمارەی بینەر : {wat}\n✧ ¦ ژمارەی کۆمێنت : {com}\n✧ ¦ ژمارەی شەیرەکان : {sh}\n✧ ¦ درێژی ڤیدیۆ : {time}**",
         )
-        await app.send_video(
-            message.chat.id,
-            vid,
-            caption=f"{tit}",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=_["S_B_4"],
-                            url=f"{SUPPORT_CHANNEL}",
-                        )
-                    ]
-                ]
-            ),
-        )
+        await app.send_video(message.chat.id, vid, caption=f"{tit}")
 
-    except BaseException:
+    except:
         pass
