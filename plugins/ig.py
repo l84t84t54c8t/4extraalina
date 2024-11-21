@@ -1,8 +1,10 @@
 import re
+from config import GITHUB_REPO, SUPPORT_CHANNEL, SUPPORT_GROUP
 
 import requests
 from AlinaMusic import app
 from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 # Regex pattern to match Instagram URLs
 instagram_url_pattern = r"(https?://(?:www\.)?instagram\.com/[-a-zA-Z0-9@:%._\+~#=]{2,256}/[-a-zA-Z0-9@:%._\+~#=]+)"
@@ -25,21 +27,25 @@ async def download_instagram_video(app, message):
         video = response["post_video_url"]
 
         # Send thumbnail as a photo
-        await message.reply_photo(
-            thu, caption="*ڤیدیۆکە دابەزاندنی دەستپێدەکات...*\n\n⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙄𝙌 - @MGIMT"
-        )
+        await message.reply_text("**← کەمێک چاوەڕێ بکە .. ڤیدیۆ دادەبەزێت ...**")
 
         # Send video directly
-        caption = (
-            "**بە سەرکەوتوویی داگرترا لەلایەن :\n**"
-            "**⧉• 𝙎𝙊𝙐𝙍𝘾𝞝 𝙄𝙌 - @MGIMT\n\n**"
-            "**@EHS4SS - جۆینی ئەم کەناڵە شازە بکە♥️⚡️**"
-        )
+        caption = ("**✅ ꒐ بە سەرکەوتوویی داگرترا\n🎸 ꒐ @IQMCBOT**")
         await app.send_video(
             message.chat.id,
             video,
             caption=caption,
-        )
+            reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                            text=_["S_B_4"], 
+                            url=f"{SUPPORT_CHANNEL}",
+                            )
+                        ]
+                    ]
+                ),
+            )
 
     except Exception as e:
         print(f"Error: {e}")
