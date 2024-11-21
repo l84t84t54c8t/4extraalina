@@ -9,7 +9,7 @@ instagram_url_pattern = r"(https?://(?:www\.)?instagram\.com/[-a-zA-Z0-9@:%._\+~
 
 
 @app.on_message(filters.regex(instagram_url_pattern))
-async def download_instagram_video(client, message):
+async def download_instagram_video(app, message):
     try:
         # Extract the Instagram link from the message
         link = re.search(instagram_url_pattern, message.text).group(1)
