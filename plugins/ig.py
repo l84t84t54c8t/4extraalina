@@ -21,6 +21,7 @@ try:
 except instaloader.exceptions.BadCredentialsException:
     print("Invalid Instagram credentials. Please check your username and password.")
 
+
 @app.on_message(filters.regex(instagram_url_pattern))
 async def download_instagram(client, message):
     try:
@@ -59,7 +60,11 @@ async def download_instagram(client, message):
         shutil.rmtree(target_folder)
 
     except instaloader.exceptions.LoginRequiredException:
-        await message.reply_text("Authentication required to access this post. Please update the bot with valid credentials.")
+        await message.reply_text(
+            "Authentication required to access this post. Please update the bot with valid credentials."
+        )
     except Exception as e:
-        await message.reply_text(f"An error occurred while processing your request: {e}")
+        await message.reply_text(
+            f"An error occurred while processing your request: {e}"
+        )
         print(f"Error: {e}")
