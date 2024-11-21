@@ -1,6 +1,5 @@
 import os
 import shutil  # To clean up the directory
-
 import instaloader
 from AlinaMusic import app
 from pyrogram import filters
@@ -8,37 +7,24 @@ from pyrogram import filters
 # Create an Instaloader instance
 loader = instaloader.Instaloader()
 
-# Command handler to download Instagram video
+# Regex to match Instagram URLs
+instagram_url_pattern = r"(https?://(?:www\.)?instagram\.com/[-a-zA-Z0-9@:%._\+~#=]{2,256}/[-a-zA-Z0-9@:%._\+~#=]+)"
 
-
-@app.on_message(filters.command(["download_instagram"]))
+# Handler to download Instagram video via link
+@app.on_message(filters.regex(instagram_url_pattern))
 async def download_instagram(client, message):
     try:
-        # Check if a URL was provided
-        if len(message.command) < 2:
-            await message.reply_text(
-                "Please provide an Instagram post URL.\nUsage: `/download_instagram <url>`"
-            )
-            return
+        # Extract the URL from the message
+        url = message.matches[0].group(0)
 
-        # Extract URL from the command
-        url = message.command[1]
-
-        # Validate URL
-        if not "instagram.com" in url:
-            await message.reply_text(
-                "Invalid URL. Please provide a valid Instagram post URL."
-            )
-            return
-
-        await message.reply_text("Downloading the Instagram video... Please wait.")
+        await message.reply_text("**← کەمێک چاوەڕێ بکە .. ڤیدیۆ دادەبەزێت ...**")
 
         # Extract shortcode from URL
         shortcode = url.split("/")[-2]
         post = instaloader.Post.from_shortcode(loader.context, shortcode)
 
         if not post.is_video:
-            await message.reply_text("The provided URL does not contain a video.")
+            await message.reply_text("**ئەو لینکەی بەمنت داوە ڤیدیۆ نییە**")
             return
 
         # Download the video to a target folder
@@ -53,14 +39,14 @@ async def download_instagram(client, message):
                 break
 
         if not video_file:
-            await message.reply_text("Failed to locate the downloaded video.")
+            await message.reply_text("**شکستی هێنا لە دۆزینەوەی ڤیدیۆکە**")
             return
 
         # Send the video to the user
         await client.send_video(
             chat_id=message.chat.id,
             video=video_file,
-            caption="Here is your downloaded Instagram video!",
+            caption="**✅ ꒐ بە سەرکەوتوویی داگرترا\n🎸 ꒐ @IQMCBOT**",
         )
 
         # Clean up the downloads folder
