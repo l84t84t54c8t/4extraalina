@@ -1,9 +1,9 @@
 import re
 
 import requests
+from AlinaMusic import app
 from config import LOG_GROUP_ID
 from pyrogram import filters
-from AlinaMusic import app
 
 
 @app.on_message(filters.command(["ig", "instagram", "reel"]))
