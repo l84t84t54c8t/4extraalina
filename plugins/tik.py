@@ -1,8 +1,9 @@
 import requests
 from AlinaMusic import app
 from config import SUPPORT_CHANNEL
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 
 @app.on_message(
     filters.regex(
@@ -29,8 +30,11 @@ async def Start(app, message):
             ava,
             caption=f"**✧ ¦ ناو : {name}\n✧ ¦ وڵات : {region}\n\n✧ ¦ ژمارەی بینەر : {wat}\n✧ ¦ ژمارەی کۆمێنت : {com}\n✧ ¦ ژمارەی شەیرەکان : {sh}\n✧ ¦ درێژی ڤیدیۆ : {time}**",
         )
-        await app.send_video(message.chat.id, vid, caption=f"{tit}",
-        reply_markup=InlineKeyboardMarkup(
+        await app.send_video(
+            message.chat.id,
+            vid,
+            caption=f"{tit}",
+            reply_markup=InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton(
