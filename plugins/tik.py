@@ -1,8 +1,6 @@
 import requests
 from AlinaMusic import app
-from config import SUPPORT_CHANNEL
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 @app.on_message(
@@ -32,5 +30,5 @@ async def Start(app, message):
         )
         await app.send_video(message.chat.id, vid, caption=f"{tit}")
 
-    except:
+    except BaseException:
         pass
