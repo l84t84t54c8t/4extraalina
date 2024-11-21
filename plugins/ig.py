@@ -1,43 +1,44 @@
 import requests
 from AlinaMusic import app
 from pyrogram import filters
+from pyrogram import Client, filters
+import instaloader
+import os
 
+# Create an Instaloader instance
+loader = instaloader.Instaloader()
 
-@app.on_message(filters.command(["ig", "instagram", "reel"]) & filters.text)
-async def download_instagram_video(client, message):
-    text = message.text.split(maxsplit=1)[1] if len(message.command) > 1 else None
+# Command handler to download Instagram video
+@app.on_message(filters.command(["download_instagram"]))
+async def download_instagram(client, message):
+    try:
+        # Check if a URL was provided
+        if len(message.command) < 2:
+            await message.reply_text("Please provide an Instagram post URL.\nUsage: `/download_instagram <url>`")
+            return
 
-    if text and "instagram.com" in text:
-        # Sending a loading message
-        loading_message = await message.reply_text(
-            "**← دادەبەزێت کەمێک چاوەڕێ بکە ...!**"
-        )
+        # Extract URL
+        url = message.command[1]
+        
+        # Download the video
+        await message.reply_text("Downloading the Instagram video... Please wait.")
+        post = instaloader.Post.from_shortcode(loader.context, url.split("/")[-2])
+        
+        if not post.is_video:
+            await message.reply_text("This URL does not contain a video.")
+            return
+        
+        # Save the video
+        video_file = f"{post.shortcode}.mp4"
+        loader.download_post(post, target="downloads")
+        video_path = os.path.join("downloads", video_file)
 
-        # Prepare data for the API
-        json_data = {"url": text}
-        api_url = "https://insta.savetube.me/downloadPostVideo"
-
-        try:
-            # Making the API request
-            response = requests.post(api_url, json=json_data)
-            response_data = response.json()
-
-            # Check if the API returned a valid URL
-            if "url" in response_data and response_data["url"]:
-                video_url = response_data["url"]
-
-                # Sending the video
-                await client.send_video(
-                    chat_id=message.chat.id,
-                    video=video_url,
-                    caption="- @IQMCBOT .",
-                )
-            else:
-                await message.reply_text("**هیچ شتێک نەدۆزراوە**")
-        except Exception as e:
-            await message.reply_text(f"**هەڵە: {e}**")
-        finally:
-            # Deleting the loading message
-            await loading_message.delete()
-    else:
-        await message.reply_text("**تکایە بەستەری ئینستاگرام بە دروستی بنێرە**")
+        # Send the video to the user
+        await client.send_video(chat_id=message.chat.id, video=video_path)
+        await message.reply_text("Here is your downloaded Instagram video!")
+        
+        # Clean up
+        os.remove(video_path)
+    except Exception as e:
+        await message.reply_text(f"Failed to download video: {e}")
+        print(e)
