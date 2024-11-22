@@ -182,7 +182,7 @@ async def check_group_permissions(client: Client, message: Message):
         command_parts = message.command
         if len(command_parts) < 2:
             await message.reply_text(
-                "Usage: `/checkgroup @group_username` or `/checkgroup group_id`",
+                "**بەکارهێنان:**\n`/checkgroup @group_username`\n**یان**\n`/checkgroup group_id`",
                 parse_mode="markdown",
             )
             return
@@ -196,7 +196,7 @@ async def check_group_permissions(client: Client, message: Message):
             chat = await client.get_chat(int(target_id))
 
         if chat.type != ChatType.SUPERGROUP:
-            await message.reply_text("This command is only for groups.")
+            await message.reply_text("**ئەم فەرمانە تایبەتە بە گرووپەکان.**")
             return
 
         bot_id = (await client.get_me()).id
@@ -204,7 +204,7 @@ async def check_group_permissions(client: Client, message: Message):
 
         # Check if the bot is an administrator
         if member.status != ChatMemberStatus.ADMINISTRATOR:
-            await message.reply_text("I am not an administrator in this group!")
+            await message.reply_text("**من ئەدمین نیم لەم گرووپە!**")
             return
 
         # Check permissions
@@ -230,17 +230,18 @@ async def check_group_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Group Permissions:**\n" + "\n".join(
+            response = "**ڕۆڵی بۆت لە گرووپ:**\n" + "\n".join(
                 f"- {perm}" for perm in permissions
             )
         else:
-            response = "I am an administrator but have no special permissions."
+            response = "**من ئەدمینم لەم گرووپە\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
 
         await message.reply_text(response)
 
     except Exception as e:
-        await message.reply_text(f"An error occurred: {e}")
+        await message.reply_text(f"**هەڵە:**\n{e}")
         print(f"Error in check_group_permissions: {e}")
+
 
 
 @app.on_message(filters.command("checkchannel") & SUDOERS)
@@ -252,10 +253,7 @@ async def check_channel_permissions(client: Client, message: Message):
     try:
         command_parts = message.command
         if len(command_parts) < 2:
-            await message.reply_text(
-                "Usage: `/checkchannel @channel_username` or `/checkchannel channel_id`",
-                parse_mode="markdown",
-            )
+            await message.reply_text("**بەکارهێنان:**\n `/checkchannel @channel_username`\n**یان**\n`/checkchannel channel_id`")
             return
 
         target_id = command_parts[1]  # Get the username or ID
@@ -267,42 +265,44 @@ async def check_channel_permissions(client: Client, message: Message):
             chat = await client.get_chat(int(target_id))
 
         if chat.type != ChatType.CHANNEL:
-            await message.reply_text("This command is only for channels.")
+            await message.reply_text("**ئەم فەرمانە تایبەتە بۆ کەناڵەکان.**")
             return
 
         bot_id = (await client.get_me()).id
         member = await client.get_chat_member(chat.id, bot_id)
 
-        if member.status != "administrator":
-            await message.reply_text("I am not an administrator in this channel!")
+        # Check if the bot is an administrator
+        if member.status != ChatMemberStatus.ADMINISTRATOR:
+            await message.reply_text("**من ئەدمین نیم لەم کەناڵە!**")
             return
 
         # Check permissions
         permissions = []
-        perms = member.privileges
-        if perms.can_post_messages:
-            permissions.append("Post Messages")
-        if perms.can_edit_messages:
-            permissions.append("Edit Messages")
-        if perms.can_delete_messages:
-            permissions.append("Delete Messages")
-        if perms.can_invite_users:
-            permissions.append("Invite Users")
-        if perms.can_manage_chat:
-            permissions.append("Manage Chat")
-        if perms.can_manage_video_chats:
-            permissions.append("Manage Video Chats")
+        if member.privileges:
+            perms = member.privileges
+            if perms.can_post_messages:
+                permissions.append("Post Messages")
+            if perms.can_edit_messages:
+                permissions.append("Edit Messages")
+            if perms.can_delete_messages:
+                permissions.append("Delete Messages")
+            if perms.can_invite_users:
+                permissions.append("Invite Users")
+            if perms.can_manage_chat:
+                permissions.append("Manage Chat")
+            if perms.can_manage_video_chats:
+                permissions.append("Manage Video Chats")
 
         # Prepare response
         if permissions:
-            response = "**Bot Channel Permissions:**\n" + "\n".join(
+            response = "**ڕۆڵی بۆت لە کەناڵ:**\n" + "\n".join(
                 f"- {perm}" for perm in permissions
             )
         else:
-            response = "I am an administrator but have no special permissions."
+            response = "**من ئەدمینم لەم کەناڵە\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
 
         await message.reply_text(response)
 
     except Exception as e:
-        await message.reply_text(f"An error occurred: {e}")
+        await message.reply_text(f"**هەڵە:**\n{e}")
         print(f"Error in check_channel_permissions: {e}")
