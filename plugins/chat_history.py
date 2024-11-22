@@ -243,7 +243,6 @@ async def check_group_permissions(client: Client, message: Message):
         print(f"Error in check_group_permissions: {e}")
 
 
-
 @app.on_message(filters.command("checkchannel") & SUDOERS)
 async def check_channel_permissions(client: Client, message: Message):
     """
@@ -253,7 +252,9 @@ async def check_channel_permissions(client: Client, message: Message):
     try:
         command_parts = message.command
         if len(command_parts) < 2:
-            await message.reply_text("**بەکارهێنان:**\n `/checkchannel @channel_username`\n**یان**\n`/checkchannel channel_id`")
+            await message.reply_text(
+                "**بەکارهێنان:**\n `/checkchannel @channel_username`\n**یان**\n`/checkchannel channel_id`"
+            )
             return
 
         target_id = command_parts[1]  # Get the username or ID
