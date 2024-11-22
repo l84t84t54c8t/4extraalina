@@ -176,22 +176,42 @@ async def check_two_step_command(client, message):
         await message.reply_text("An error occurred while processing your request.")
 
 
+
 @app.on_message(filters.command("checkgroup") & SUDOERS)
 async def check_group_permissions(client: Client, message: Message):
     """
-    Command to check the bot's permissions in a group.
+    Command to check the bot's permissions in a group by username or ID.
+    Usage: /checkgroup @group_username or /checkgroup group_id
     """
     try:
-        chat = message.chat  # Get the current chat (group)
-        bot_id = (await client.get_me()).id  # Get the bot's user ID
-        # Get bot's member status
+        command_parts = message.command
+        if len(command_parts) < 2:
+            await message.reply_text(
+                "Usage: `/checkgroup @group_username` or `/checkgroup group_id`",
+                parse_mode="markdown",
+            )
+            return
+
+        target_id = command_parts[1]  # Get the username or ID
+        if target_id.startswith("@"):
+            # If it's a username, resolve to chat ID
+            chat = await client.get_chat(target_id)
+        else:
+            # If it's an ID, directly use it
+            chat = await client.get_chat(int(target_id))
+
+        if chat.type != ChatType.SUPERGROUP:
+            await message.reply_text("This command is only for groups.")
+            return
+
+        bot_id = (await client.get_me()).id
         member = await client.get_chat_member(chat.id, bot_id)
 
         if member.status != "administrator":
             await message.reply_text("I am not an administrator in this group!")
             return
 
-        # List of permissions
+        # Check permissions
         permissions = []
         perms = member.privileges
         if perms.can_change_info:
@@ -213,9 +233,7 @@ async def check_group_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Group Permissions:**\n" + "\n".join(
-                f"- {perm}" for perm in permissions
-            )
+            response = "**Bot Group Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
         else:
             response = "I am an administrator but have no special permissions."
 
@@ -229,23 +247,38 @@ async def check_group_permissions(client: Client, message: Message):
 @app.on_message(filters.command("checkchannel") & SUDOERS)
 async def check_channel_permissions(client: Client, message: Message):
     """
-    Command to check the bot's permissions in a channel.
+    Command to check the bot's permissions in a channel by username or ID.
+    Usage: /checkchannel @channel_username or /checkchannel channel_id
     """
     try:
-        if message.chat.type != ChatType.CHANNEL:
-            await message.reply_text("This command can only be used in channels!")
+        command_parts = message.command
+        if len(command_parts) < 2:
+            await message.reply_text(
+                "Usage: `/checkchannel @channel_username` or `/checkchannel channel_id`",
+                parse_mode="markdown",
+            )
             return
 
-        chat = message.chat  # Get the current chat (channel)
-        bot_id = (await client.get_me()).id  # Get the bot's user ID
-        # Get bot's member status
+        target_id = command_parts[1]  # Get the username or ID
+        if target_id.startswith("@"):
+            # If it's a username, resolve to chat ID
+            chat = await client.get_chat(target_id)
+        else:
+            # If it's an ID, directly use it
+            chat = await client.get_chat(int(target_id))
+
+        if chat.type != ChatType.CHANNEL:
+            await message.reply_text("This command is only for channels.")
+            return
+
+        bot_id = (await client.get_me()).id
         member = await client.get_chat_member(chat.id, bot_id)
 
         if member.status != "administrator":
             await message.reply_text("I am not an administrator in this channel!")
             return
 
-        # List of permissions
+        # Check permissions
         permissions = []
         perms = member.privileges
         if perms.can_post_messages:
@@ -263,9 +296,7 @@ async def check_channel_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Channel Permissions:**\n" + "\n".join(
-                f"- {perm}" for perm in permissions
-            )
+            response = "**Bot Channel Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
         else:
             response = "I am an administrator but have no special permissions."
 
@@ -274,3 +305,4 @@ async def check_channel_permissions(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"An error occurred: {e}")
         print(f"Error in check_channel_permissions: {e}")
+
