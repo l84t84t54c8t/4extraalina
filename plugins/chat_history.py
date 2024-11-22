@@ -228,15 +228,14 @@ async def check_group_permissions(client: Client, message: Message):
             if perms.can_manage_video_chats:
                 permissions.append("Manage Video Chats")
 
-        # Prepare response
         # Prepare response with the group name
         groupn = chat.title or chat.username or "گرووپی نەناسراو"
         if permissions:
-            response = "**ڕۆڵی بۆت لە {groupn}:**\n" + "\n".join(
+            response = f"**ڕۆڵی بۆت لە {groupn}:**\n" + "\n".join(
                 f"- {perm}" for perm in permissions
             )
         else:
-            response = "**من ئەدمینم لەم گرووپە\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
+            response = f"**من ئەدمینم لەم گرووپە ({groupn})\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
 
         await message.reply_text(response)
 
@@ -296,16 +295,14 @@ async def check_channel_permissions(client: Client, message: Message):
             if perms.can_manage_video_chats:
                 permissions.append("Manage Video Chats")
 
-        # Prepare response
-
         # Prepare response with the channel name
         channel_name = chat.title or chat.username or "کەناڵی نەناسراو"
         if permissions:
-            response = "**ڕۆڵی بۆت لە {channel_name}:**\n" + "\n".join(
+            response = f"**ڕۆڵی بۆت لە {channel_name}:**\n" + "\n".join(
                 f"- {perm}" for perm in permissions
             )
         else:
-            response = "**من ئەدمینم لەم کەناڵە\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
+            response = f"**من ئەدمینم لەم کەناڵە ({channel_name})\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
 
         await message.reply_text(response)
 
