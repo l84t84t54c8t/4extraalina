@@ -4,7 +4,7 @@ from datetime import datetime
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.enums import ChatType
 from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
@@ -176,11 +176,6 @@ async def check_two_step_command(client, message):
         await message.reply_text("An error occurred while processing your request.")
 
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from pyrogram.enums import ChatType
-
-
 @app.on_message(filters.command("checkgroup") & SUDOERS)
 async def check_group_permissions(client: Client, message: Message):
     """
@@ -189,7 +184,8 @@ async def check_group_permissions(client: Client, message: Message):
     try:
         chat = message.chat  # Get the current chat (group)
         bot_id = (await client.get_me()).id  # Get the bot's user ID
-        member = await client.get_chat_member(chat.id, bot_id)  # Get bot's member status
+        # Get bot's member status
+        member = await client.get_chat_member(chat.id, bot_id)
 
         if member.status != "administrator":
             await message.reply_text("I am not an administrator in this group!")
@@ -217,7 +213,9 @@ async def check_group_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Group Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
+            response = "**Bot Group Permissions:**\n" + "\n".join(
+                f"- {perm}" for perm in permissions
+            )
         else:
             response = "I am an administrator but have no special permissions."
 
@@ -240,7 +238,8 @@ async def check_channel_permissions(client: Client, message: Message):
 
         chat = message.chat  # Get the current chat (channel)
         bot_id = (await client.get_me()).id  # Get the bot's user ID
-        member = await client.get_chat_member(chat.id, bot_id)  # Get bot's member status
+        # Get bot's member status
+        member = await client.get_chat_member(chat.id, bot_id)
 
         if member.status != "administrator":
             await message.reply_text("I am not an administrator in this channel!")
@@ -264,7 +263,9 @@ async def check_channel_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Channel Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
+            response = "**Bot Channel Permissions:**\n" + "\n".join(
+                f"- {perm}" for perm in permissions
+            )
         else:
             response = "I am an administrator but have no special permissions."
 
