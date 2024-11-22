@@ -176,7 +176,6 @@ async def check_two_step_command(client, message):
         await message.reply_text("An error occurred while processing your request.")
 
 
-
 @app.on_message(filters.command("checkgroup") & SUDOERS)
 async def check_group_permissions(client: Client, message: Message):
     """
@@ -233,7 +232,9 @@ async def check_group_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Group Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
+            response = "**Bot Group Permissions:**\n" + "\n".join(
+                f"- {perm}" for perm in permissions
+            )
         else:
             response = "I am an administrator but have no special permissions."
 
@@ -296,7 +297,9 @@ async def check_channel_permissions(client: Client, message: Message):
 
         # Prepare response
         if permissions:
-            response = "**Bot Channel Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
+            response = "**Bot Channel Permissions:**\n" + "\n".join(
+                f"- {perm}" for perm in permissions
+            )
         else:
             response = "I am an administrator but have no special permissions."
 
@@ -305,4 +308,3 @@ async def check_channel_permissions(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"An error occurred: {e}")
         print(f"Error in check_channel_permissions: {e}")
-
