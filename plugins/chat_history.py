@@ -174,3 +174,102 @@ async def check_two_step_command(client, message):
         print(f"Error occurred during /twostep command: {e}")
         # Send a user-friendly message
         await message.reply_text("An error occurred while processing your request.")
+
+
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from pyrogram.enums import ChatType
+
+
+@app.on_message(filters.command("checkgroup") & SUDOERS)
+async def check_group_permissions(client: Client, message: Message):
+    """
+    Command to check the bot's permissions in a group.
+    """
+    try:
+        chat = message.chat  # Get the current chat (group)
+        bot_id = (await client.get_me()).id  # Get the bot's user ID
+        member = await client.get_chat_member(chat.id, bot_id)  # Get bot's member status
+
+        if member.status != "administrator":
+            await message.reply_text("I am not an administrator in this group!")
+            return
+
+        # List of permissions
+        permissions = []
+        perms = member.privileges
+        if perms.can_change_info:
+            permissions.append("Change Group Info")
+        if perms.can_delete_messages:
+            permissions.append("Delete Messages")
+        if perms.can_restrict_members:
+            permissions.append("Restrict Members")
+        if perms.can_invite_users:
+            permissions.append("Invite Users")
+        if perms.can_pin_messages:
+            permissions.append("Pin Messages")
+        if perms.can_promote_members:
+            permissions.append("Promote Members")
+        if perms.can_manage_chat:
+            permissions.append("Manage Chat")
+        if perms.can_manage_video_chats:
+            permissions.append("Manage Video Chats")
+
+        # Prepare response
+        if permissions:
+            response = "**Bot Group Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
+        else:
+            response = "I am an administrator but have no special permissions."
+
+        await message.reply_text(response)
+
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {e}")
+        print(f"Error in check_group_permissions: {e}")
+
+
+@app.on_message(filters.command("checkchannel") & SUDOERS)
+async def check_channel_permissions(client: Client, message: Message):
+    """
+    Command to check the bot's permissions in a channel.
+    """
+    try:
+        if message.chat.type != ChatType.CHANNEL:
+            await message.reply_text("This command can only be used in channels!")
+            return
+
+        chat = message.chat  # Get the current chat (channel)
+        bot_id = (await client.get_me()).id  # Get the bot's user ID
+        member = await client.get_chat_member(chat.id, bot_id)  # Get bot's member status
+
+        if member.status != "administrator":
+            await message.reply_text("I am not an administrator in this channel!")
+            return
+
+        # List of permissions
+        permissions = []
+        perms = member.privileges
+        if perms.can_post_messages:
+            permissions.append("Post Messages")
+        if perms.can_edit_messages:
+            permissions.append("Edit Messages")
+        if perms.can_delete_messages:
+            permissions.append("Delete Messages")
+        if perms.can_invite_users:
+            permissions.append("Invite Users")
+        if perms.can_manage_chat:
+            permissions.append("Manage Chat")
+        if perms.can_manage_video_chats:
+            permissions.append("Manage Video Chats")
+
+        # Prepare response
+        if permissions:
+            response = "**Bot Channel Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
+        else:
+            response = "I am an administrator but have no special permissions."
+
+        await message.reply_text(response)
+
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {e}")
+        print(f"Error in check_channel_permissions: {e}")
