@@ -229,7 +229,7 @@ async def check_group_permissions(client: Client, message: Message):
                 permissions.append("Manage Video Chats")
 
         # Prepare response
-                # Prepare response with the channel name
+        # Prepare response with the channel name
         group_name = chat.title or chat.username or "گرووپی نەناسراو"
         if permissions:
             response = "**ڕۆڵی بۆت لە {group_name}:**\n" + "\n".join(
