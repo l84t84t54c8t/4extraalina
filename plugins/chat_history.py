@@ -235,7 +235,9 @@ async def check_group_permissions(client: Client, message: Message):
                 f"- {perm}" for perm in permissions
             )
         else:
-            response = f"**من ئەدمینم لەم گرووپە ({groupn})\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
+            response = (
+                f"**من ئەدمینم لەم گرووپە ({groupn})\nبەڵام هیچ ڕۆڵێکی تایبەتم نییە.**"
+            )
 
         await message.reply_text(response)
 
