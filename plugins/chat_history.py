@@ -5,7 +5,7 @@ from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import Client, filters
-from pyrogram.enums import ChatType
+from pyrogram.enums import ChatType, ChatMemberStatus
 from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
 
@@ -176,12 +176,9 @@ async def check_two_step_command(client, message):
         await message.reply_text("An error occurred while processing your request.")
 
 
+
 @app.on_message(filters.command("checkgroup") & SUDOERS)
 async def check_group_permissions(client: Client, message: Message):
-    """
-    Command to check the bot's permissions in a group by username or ID.
-    Usage: /checkgroup @group_username or /checkgroup group_id
-    """
     try:
         command_parts = message.command
         if len(command_parts) < 2:
@@ -191,12 +188,12 @@ async def check_group_permissions(client: Client, message: Message):
             )
             return
 
-        target_id = command_parts[1]  # Get the username or ID
+        target_id = command_parts[1]
         if target_id.startswith("@"):
-            # If it's a username, resolve to chat ID
+            # Resolve username to chat ID
             chat = await client.get_chat(target_id)
         else:
-            # If it's an ID, directly use it
+            # Directly use chat ID
             chat = await client.get_chat(int(target_id))
 
         if chat.type != ChatType.SUPERGROUP:
@@ -206,35 +203,35 @@ async def check_group_permissions(client: Client, message: Message):
         bot_id = (await client.get_me()).id
         member = await client.get_chat_member(chat.id, bot_id)
 
-        if member.status != "administrator":
+        # Check if the bot is an administrator
+        if member.status != ChatMemberStatus.ADMINISTRATOR:
             await message.reply_text("I am not an administrator in this group!")
             return
 
         # Check permissions
         permissions = []
-        perms = member.privileges
-        if perms.can_change_info:
-            permissions.append("Change Group Info")
-        if perms.can_delete_messages:
-            permissions.append("Delete Messages")
-        if perms.can_restrict_members:
-            permissions.append("Restrict Members")
-        if perms.can_invite_users:
-            permissions.append("Invite Users")
-        if perms.can_pin_messages:
-            permissions.append("Pin Messages")
-        if perms.can_promote_members:
-            permissions.append("Promote Members")
-        if perms.can_manage_chat:
-            permissions.append("Manage Chat")
-        if perms.can_manage_video_chats:
-            permissions.append("Manage Video Chats")
+        if member.privileges:
+            perms = member.privileges
+            if perms.can_change_info:
+                permissions.append("Change Group Info")
+            if perms.can_delete_messages:
+                permissions.append("Delete Messages")
+            if perms.can_restrict_members:
+                permissions.append("Restrict Members")
+            if perms.can_invite_users:
+                permissions.append("Invite Users")
+            if perms.can_pin_messages:
+                permissions.append("Pin Messages")
+            if perms.can_promote_members:
+                permissions.append("Promote Members")
+            if perms.can_manage_chat:
+                permissions.append("Manage Chat")
+            if perms.can_manage_video_chats:
+                permissions.append("Manage Video Chats")
 
         # Prepare response
         if permissions:
-            response = "**Bot Group Permissions:**\n" + "\n".join(
-                f"- {perm}" for perm in permissions
-            )
+            response = "**Bot Group Permissions:**\n" + "\n".join(f"- {perm}" for perm in permissions)
         else:
             response = "I am an administrator but have no special permissions."
 
