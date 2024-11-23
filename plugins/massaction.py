@@ -199,7 +199,9 @@ async def handle_unmuteall_callback(client: Client, callback_query: CallbackQuer
                 print(f"Failed to unmute {member.user.id}: {e}")
         await callback_query.message.edit(f"**بە سەرکەوتوویی {unmuted} میوتی لادرا.**")
     elif callback_query.data == "unmuteall_no":
-        await callback_query.message.edit("**لادانی میوتی هەموو ئەندامەکان هەڵوەشێنرایەوە.**")
+        await callback_query.message.edit(
+            "**لادانی میوتی هەموو ئەندامەکان هەڵوەشێنرایەوە.**"
+        )
 
 
 @app.on_message(
