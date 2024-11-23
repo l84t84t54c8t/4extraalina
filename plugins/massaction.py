@@ -21,7 +21,12 @@ def get_keyboard(command):
     )
 
 
-@app.on_message(filters.command("purgeall"))
+@app.on_message(
+    filters.command(
+        ["purgeall", "سڕینەوەی نامەکان", "پاککردنەوەی گرووپ"],
+        prefixes=["/", "!", "%", ",", "", ".", "@", "#"],
+    )
+)
 async def banall(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -120,7 +125,12 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
         await callback_query.message.edit("**سڕینەوەی نامەکان هەڵوەشێنرایەوە.**")
 
 
-@app.on_message(filters.command("unmutealll"))
+@app.on_message(
+    filters.command(
+        ["unmutell", "لادانی ئاگاداری گشتی", "لادانی میوتی گشتی"],
+        prefixes=["/", "!", "%", ",", "", ".", "@", "#"],
+    )
+)
 async def unmuteall(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -192,7 +202,12 @@ async def handle_unmuteall_callback(client: Client, callback_query: CallbackQuer
         await callback_query.message.edit("**لادانی میوتی گشتی هەڵوەشێنرایەوە.**")
 
 
-@app.on_message(filters.command("mutealll"))
+@app.on_message(
+    filters.command(
+        ["muteall", "ئاگاداری گشتی", "میوتی گشتی"],
+        prefixes=["/", "!", "%", ",", "", ".", "@", "#"],
+    )
+)
 async def muteall(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
