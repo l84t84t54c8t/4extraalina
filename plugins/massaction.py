@@ -170,10 +170,10 @@ async def handle_unmuteall_callback(client: Client, callback_query: CallbackQuer
         )
         return
     if callback_query.data == "unmuteall_yes":
-        await callback_query.message.edit("لادانی میوتی گشتی ...")
+        await callback_query.message.edit("**لادانی میوتی هەموو ئەندامەکان ...**")
         bot = await app.get_chat_member(chat_id, app.me.id)
         if not bot.privileges.can_restrict_members:
-            await callback_query.message.edit("ببورە من ڕۆڵی میوت و دەرکردنم نییە.")
+            await callback_query.message.edit("**ببورە من ڕۆڵی میوت و دەرکردنم نییە.**")
             return
         unmuted = 0
         async for member in app.get_chat_members(chat_id):
@@ -199,7 +199,7 @@ async def handle_unmuteall_callback(client: Client, callback_query: CallbackQuer
                 print(f"Failed to unmute {member.user.id}: {e}")
         await callback_query.message.edit(f"**بە سەرکەوتوویی {unmuted} میوتی لادرا.**")
     elif callback_query.data == "unmuteall_no":
-        await callback_query.message.edit("**لادانی میوتی گشتی هەڵوەشێنرایەوە.**")
+        await callback_query.message.edit("**لادانی میوتی هەموو ئەندامەکان هەڵوەشێنرایەوە.**")
 
 
 @app.on_message(
@@ -242,14 +242,14 @@ async def handle_muteall_callback(client: Client, callback_query: CallbackQuery)
             owner_AMBOT = admin.user.mention
     if user_id != owner_id and user_id not in SUDOERS:
         await callback_query.answer(
-            "تەنها خاوەنی گرووپ دەتوانێت ئەم کارە بکات.", show_alert=True
+            "**تەنها خاوەنی گرووپ دەتوانێت ئەم کارە بکات.**", show_alert=True
         )
         return
     if callback_query.data == "muteall_yes":
-        await callback_query.message.edit("میوت کردنی هەموو ئەندامەکان ...")
+        await callback_query.message.edit("**میوت کردنی هەموو ئەندامەکان ...**")
         bot = await app.get_chat_member(chat_id, app.me.id)
         if not bot.privileges.can_restrict_members:
-            await callback_query.message.edit("ببورە من ڕۆڵی میوت و دەرکردنم نییە.")
+            await callback_query.message.edit("**ببورە من ڕۆڵی میوت و دەرکردنم نییە.**")
             return
         muted = 0
         async for member in app.get_chat_members(chat_id):
