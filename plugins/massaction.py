@@ -5,7 +5,6 @@ from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import get_assistant
 from pyrogram import Client, enums, filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import ChatAdminRequired
 from pyrogram.types import (CallbackQuery, ChatPermissions, ChatPrivileges,
                             InlineKeyboardButton, InlineKeyboardMarkup,
                             Message)
@@ -36,9 +35,7 @@ async def banall(client: Client, message: Message):
     )
     await asyncio.sleep(2)
     bot = await app.get_chat_member(chat_id, app.me.id)
-    if not (
-        bot.privileges.can_delete_messages
-    ):
+    if not (bot.privileges.can_delete_messages):
         await AMBOTOK.edit(
             f"**من ڕۆڵی پێویستم نییە بۆ ئەنجامدانی\n**"
             f"**پێویستی بە ڕۆڵی.\n**"
@@ -75,7 +72,9 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
         return
 
     if callback_query.data == "deleteall_yes":
-        await callback_query.answer("**سڕینەوەی نامەکان دەستی پێکرد . .**", show_alert=True)
+        await callback_query.answer(
+            "**سڕینەوەی نامەکان دەستی پێکرد . .**", show_alert=True
+        )
         await app.promote_chat_member(
             chat_id,
             assid,
@@ -116,12 +115,9 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
                 "**بە سەرکەوتوویی هەموو نامەکان سڕدرانەوە.**", show_alert=False
             )
         except Exception as e:
-            await callback_query.answer(
-                f"**هەڵە:\n{str(e)}**", show_alert=False
-            )
+            await callback_query.answer(f"**هەڵە:\n{str(e)}**", show_alert=False)
     elif callback_query.data == "deleteall_no":
         await callback_query.message.edit("**سڕینەوەی نامەکان هەڵوەشێنرایەوە.**")
-
 
 
 @app.on_message(filters.command("unmutealll"))
@@ -167,13 +163,14 @@ async def handle_unmuteall_callback(client: Client, callback_query: CallbackQuer
         await callback_query.message.edit("لادانی میوتی گشتی ...")
         bot = await app.get_chat_member(chat_id, app.me.id)
         if not bot.privileges.can_restrict_members:
-            await callback_query.message.edit(
-                "ببورە من ڕۆڵی میوت و دەرکردنم نییە."
-            )
+            await callback_query.message.edit("ببورە من ڕۆڵی میوت و دەرکردنم نییە.")
             return
         unmuted = 0
         async for member in app.get_chat_members(chat_id):
-            if member.status in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+            if member.status in [
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.OWNER,
+            ]:
                 continue
             try:
                 await app.restrict_chat_member(
@@ -237,13 +234,14 @@ async def handle_muteall_callback(client: Client, callback_query: CallbackQuery)
         await callback_query.message.edit("میوت کردنی هەموو ئەندامەکان ...")
         bot = await app.get_chat_member(chat_id, app.me.id)
         if not bot.privileges.can_restrict_members:
-            await callback_query.message.edit(
-                "ببورە من ڕۆڵی میوت و دەرکردنم نییە."
-            )
+            await callback_query.message.edit("ببورە من ڕۆڵی میوت و دەرکردنم نییە.")
             return
         muted = 0
         async for member in app.get_chat_members(chat_id):
-            if member.status in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+            if member.status in [
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.OWNER,
+            ]:
                 continue
             try:
                 await app.restrict_chat_member(
@@ -252,7 +250,9 @@ async def handle_muteall_callback(client: Client, callback_query: CallbackQuery)
                 muted += 1
             except Exception as e:
                 print(f"Failed to mute {member.user.id}: {e}")
-        await callback_query.message.edit(f"**بە سەرکەوتوویی {muted} ئەندام میوت کرا.**")
+        await callback_query.message.edit(
+            f"**بە سەرکەوتوویی {muted} ئەندام میوت کرا.**"
+        )
     elif callback_query.data == "muteall_no":
         await callback_query.message.edit("**میوتی گشتی هەڵوەشێنرایەوە.**")
 
