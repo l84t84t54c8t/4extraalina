@@ -1,10 +1,10 @@
 from sys import exit as exiter
 
+from AlinaMusic.core.mongo import DB_NAME
+from AlinaMusic.logging import LOGGER
+from config import MONGO_DB_URI
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
-from config import MONGO_DB_URI
-from AlinaMusic.logging import LOGGER
-from AlinaMusic.core.mongo import DB_NAME
 
 try:
     Alina_db_client = MongoClient(MONGO_DB_URI)
