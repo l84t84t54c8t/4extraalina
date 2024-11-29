@@ -1,18 +1,26 @@
 import logging
 from functools import wraps
-from traceback import format_exc as err
+from traceback import format_exc
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
-from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
+from pyrogram.errors import ChatWriteForbidden
 from pyrogram.types import Message
 
+# Configure logging
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
-async def member_permissions(chat_id: int, user_id: int):
+async def member_permissions(chat_id: int, user_id: int) -> list[str]:
+    """
+    Retrieve a user's permissions in a chat.
+    """
     perms = []
     member = (await app.get_chat_member(chat_id, user_id)).privileges
     if not member:
-        return []
+        return perms
     if member.can_post_messages:
         perms.append("can_post_messages")
     if member.can_edit_messages:
@@ -34,82 +42,81 @@ async def member_permissions(chat_id: int, user_id: int):
     return perms
 
 
-async def authorised(func, subFunc2, client, message, *args, **kwargs):
-    chatID = message.chat.id
-    try:
-        await func(client, message, *args, **kwargs)
-    except ChatWriteForbidden:
-        await app.leave_chat(chatID)
-    except Exception as e:
-        logging.exception(e)
-        try:
-            await message.reply_text(str(e.MESSAGE))
-        except AttributeError:
-            await message.reply_text(str(e))
-        e = err()
-        print(str(e))
-    return subFunc2
-
-
-async def unauthorised(
-    message: Message, permission, subFunc2, bot_lacking_permission=False
-):
-    chatID = message.chat.id
-    if bot_lacking_permission:
-        text = (
-            "**👮🏻 | ببورە، تۆ ڕؤڵت نییە**"
-            + f"\n**👮🏻 | پێویستە ڕؤلی  __{permission}__ هەبێت!**"
-        )
-    else:
-        text = (
-            "**👮🏻 | ببورە، تۆ ڕؤڵت نییە**"
-            + f"\n**👮🏻 | پێویستە ڕؤلی  __{permission}__ هەبێت!**"
-        )
-    try:
-        await message.reply_text(text)
-    except ChatWriteForbidden:
-        await app.leave_chat(chatID)
-    return subFunc2
-
-
-async def bot_permissions(chat_id: int):
-    perms = []
+async def bot_permissions(chat_id: int) -> list[str]:
+    """
+    Retrieve the bot's permissions in a chat.
+    """
     return await member_permissions(chat_id, app.id)
 
 
-def adminsOnly(permission):
-    def subFunc(func):
+async def authorised(func, client, message: Message, *args, **kwargs):
+    """
+    Wrapper for handling authorised actions with error management.
+    """
+    try:
+        await func(client, message, *args, **kwargs)
+    except ChatWriteForbidden:
+        logging.error(f"Bot lacks permission to write in chat {message.chat.id}. Leaving the chat.")
+        await app.leave_chat(message.chat.id)
+    except Exception as e:
+        logging.exception(f"Error in authorised function: {e}")
+        try:
+            await message.reply_text(f"**Error:** {str(e)}")
+        except ChatWriteForbidden:
+            await app.leave_chat(message.chat.id)
+        logging.debug(f"Traceback: {format_exc()}")
+
+
+async def unauthorised(message: Message, permission: str, bot_lacking_permission=False):
+    """
+    Notify a user of unauthorised access.
+    """
+    chat_id = message.chat.id
+    text = (
+        f"**👮🏻 | ببورە، تۆ ڕؤڵت نییە**\n"
+        f"**👮🏻 | پێویستە ڕؤلی  __{permission}__ هەبێت!**"
+    )
+    if bot_lacking_permission:
+        text = f"**❌ Bot lacks permission:** `{permission}`."
+
+    try:
+        await message.reply_text(text)
+    except ChatWriteForbidden:
+        logging.error(f"Bot cannot send messages in chat {chat_id}. Leaving the chat.")
+        await app.leave_chat(chat_id)
+
+
+def adminsOnly(permission: str):
+    """
+    Decorator to enforce admin-only commands with specific permissions.
+    """
+    def decorator(func):
         @wraps(func)
-        async def subFunc2(client, message: Message, *args, **kwargs):
-            chatID = message.chat.id
+        async def wrapper(client, message: Message, *args, **kwargs):
+            chat_id = message.chat.id
 
-            # Check if the bot has the required permission
-            bot_perms = await bot_permissions(chatID)
+            # Check bot's permissions
+            bot_perms = await bot_permissions(chat_id)
             if permission not in bot_perms:
-                return await unauthorised(
-                    message, permission, subFunc2, bot_lacking_permission=True
-                )
+                return await unauthorised(message, permission, bot_lacking_permission=True)
 
+            # Handle anonymous admins
             if not message.from_user:
-                # For anonymous admins
-                if message.sender_chat and message.sender_chat.id == message.chat.id:
-                    return await authorised(
-                        func,
-                        subFunc2,
-                        client,
-                        message,
-                        *args,
-                        **kwargs,
-                    )
-                return await unauthorised(message, permission, subFunc2)
+                if message.sender_chat and message.sender_chat.id == chat_id:
+                    return await authorised(func, client, message, *args, **kwargs)
+                return await unauthorised(message, permission)
 
-            # For admins and sudo users
-            userID = message.from_user.id
-            permissions = await member_permissions(chatID, userID)
-            if userID not in SUDOERS and permission not in permissions:
-                return await unauthorised(message, permission, subFunc2)
-            return await authorised(func, subFunc2, client, message, *args, **kwargs)
+            # Handle regular users and SUDOERS
+            user_id = message.from_user.id
+            if user_id in SUDOERS:
+                return await authorised(func, client, message, *args, **kwargs)
 
-        return subFunc2
+            user_perms = await member_permissions(chat_id, user_id)
+            if permission not in user_perms:
+                return await unauthorised(message, permission)
+            
+            return await authorised(func, client, message, *args, **kwargs)
 
-    return subFunc
+        return wrapper
+
+    return decorator
