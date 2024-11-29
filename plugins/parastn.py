@@ -1418,7 +1418,6 @@ async def telegr1aph(client, message):
 hmses = {}
 
 
-
 @app.on_message(filters.video_chat_members_invited)
 async def zoharyy(client, message):
     text = f"- قام {message.from_user.mention}\n - بدعوة : "
