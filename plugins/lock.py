@@ -435,7 +435,7 @@ async def unlock_perm(c: Gojo, m: Message):
     return
 
 
-async def delete_messages(c: Gojo, m: Message):
+async def delete_messages(c: app, m: Message):
     try:
         await m.delete()
         return
@@ -445,7 +445,7 @@ async def delete_messages(c: Gojo, m: Message):
         return
 
 
-async def is_approved_user(c: Gojo, m: Message):
+async def is_approved_user(c: app, m: Message):
     approved_users = Approve(m.chat.id).list_approved()
     ul = [user[0] for user in approved_users]
     try:
@@ -557,15 +557,7 @@ async def prevent_approved(m: Message):
     return
 
 
-__PLUGIN__ = "locks"
-
-__alt_name__ = ["grouplock", "lock", "grouplocks"]
-
-__buttons__ = [
-    [
-        ("Lock Types", "LOCK_TYPES"),
-    ],
-]
+__MODULE__ = "locks"
 
 __HELP__ = """
 **Locks**
