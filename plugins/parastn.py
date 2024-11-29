@@ -1,20 +1,14 @@
 import os
 
-from config import MUST_JOIN, OWNER_ID, OWNER_USERNAME
+from AlinaMusic import app
+from config import OWNER_ID, OWNER_USERNAME
 from pyrogram import Client
 from pyrogram import Client as client
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
-from pyrogram.errors import ChatAdminRequired, ChatWriteForbidden, UserNotParticipant
-from pyrogram.types import (
-    ChatPermissions,
-    ChatPrivileges,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
+from pyrogram.types import (ChatPermissions, ChatPrivileges,
+                            InlineKeyboardButton, InlineKeyboardMarkup)
 from telegraph import upload_file
-from AlinaMusic import app
-from AlinaMusic.plugins.play.play import joinch
 
 photosource = "https://graph.org/file/3202937ba2792dfa8722f.jpg"
 
@@ -155,7 +149,7 @@ async def h24mgdgbie(client: Client, CallbackQuery):
     )
 
 
-###قفل الحمايه
+# قفل الحمايه
 @app.on_callback_query(
     filters.regex(
         pattern=r"^(stop_photo|stop_video|stop_forward|stop_link|stop_mention|stop_sticker|stop_alkl)$"
@@ -263,7 +257,7 @@ link_mut = []
 link_ban = []
 
 
-###فتح الحمايه
+# فتح الحمايه
 @app.on_callback_query(
     filters.regex(
         pattern=r"^(viddelet|photoun|frwdelet|rwadelet|mendelet|moldelet|opn_alkl)$"
@@ -474,7 +468,7 @@ async def mearhjc(client: Client, CallbackQuery):
         [[InlineKeyboardButton("رجوع", callback_data=f"jzhfjgh5")]]
     )
     chat_id = CallbackQuery.message.chat.id
-    ##الكل
+    # الكل
     if command == "alkl_unmut1":
         try:
             photo_mut.append(CallbackQuery.message.chat.id)
@@ -559,7 +553,7 @@ async def mearhjc(client: Client, CallbackQuery):
         return await CallbackQuery.edit_message_text(
             " تم قفل الكل بنجاح ✨♥", reply_markup=keybord
         )
-    ##الصور
+    # الصور
     if command == "photo_unmut1":
         if chat_id in photo_mut:
             return await CallbackQuery.message.reply_text("الصور مقفول بالفعل ✨♥")
@@ -581,7 +575,7 @@ async def mearhjc(client: Client, CallbackQuery):
         return await CallbackQuery.edit_message_text(
             " تم قفل الصور بنجاح ✨♥", reply_markup=keybord
         )
-    ##الفديو
+    # الفديو
     if command == "video_unmut1":
         if chat_id in video_mut:
             return await CallbackQuery.message.reply_text("الفديو مقفول بالفعل ✨♥")
@@ -603,7 +597,7 @@ async def mearhjc(client: Client, CallbackQuery):
         return await CallbackQuery.edit_message_text(
             " تم قفل الفديو بنجاح ✨♥", reply_markup=keybord
         )
-    ##المنشن
+    # المنشن
     if command == "mention_unmut1":
         if chat_id in mention_mut:
             return await CallbackQuery.message.reply_text("المنشن مقفول بالفعل ✨♥")
@@ -625,7 +619,7 @@ async def mearhjc(client: Client, CallbackQuery):
         return await CallbackQuery.edit_message_text(
             " تم قفل المنشن بنجاح ✨♥", reply_markup=keybord
         )
-    ##التوجيه
+    # التوجيه
     if command == "forward_unmut1":
         if chat_id in forward_mut:
             return await CallbackQuery.message.reply_text("التوجيه مقفول بالفعل ✨♥")
@@ -647,7 +641,7 @@ async def mearhjc(client: Client, CallbackQuery):
         return await CallbackQuery.edit_message_text(
             " تم قفل التوجيه بنجاح ✨♥", reply_markup=keybord
         )
-    ##الروابط
+    # الروابط
     if command == "link_unmut1":
         if chat_id in link_mut:
             return await CallbackQuery.message.reply_text("الروابط مقفول بالفعل ✨♥")
@@ -669,7 +663,7 @@ async def mearhjc(client: Client, CallbackQuery):
         return await CallbackQuery.edit_message_text(
             " تم قفل الروابط بنجاح ✨♥", reply_markup=keybord
         )
-    ##الملصقات
+    # الملصقات
     if command == "sticker_unmut1":
         if chat_id in sticker_mut:
             return await CallbackQuery.message.reply_text("الملصقات مقفول بالفعل ✨♥")
@@ -693,7 +687,7 @@ async def mearhjc(client: Client, CallbackQuery):
         )
 
 
-###الصور
+# الصور
 @app.on_message(
     filters.photo & filters.create(lambda _, __, message: message.chat.id in photo_mut)
 )
@@ -736,7 +730,7 @@ async def deletks55e55_fgon(client, message):
     print("صور")
 
 
-###الفديو
+# الفديو
 @app.on_message(
     filters.video & filters.create(lambda _, __, message: message.chat.id in video_mut)
 )
@@ -779,7 +773,7 @@ async def deletkse_video(client, message):
     print("فيد")
 
 
-###التوجيه
+# التوجيه
 @app.on_message(
     filters.forwarded
     & filters.create(lambda _, __, message: message.chat.id in forward_mut)
@@ -824,7 +818,7 @@ async def deletkse_forward(client, message):
     print("توجيه")
 
 
-###الملصقات
+# الملصقات
 @app.on_message(
     filters.sticker
     & filters.create(lambda _, __, message: message.chat.id in sticker_mut)
@@ -869,7 +863,7 @@ async def deletkse_sticker(client, message):
     print("ملصق")
 
 
-###المنشن
+# المنشن
 @app.on_message(group=676531)
 async def deletkse_mention(client, message):
     if not message.chat.id in mention_mut:
@@ -914,7 +908,7 @@ async def deletkse_mention(client, message):
         print("@")
 
 
-###الروابط
+# الروابط
 @app.on_message(group=54534)
 async def deletkse_link(client, message):
     if not message.chat.id in link_mut:
@@ -1533,7 +1527,7 @@ async def zoharyy(client, message):
             pass
     try:
         await message.reply(f"{text} ")
-    except:
+    except BaseException:
         pass
 
 
@@ -1883,7 +1877,7 @@ async def m54u54te(client, message):
                 user_id=message.reply_to_message.from_user.id,
                 permissions=unmute_permissions,
             )
-        except:
+        except BaseException:
             await message.reply_text(f"لم استطع تنزيله")
         await message.reply_text(f"تم تنزيل المشرف بنجاح ✨♥")
 
