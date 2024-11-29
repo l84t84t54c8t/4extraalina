@@ -4,8 +4,7 @@ from Powers.database import MongoDB
 
 INSERTION_LOCK = RLock()
 
-lock_t = ["bot", "anti_c_send", "anti_fwd",
-          "anti_fwd_u", "anti_fwd_c", "anti_links"]
+lock_t = ["bot", "anti_c_send", "anti_fwd", "anti_fwd_u", "anti_fwd_c", "anti_links"]
 
 
 class LOCKS(MongoDB):
@@ -68,20 +67,16 @@ class LOCKS(MongoDB):
         ]:
             return False
         if locktype != "all":
-            curr = self.find_one(
-                {"chat_id": chat, "locktype": locktype})
+            curr = self.find_one({"chat_id": chat, "locktype": locktype})
             return bool(curr)
         else:
             if not (curr := self.find_all({"chat_id": chat})):
                 return None
             to_return = {
                 "anti_channel": False,
-                "anti_fwd": {
-                    "user": False,
-                    "chat": False
-                },
+                "anti_fwd": {"user": False, "chat": False},
                 "anti_links": False,
-                "bot": False
+                "bot": False,
             }
             for i in list(curr):
                 if i["locktype"] == "anti_c_send":
