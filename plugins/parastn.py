@@ -13,42 +13,10 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
 )
 from telegraph import upload_file
-from YukkiMusic import app
+from AlinaMusic import app
+from AlinaMusic.plugins.play.play import joinch
 
 photosource = "https://graph.org/file/3202937ba2792dfa8722f.jpg"
-
-
-async def johned(message):
-    if not MUST_JOIN:
-        return
-    try:
-        try:
-            await app.get_chat_member(MUST_JOIN, message.from_user.id)
-        except UserNotParticipant:
-            if MUST_JOIN.isalpha():
-                link = "https://t.me/" + MUST_JOIN
-            else:
-                chat_info = await app.get_chat(MUST_JOIN)
-                link = chat_info.invite_link
-            try:
-                await message.reply(
-                    f"**• You must join the channel\n• To be able to play songs\n• Bot Channel : « @{MUST_JOIN} »\n\n• پێویستە جۆینی کەناڵ بکەیت\n• بۆ ئەوەی بتوانی گۆرانی پەخش بکەیت\n• کەناڵی بۆت : « @{MUST_JOIN} »**",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    "• جۆینی کەناڵ بکە •", url=f"{link}"
-                                ),
-                            ]
-                        ]
-                    ),
-                    disable_web_page_preview=True,
-                )
-                await message.stop_propagation()
-            except ChatWriteForbidden:
-                pass
-    except ChatAdminRequired:
-        print(f"**بۆت بکە ئەدمین لە کەناڵی**: {MUST_JOIN} !")
 
 
 loloalbhos = []
