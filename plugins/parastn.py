@@ -954,7 +954,7 @@ async def deletkse_link(client, message):
         print("رابط")
 
 
-@Client.on_message(filters.command(["قفل الدردشه", "قفل الدردشة"], ""))
+@app.on_message(filters.command(["قفل الدردشه", "قفل الدردشة"], ""))
 async def enabled(client, message):
     if await joinch(message):
         return
@@ -981,7 +981,7 @@ async def enabled(client, message):
         )
 
 
-@Client.on_message(filters.command(["فتح الدردشه", "فتح الدردشة"], ""))
+@app.on_message(filters.command(["فتح الدردشه", "فتح الدردشة"], ""))
 async def undard(client, message):
     if await joinch(message):
         return
@@ -1008,7 +1008,7 @@ async def undard(client, message):
         )
 
 
-@Client.on_message(filters.command("قفل التثبيت", ""))
+@app.on_message(filters.command("قفل التثبيت", ""))
 async def taspit(client, message):
     if await joinch(message):
         return
@@ -1036,7 +1036,7 @@ async def taspit(client, message):
         )
 
 
-@Client.on_message(filters.command("فتح التثبيت", ""))
+@app.on_message(filters.command("فتح التثبيت", ""))
 async def tasspit(client, message):
     if await joinch(message):
         return
@@ -1064,7 +1064,7 @@ async def tasspit(client, message):
         )
 
 
-@Client.on_message(filters.command("قفل الدعوة", ""))
+@app.on_message(filters.command("قفل الدعوة", ""))
 async def dasoo(client, message):
     if await joinch(message):
         return
@@ -1092,7 +1092,7 @@ async def dasoo(client, message):
         )
 
 
-@Client.on_message(filters.command("فتح الدعوة", ""))
+@app.on_message(filters.command("فتح الدعوة", ""))
 async def zombeee(client, message):
     if await joinch(message):
         return
@@ -1120,7 +1120,7 @@ async def zombeee(client, message):
         )
 
 
-@Client.on_message(filters.command("قفل الميديا", ""))
+@app.on_message(filters.command("قفل الميديا", ""))
 async def mediazomb(client, message):
     if await joinch(message):
         return
@@ -1150,7 +1150,7 @@ async def mediazomb(client, message):
         )
 
 
-@Client.on_message(filters.command("فتح الميديا", ""))
+@app.on_message(filters.command("فتح الميديا", ""))
 async def zombmeddia(client, message):
     if await joinch(message):
         return
@@ -1180,7 +1180,7 @@ async def zombmeddia(client, message):
         )
 
 
-@Client.on_message(filters.command("قفل المتحركات", ""))
+@app.on_message(filters.command("قفل المتحركات", ""))
 async def motahark(client, message):
     if await joinch(message):
         return
@@ -1213,7 +1213,7 @@ async def motahark(client, message):
         )
 
 
-@Client.on_message(filters.command("فتح المتحركات", ""))
+@app.on_message(filters.command("فتح المتحركات", ""))
 async def motazombie(client, message):
     if await joinch(message):
         return
