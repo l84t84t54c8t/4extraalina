@@ -1,12 +1,12 @@
 from threading import RLock
+
 from AlinaMusic.core.mongo import mongodb
 
 # Initialize the locks collection
 locksdb = mongodb.locks
 INSERTION_LOCK = RLock()
 
-lock_t = ["bot", "anti_c_send", "anti_fwd",
-          "anti_fwd_u", "anti_fwd_c", "anti_links"]
+lock_t = ["bot", "anti_c_send", "anti_fwd", "anti_fwd_u", "anti_fwd_c", "anti_links"]
 
 
 class LOCKS:
@@ -66,8 +66,7 @@ class LOCKS:
             return False
 
         if locktype != "all":
-            curr = await self.db.find_one(
-                {"chat_id": chat, "locktype": locktype})
+            curr = await self.db.find_one({"chat_id": chat, "locktype": locktype})
             return bool(curr)
 
         curr = self.db.find({"chat_id": chat})
@@ -76,12 +75,9 @@ class LOCKS:
 
         to_return = {
             "anti_channel": False,
-            "anti_fwd": {
-                "user": False,
-                "chat": False
-            },
+            "anti_fwd": {"user": False, "chat": False},
             "anti_links": False,
-            "bot": False
+            "bot": False,
         }
         async for i in curr:
             if i["locktype"] == "anti_c_send":
