@@ -3,12 +3,10 @@ from re import findall
 from re import sub as re_sub
 
 from pyrogram import errors
-from pyrogram.enums import MessageEntityType
 from pyrogram.enums import ChatMemberStatus as CMS
-from pyrogram.enums import ChatType
-from pyrogram.errors import RPCError, UserNotParticipant
+from pyrogram.enums import ChatType, MessageEntityType
 from pyrogram.filters import create
-from pyrogram.types import CallbackQuery, ChatJoinRequest, Message
+from pyrogram.types import CallbackQuery, Message
 
 MARKDOWN = """
 ʀᴇᴀᴅ ᴛʜᴇ ʙᴇʟᴏᴡ ᴛᴇxᴛ ᴄᴀʀᴇғᴜʟʟʏ ᴛᴏ ғɪɴᴅ ᴏᴜᴛ ʜᴏᴡ ғᴏʀᴍᴀᴛᴛɪɴɢ ᴡᴏʀᴋs!
@@ -313,9 +311,7 @@ async def restrict_check_func(_, __, m: Message or CallbackQuery):
     if isinstance(m, CallbackQuery):
         m = m.message
 
-    if (
-            m.chat.type not in [ChatType.SUPERGROUP, ChatType.GROUP]
-    ):
+    if m.chat.type not in [ChatType.SUPERGROUP, ChatType.GROUP]:
         return False
 
     if not m.from_user:
@@ -323,15 +319,17 @@ async def restrict_check_func(_, __, m: Message or CallbackQuery):
 
     user = await m.chat.get_member(m.from_user.id)
 
-    if user and user.status in [CMS.ADMINISTRATOR, CMS.OWNER] and user.privileges.can_restrict_members:
+    if (
+        user
+        and user.status in [CMS.ADMINISTRATOR, CMS.OWNER]
+        and user.privileges.can_restrict_members
+    ):
         status = True
     else:
         status = False
         await m.reply_text(text="You don't have permissions to restrict members!")
 
     return status
-
-
 
 
 restrict_filter = create(restrict_check_func)
