@@ -12,10 +12,10 @@ from pyrogram.enums import MessageServiceType as MST
 from pyrogram.errors import ChatAdminRequired, ChatNotModified, RPCError
 from pyrogram.types import CallbackQuery, ChatPermissions, Message
 
-from utils.database.approvedb import Approve
 from utils.caching import ADMIN_CACHE, admin_cache_reload
-from utils.functions import restrict_filter
+from utils.database.approvedb import Approve
 from utils.database.lockdb import LOCKS
+from utils.functions import restrict_filter
 
 l_t = """
 **Lock Types:**
