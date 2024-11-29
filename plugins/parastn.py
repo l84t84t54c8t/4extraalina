@@ -5,8 +5,8 @@ from AlinaMusic.plugins.play.play import joinch as johned
 from config import OWNER_ID, OWNER_USERNAME
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
-from pyrogram.types import (ChatPermissions, ChatPrivileges,
-                            InlineKeyboardButton, InlineKeyboardMarkup)
+from pyrogram.types import (ChatPermissions, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
 from telegraph import upload_file
 
 photosource = "https://graph.org/file/3202937ba2792dfa8722f.jpg"
@@ -1413,7 +1413,6 @@ async def telegr1aph(client, message):
         os.remove(download_location)
 
 
-
 welcome_enabled = True
 
 
@@ -1443,7 +1442,6 @@ async def welco57me(client, message, chat_member_updated):
                     f"• المستخدم {user.username} ({user.first_name}) تم طرده من الدردشة"
                 )
         await client.send_message(chat_member_updated.chat.id, message)
-
 
 
 @app.on_message(filters.command(["لقبي"], ""))
@@ -1944,7 +1942,6 @@ async def telegraph(client, message):
         )
     finally:
         os.remove(download_location)
-
 
 
 muted_users = {}
