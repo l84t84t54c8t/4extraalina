@@ -17,3 +17,4 @@ pydub
 SpeechRecognition
 nekos.py
 git+https://github.com/Vivekkumar-IN/TheApi@main
+threading
