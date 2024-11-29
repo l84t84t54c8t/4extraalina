@@ -2,20 +2,20 @@ from asyncio import sleep
 from datetime import datetime, timedelta
 from traceback import format_exc
 
+from AlinaMusic import app
+from AlinaMusic.logging import LOGGER
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import MessageEntityType as MET
 from pyrogram.enums import MessageServiceType as MST
 from pyrogram.errors import ChatAdminRequired, ChatNotModified, RPCError
 from pyrogram.types import CallbackQuery, ChatPermissions, Message
 
-from AlinaMusic.logging import LOGGER
-from AlinaMusic import app
 from utils.approvedb import Approve
-from utils.lockdb import LOCKS
-from AlinaMusic.misc import SUDOERS
 from utils.caching import ADMIN_CACHE, admin_cache_reload
 from utils.functions import restrict_filter
-from AlinaMusic.utils.keyboard import ikb
+from utils.lockdb import LOCKS
 
 l_t = """
 **Lock Types:**
@@ -42,9 +42,7 @@ l_t = """
 
 @app.on_message(filters.command("locktypes"))
 async def lock_types(_, m: Message):
-    await m.reply_text(
-        l_t
-    )
+    await m.reply_text(l_t)
     return
 
 
@@ -183,8 +181,7 @@ Use /locktypes to get the lock types"""
             ChatPermissions(
                 can_send_messages=msg,
                 can_send_media_messages=media,
-                can_send_other_messages=any(
-                    [stickers, animations, games, inlinebots]),
+                can_send_other_messages=any([stickers, animations, games, inlinebots]),
                 can_add_web_page_previews=webprev,
                 can_send_polls=polls,
                 can_change_info=info,
@@ -384,7 +381,9 @@ async def unlock_perm(c: Gojo, m: Message):
         curr = lock.remove_lock_channel(m.chat.id, "anti_fwd_u")
 
         if not curr:
-            await m.reply_text("Forwarding content from users is not allowed in this chat")
+            await m.reply_text(
+                "Forwarding content from users is not allowed in this chat"
+            )
             return
 
         await m.reply_text("Forwarding content from users is now enabled for this chat")
@@ -394,9 +393,13 @@ async def unlock_perm(c: Gojo, m: Message):
         curr = lock.remove_lock_channel(m.chat.id, "anti_fwd_c")
 
         if not curr:
-            await m.reply_text("Forwarding content from channel is not allowed in this chat")
+            await m.reply_text(
+                "Forwarding content from channel is not allowed in this chat"
+            )
             return
-        await m.reply_text("Forwarding content from channel is now enabled for this chat")
+        await m.reply_text(
+            "Forwarding content from channel is now enabled for this chat"
+        )
         return
 
     else:
@@ -450,20 +453,23 @@ async def is_approved_user(c: Gojo, m: Message):
     except KeyError:
         admins_group = await admin_cache_reload(m, "lock")
 
-
     if m.forward_from:
         return bool(
             m.from_user
             and (
-                    m.from_user.id in ul
-                    or m.from_user.id in SUDOERS
-                    or m.from_user.id in admins_group
-                    or m.from_user.id == c.me.id
+                m.from_user.id in ul
+                or m.from_user.id in SUDOERS
+                or m.from_user.id in admins_group
+                or m.from_user.id == c.me.id
             )
         )
     elif m.forward_from_chat:
         if m.from_user and (
-                m.from_user.id in ul or m.from_user.id in SUDOERS or m.from_user.id in admins_group or m.from_user.id == c.me.id):
+            m.from_user.id in ul
+            or m.from_user.id in SUDOERS
+            or m.from_user.id in admins_group
+            or m.from_user.id == c.me.id
+        ):
             return True
         elif m.automatic_forward:
             return True
@@ -471,10 +477,10 @@ async def is_approved_user(c: Gojo, m: Message):
             return False
     elif m.from_user:
         return (
-                m.from_user.id in ul
-                or m.from_user.id in SUDOERS
-                or m.from_user.id in admins_group
-                or m.from_user.id == c.me.id
+            m.from_user.id in ul
+            or m.from_user.id in SUDOERS
+            or m.from_user.id in admins_group
+            or m.from_user.id == c.me.id
         )
     else:
         return False
@@ -507,10 +513,10 @@ async def lock_del_mess(c: Gojo, m: Message):
         return
 
     if (
-            chat_locks["anti_channel"]
-            and m.sender_chat
-            and not m.forward_from_chat
-            and not m.forward_from
+        chat_locks["anti_channel"]
+        and m.sender_chat
+        and not m.forward_from_chat
+        and not m.forward_from
     ):
         if m.chat.is_admin:
             return
@@ -525,7 +531,9 @@ async def lock_del_mess(c: Gojo, m: Message):
             if i.type in [MET.URL or MET.TEXT_LINK]:
                 await delete_messages(c, m)
                 return
-    elif any(chat_locks["anti_fwd"].values()) and (m.forward_from or m.forward_from_chat):
+    elif any(chat_locks["anti_fwd"].values()) and (
+        m.forward_from or m.forward_from_chat
+    ):
         if all(chat_locks["anti_fwd"].values()):
             await delete_messages(c, m)
             return
@@ -556,7 +564,8 @@ __alt_name__ = ["grouplock", "lock", "grouplocks"]
 __buttons__ = [
     [
         ("Lock Types", "LOCK_TYPES"),
-    ], ]
+    ],
+]
 
 __HELP__ = """
 **Locks**
@@ -580,13 +589,7 @@ async def lock_types_callback(c: Gojo, q: CallbackQuery):
 
     if data == "LOCK_TYPES":
         kb = ikb([[("Back", "LOCK_TYPES_back")]])
-        await q.edit_message_caption(
-            l_t,
-            reply_markup=kb
-        )
+        await q.edit_message_caption(l_t, reply_markup=kb)
     else:
         kb = ikb([[("Lock Types", "LOCK_TYPES")]])
-        await q.edit_message_caption(
-            __HELP__,
-            reply_markup=kb
-        )
+        await q.edit_message_caption(__HELP__, reply_markup=kb)
