@@ -1,6 +1,7 @@
 import os
 
 from AlinaMusic import app
+from AlinaMusic.plugins.play.play import joinch
 from config import OWNER_ID, OWNER_USERNAME
 from pyrogram import Client
 from pyrogram import Client as client
@@ -20,7 +21,7 @@ alkl = []
 
 @app.on_message(filters.command(["قفل الحمايه", "تعطيل الحمايه"], ""))
 async def lllocj7865j(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -41,7 +42,7 @@ async def lllocj7865j(client, message):
 
 @app.on_message(filters.command(["فتح الحمايه", "تفعيل الحمايه"], ""))
 async def idljjop546ss(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -84,7 +85,7 @@ async def idljjop546ss(client, message):
     group=71328934,
 )
 async def gigshkdnnj(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     if message.chat.id in alkl:
         return await message.reply_text(
@@ -955,7 +956,7 @@ async def deletkse_link(client, message):
 
 @Client.on_message(filters.command(["قفل الدردشه", "قفل الدردشة"], ""))
 async def enabled(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -982,7 +983,7 @@ async def enabled(client, message):
 
 @Client.on_message(filters.command(["فتح الدردشه", "فتح الدردشة"], ""))
 async def undard(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1009,7 +1010,7 @@ async def undard(client, message):
 
 @Client.on_message(filters.command("قفل التثبيت", ""))
 async def taspit(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1037,7 +1038,7 @@ async def taspit(client, message):
 
 @Client.on_message(filters.command("فتح التثبيت", ""))
 async def tasspit(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1065,7 +1066,7 @@ async def tasspit(client, message):
 
 @Client.on_message(filters.command("قفل الدعوة", ""))
 async def dasoo(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1093,7 +1094,7 @@ async def dasoo(client, message):
 
 @Client.on_message(filters.command("فتح الدعوة", ""))
 async def zombeee(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1121,7 +1122,7 @@ async def zombeee(client, message):
 
 @Client.on_message(filters.command("قفل الميديا", ""))
 async def mediazomb(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1151,7 +1152,7 @@ async def mediazomb(client, message):
 
 @Client.on_message(filters.command("فتح الميديا", ""))
 async def zombmeddia(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1181,7 +1182,7 @@ async def zombmeddia(client, message):
 
 @Client.on_message(filters.command("قفل المتحركات", ""))
 async def motahark(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1214,7 +1215,7 @@ async def motahark(client, message):
 
 @Client.on_message(filters.command("فتح المتحركات", ""))
 async def motazombie(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1366,7 +1367,7 @@ async def deleeon(client, message):
 
 @app.on_message(filters.command(["تليجراف", "تليغراف", "ميديا"], ""), group=973)
 async def telegr1aph(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     replied = message.reply_to_message
     if not replied:
@@ -1416,103 +1417,6 @@ async def telegr1aph(client, message):
 
 hmses = {}
 
-
-@app.on_message(filters.reply & filters.regex(r"^(چرپەنامە|چرپە)$") & filters.group)
-async def reply_with_link(client, message):
-    user_id = message.reply_to_message.from_user.id
-    my_id = message.from_user.id
-    bar_id = message.chat.id
-    start_link = f"https://t.me/{app.username}?start=hms{my_id}to{user_id}in{bar_id}"
-    reply_markup = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("- ئێرە دابگرە 📬", url=start_link)]]
-    )
-    await message.reply_text(
-        "**\n⇜ دووگمەی خوارەوە داگرە بۆ نووسینی چرپە.\n✓**", reply_markup=reply_markup
-    )
-
-
-waiting_for_hms = False
-
-
-@app.on_message(filters.command("start"), group=5790)
-async def hms_start(client, message):
-    if message.text.split(" ", 1)[-1].startswith("hms"):
-        global waiting_for_hms, hms_ids
-        hms_ids = message.text
-        waiting_for_hms = True
-        await message.reply_text(
-            "**-> ئێستا چرپەنامە بنێرە\n√**",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            "- هەڵوەشاندنەوە ❌️", callback_data="hms_cancel"
-                        )
-                    ]
-                ]
-            ),
-        )
-        return
-
-
-@app.on_message(filters.private & filters.text & ~filters.command("hstart"), group=576)
-async def send_hms(client, message):
-    global waiting_for_hms
-    if waiting_for_hms:
-        to_id = int(hms_ids.split("to")[-1].split("in")[0])
-        from_id = int(hms_ids.split("hms")[-1].split("to")[0])
-        in_id = int(hms_ids.split("in")[-1])
-        to_url = f"tg://openmessage?user_id={to_id}"
-        from_url = f"tg://openmessage?user_id={from_id}"
-        user = await client.get_users(to_id)
-        user2 = await client.get_users(from_id)
-        user_id = user.id
-        user_mention = user.mention()
-        user_mention2 = user2.mention()
-        hmses[str(to_id)] = {"hms": message.text, "bar": in_id}
-        await message.reply_text("**⇜ بە سەرکەوتوویی چرپەنامە .. نێردرا \n√**")
-        await client.send_message(
-            chat_id=in_id,
-            text=f"**⇜ ئەزیزم 「 {user_mention} 」.\n⇜ چرپەیەکی نھێنیت هەیە لە「 {user_mention2} 」.**",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            "- کردنەوەی چرپەنامە 🗳", callback_data="hms_answer"
-                        )
-                    ],
-                    [
-                        InlineKeyboardButton(
-                            "- نێردراوە بۆ", url=f"tg://openmessage?user_id={to_id}"
-                        )
-                    ],
-                    [InlineKeyboardButton("- لەلایەن", url=f"{from_url}")],
-                ]
-            ),
-        )
-        waiting_for_hms = False
-
-
-@app.on_callback_query(filters.regex("hms_answer"), group=5766565)
-async def display_hms(client, callback):
-    in_id = callback.message.chat.id
-    who_id = callback.from_user.id
-    if hmses.get(str(who_id)) is not None:
-        if hmses.get(str(who_id))["bar"] == in_id:
-            await callback.answer(hmses.get(str(who_id))["hms"], show_alert=True)
-    else:
-        await callback.answer("**⇜ لاچۆ ئەم چرپەیە بۆتۆ نییە.**", show_alert=True)
-
-
-@app.on_callback_query(filters.regex("hms_cancel"), group=57967)
-async def cancel_hms(client, callback):
-    global waiting_for_hms
-    waiting_for_hms = False
-    await client.edit_message_text(
-        chat_id=callback.message.chat.id,
-        message_id=callback.message.id,
-        text="**-> چرپەنامە هەڵوەشێنرایەوە\n√**",
-    )
 
 
 @app.on_message(filters.video_chat_members_invited)
@@ -1628,7 +1532,7 @@ mannof = []
 
 @app.on_message(filters.command(["قفل رفع المشرفين", "تعطيل رفع المشرفين"], ""))
 async def lllocjj(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1649,7 +1553,7 @@ async def lllocjj(client, message):
 
 @app.on_message(filters.command(["فتح رفع المشرفين", "تفعيل رفع المشرفين"], ""))
 async def idljjopss(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1673,7 +1577,7 @@ mangof = []
 
 @app.on_message(filters.command("رفع مشرف", "") & filters.group)
 async def tasfaya(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1736,7 +1640,7 @@ async def tasfaya(client, message):
 
 @app.on_message(filters.command(["لقبي"], ""))
 async def tit5le(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     user_id = message.from_user.id
     chat_id = message.chat.id
@@ -1752,7 +1656,7 @@ async def tit5le(client, message):
 
 @app.on_message(filters.command(["لقبه"], ""), group=6465)
 async def title(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     user_id = message.reply_to_message.from_user.id
     chat_id = message.chat.id
@@ -1768,7 +1672,7 @@ async def title(client, message):
 
 @app.on_message(filters.command(["صلاحياتي"], ""))
 async def caesarprivileges(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -1812,7 +1716,7 @@ async def caesarprivileges(client, message):
 
 @app.on_message(filters.command(["رتبتي"], ""))
 async def rotpty(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -1855,7 +1759,7 @@ muttof = []
 
 @app.on_message(filters.command(["تنزيل مشرف"], ""))
 async def m54u54te(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1884,7 +1788,7 @@ async def m54u54te(client, message):
 
 @app.on_message(filters.command(["قفل التقييد", "تعطيل التقييد"], ""))
 async def muttlock(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1905,7 +1809,7 @@ async def muttlock(client, message):
 
 @app.on_message(filters.command(["فتح التقييد", "تفعيل التقييد"], ""))
 async def muttopen(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1926,7 +1830,7 @@ async def muttopen(client, message):
 
 @app.on_message(filters.command(["الغاء تقييد", "الغاء التقييد"], ""))
 async def mu54te(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1952,7 +1856,7 @@ restricted_users = []
 
 @app.on_message(filters.command(["تقييد"], ""))
 async def m6765ute(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -1981,7 +1885,7 @@ async def m6765ute(client, message):
 
 @app.on_message(filters.command(["مسح المقيدين"], ""))
 async def unm54ute(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2003,7 +1907,7 @@ async def unm54ute(client, message):
 
 @app.on_message(filters.command(["المقيدين"], ""))
 async def get_restr_users(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2026,7 +1930,7 @@ gaaof = []
 
 @app.on_message(filters.command(["تعطيل الحظر", "تعطيل الطرد"], ""))
 async def gaalock(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2047,7 +1951,7 @@ async def gaalock(client, message):
 
 @app.on_message(filters.command(["فتح الطرد", "تفعيل الطرد", "تفعيل الحظر"], ""))
 async def gaaopen(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2071,7 +1975,7 @@ banned_users = []
 
 @app.on_message(filters.command(["حظر", "طرد"], ""), group=9764)
 async def mut54575e(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2114,7 +2018,7 @@ async def mut54575e(client, message):
 
 @app.on_message(filters.command(["مسح المحظورين"], ""), group=9738)
 async def unban55_all(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2148,7 +2052,7 @@ async def unban55_all(client, message):
 
 @app.on_message(filters.command(["الغاء حظر", "/unban"], ""), group=9765)
 async def mu65te(message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2171,7 +2075,7 @@ async def mu65te(message):
 
 @app.on_message(filters.command(["المحظورين"], ""))
 async def get_restricted_users(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     global banned_users
     count = len(banned_users)
@@ -2184,7 +2088,7 @@ async def get_restricted_users(client, message):
 
 @app.on_message(filters.command(["طرد البوتات"], "") & filters.group, group=97365)
 async def ban_bots(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2217,7 +2121,7 @@ async def ban_bots(client, message):
     filters.command(["تليجراف", "/telegraph", "/tm", "/tgm"], ""), group=973
 )
 async def telegraph(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     replied = message.reply_to_message
     if not replied:
@@ -2267,7 +2171,7 @@ async def telegraph(client, message):
 
 @app.on_message(filters.command(["الغاء تثبيت", "غ ث"], ""), group=97365)
 async def unpin_message(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2292,7 +2196,7 @@ async def unpin_message(client, message):
 
 @app.on_message(filters.command(["تثبيت", "ث"], ""), group=97354)
 async def pin_message(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2320,7 +2224,7 @@ muted_users = {}
 
 @app.on_message(filters.command(["كتم"], ""))
 async def mute_user_from_username(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2412,7 +2316,7 @@ async def unmute_user(client, callback_query):
 
 @app.on_message(filters.command(["الغاء الكتم", "الغاء كتم"], ""), group=9735544576)
 async def unm64ute_user(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     chat_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
@@ -2453,7 +2357,7 @@ async def handle_message(message):
 
 @app.on_message(filters.command(["المكتومين"], ""), group=973655)
 async def get_rmuted_users(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     global muted_users
     chat_id = message.chat.id
@@ -2470,7 +2374,7 @@ async def get_rmuted_users(client, message):
 
 @app.on_message(filters.command(["مسح المكتومين"], ""), group=973546)
 async def unmute_a54ll(client, message):
-    if await johned(message):
+    if await joinch(message):
         return
     group_id = message.chat.id
     chek = await client.get_chat_member(message.chat.id, message.from_user.id)
