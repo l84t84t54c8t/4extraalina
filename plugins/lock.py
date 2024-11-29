@@ -47,7 +47,7 @@ async def lock_types(_, m: Message):
 
 
 @app.on_message(filters.command("lock") & restrict_filter)
-async def lock_perm(c: Gojo, m: Message):
+async def lock_perm(c: app, m: Message):
     if len(m.text.split()) < 2:
         await m.reply_text("Please enter a permission to lock!")
         return
@@ -258,7 +258,7 @@ async def view_locks(_, m: Message):
 
 
 @app.on_message(filters.command("unlock") & restrict_filter)
-async def unlock_perm(c: Gojo, m: Message):
+async def unlock_perm(c: app, m: Message):
     if len(m.text.split()) < 2:
         await m.reply_text("Please enter a permission to unlock!")
         return
@@ -487,7 +487,7 @@ async def is_approved_user(c: app, m: Message):
 
 
 @app.on_message(filters.service & filters.group, 19)
-async def servicess(c: Gojo, m: Message):
+async def servicess(c: app, m: Message):
     if m.service != MST.NEW_CHAT_MEMBERS:
         return
     approved = await is_approved_user(c, m)
@@ -506,7 +506,7 @@ async def servicess(c: Gojo, m: Message):
 
 
 @app.on_message(filters.group & ~filters.me, 3)
-async def lock_del_mess(c: Gojo, m: Message):
+async def lock_del_mess(c: app, m: Message):
     lock = LOCKS()
     chat_locks = lock.get_lock_channel(m.chat.id)
     if not chat_locks:
@@ -576,7 +576,7 @@ Allows you to lock and unlock permission types in the chat.
 
 
 @app.on_callback_query(filters.regex("^LOCK_TYPES"))
-async def lock_types_callback(c: Gojo, q: CallbackQuery):
+async def lock_types_callback(c: app, q: CallbackQuery):
     data = q.data
 
     if data == "LOCK_TYPES":
