@@ -1,7 +1,7 @@
 from threading import RLock
 
 from AlinaMusic.logging import LOGGER
-from utils import MongoDB
+from . import MongoDB
 
 INSERTION_LOCK = RLock()
 
