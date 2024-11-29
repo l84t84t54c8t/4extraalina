@@ -2,7 +2,6 @@ apscheduler
 gTTS
 googlesearch-python
 deep_translator
-cachetools
 httpx[http2]
 pyfiglet
 lexica-api
@@ -18,4 +17,3 @@ pydub
 SpeechRecognition
 nekos.py
 git+https://github.com/Vivekkumar-IN/TheApi@main
-threading
