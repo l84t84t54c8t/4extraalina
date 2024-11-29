@@ -2,6 +2,7 @@ apscheduler
 gTTS
 googlesearch-python
 deep_translator
+cachetools
 httpx[http2]
 pyfiglet
 lexica-api
