@@ -13,6 +13,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+
 async def member_permissions(chat_id: int, user_id: int) -> list[str]:
     """
     Retrieve a user's permissions in a chat.
@@ -56,7 +57,9 @@ async def authorised(func, client, message: Message, *args, **kwargs):
     try:
         await func(client, message, *args, **kwargs)
     except ChatWriteForbidden:
-        logging.error(f"Bot lacks permission to write in chat {message.chat.id}. Leaving the chat.")
+        logging.error(
+            f"Bot lacks permission to write in chat {message.chat.id}. Leaving the chat."
+        )
         await app.leave_chat(message.chat.id)
     except Exception as e:
         logging.exception(f"Error in authorised function: {e}")
@@ -90,6 +93,7 @@ def adminsOnly(permission: str):
     """
     Decorator to enforce admin-only commands with specific permissions.
     """
+
     def decorator(func):
         @wraps(func)
         async def wrapper(client, message: Message, *args, **kwargs):
@@ -98,7 +102,9 @@ def adminsOnly(permission: str):
             # Check bot's permissions
             bot_perms = await bot_permissions(chat_id)
             if permission not in bot_perms:
-                return await unauthorised(message, permission, bot_lacking_permission=True)
+                return await unauthorised(
+                    message, permission, bot_lacking_permission=True
+                )
 
             # Handle anonymous admins
             if not message.from_user:
@@ -114,7 +120,7 @@ def adminsOnly(permission: str):
             user_perms = await member_permissions(chat_id, user_id)
             if permission not in user_perms:
                 return await unauthorised(message, permission)
-            
+
             return await authorised(func, client, message, *args, **kwargs)
 
         return wrapper
