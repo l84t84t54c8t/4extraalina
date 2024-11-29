@@ -4,7 +4,6 @@ from AlinaMusic import app
 from AlinaMusic.plugins.play.play import joinch
 from config import OWNER_ID, OWNER_USERNAME
 from pyrogram import Client
-from pyrogram import Client as client
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter, ChatMemberStatus
 from pyrogram.types import (ChatPermissions, ChatPrivileges,
