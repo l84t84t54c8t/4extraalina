@@ -1,6 +1,7 @@
 from threading import RLock
 
 from AlinaMusic.logging import LOGGER
+
 from . import MongoDB
 
 INSERTION_LOCK = RLock()
@@ -8,6 +9,7 @@ INSERTION_LOCK = RLock()
 
 class Approve(MongoDB):
     """Class for managing Approves in Chats in Bot."""
+
     # Database name to connect to to preform operations
     db_name = "approve"
 
@@ -64,9 +66,7 @@ class Approve(MongoDB):
 
     def clean_approve(self):
         with INSERTION_LOCK:
-            return self.delete_one(
-                {"_id": self.chat_id}
-            )
+            return self.delete_one({"_id": self.chat_id})
 
     def list_approved(self):
         with INSERTION_LOCK:
