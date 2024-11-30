@@ -1,34 +1,34 @@
 from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
+from pyrogram.types import ChatPrivileges
 from pyrogram.errors import RPCError
 
-
 @app.on_message(filters.story)
-async def delete_story(app, message):
+async def delete_story(_, message):
+    if not message.from_user:
+        return  # Exit if there's no sender attached to the story
+
     chat_id = message.chat.id
 
-    # Ensure the story is sent by a user
-    if message.from_user is None:
-        return
-
     try:
-        # Check if the bot is an admin with "Delete Stories of Others"
-        # permission
-        chat_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
-        if chat_member.status != ChatMemberStatus.ADMINISTRATOR:
-            print(f"Bot is not an admin in chat {chat_id}")
-            return
+        # Get the bot's membership details in the chat
+        bot_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
 
-        # Delete the story if it's from a regular member
-        if chat_member.privileges.can_delete_stories:
+        # Check if the bot is an admin with specific privileges
+        if (
+            bot_member.status == ChatMemberStatus.ADMINISTRATOR 
+            and isinstance(bot_member.privileges, ChatPrivileges)  # Ensure privileges are present
+            and bot_member.privileges.can_delete_stories
+        ):
             await message.delete()
             print(f"Deleted a story in chat {chat_id}")
         else:
-            print(f"Bot lacks the permission to delete stories in chat {chat_id}")
+            print(f"Bot is missing 'can_delete_stories' privilege in chat {chat_id}")
 
     except RPCError as e:
-        print(f"Failed to delete story in chat {chat_id}: {e}")
+        print(f"Error occurred while deleting story in chat {chat_id}: {e}")
+
 
 
 """
