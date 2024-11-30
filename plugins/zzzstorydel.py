@@ -1,9 +1,8 @@
 from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import RPCError
 from pyrogram.types import ChatPrivileges
-
+from pyrogram.errors import RPCError
 
 @app.on_message(filters.story)
 async def delete_story(_, message):
@@ -11,22 +10,29 @@ async def delete_story(_, message):
         return  # Exit if there's no sender attached to the story
 
     chat_id = message.chat.id
+    user_id = message.from_user.id
 
     try:
         # Get the bot's membership details in the chat
         bot_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
 
-        # Check if the bot is an admin with specific privileges
+        # Ensure the bot has the required admin privileges to delete stories
         if (
-            bot_member.status == ChatMemberStatus.ADMINISTRATOR
-            # Ensure privileges are present
-            and isinstance(bot_member.privileges, ChatPrivileges)
+            bot_member.status == ChatMemberStatus.ADMINISTRATOR 
+            and isinstance(bot_member.privileges, ChatPrivileges)  # Ensure privileges are present
             and bot_member.privileges.can_delete_stories
         ):
-            await message.delete()
-            print(f"Deleted a story in chat {chat_id}")
+            # Get the sender's membership details
+            user_member = await app.get_chat_member(chat_id, user_id)
+
+            # Only delete the story if the sender is a regular member
+            if user_member.status == ChatMemberStatus.MEMBER:
+                await message.delete()
+                print(f"Deleted a story from a member in chat {chat_id}")
+            else:
+                print(f"Story from admin/owner not deleted in chat {chat_id}")
         else:
-            print(f"Bot is missing 'can_delete_stories' privilege in chat {chat_id}")
+            print(f"Bot lacks 'can_delete_stories' privilege in chat {chat_id}")
 
     except RPCError as e:
         print(f"Error occurred while deleting story in chat {chat_id}: {e}")
