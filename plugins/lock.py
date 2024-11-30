@@ -1,18 +1,17 @@
 from AlinaMusic import app
+from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
 from pyrogram.types import ChatPermissions
 
-from utils.permissions import adminsOnly
-
-
 # mongo_commands.py
 
-from AlinaMusic.core.mongo import mongodb
 
 # MongoDB collection for storing locked permissions
 locksdb = mongodb.locke
 
 # Function to lock a permission for a chat
+
+
 async def lock_permission(chat_id: int, permission_key: str) -> bool:
     """Lock a specific permission in MongoDB."""
     update_data = {permission_key: False}
@@ -23,7 +22,10 @@ async def lock_permission(chat_id: int, permission_key: str) -> bool:
     )
     return result.modified_count > 0 or result.upserted_id is not None
 
+
 # Function to unlock a permission for a chat
+
+
 async def unlock_permission(chat_id: int, permission_key: str) -> bool:
     """Unlock a specific permission in MongoDB."""
     update_data = {permission_key: True}
@@ -34,21 +36,51 @@ async def unlock_permission(chat_id: int, permission_key: str) -> bool:
     )
     return result.modified_count > 0 or result.upserted_id is not None
 
+
 # Function to lock all permissions for a chat
+
+
 async def lock_all_permissions(chat_id: int) -> bool:
     """Lock all permissions for a chat."""
-    update_data = {key: False for key in ["messages", "media", "polls", "other", "web_preview", "invite", "pin", "info"]}
+    update_data = {
+        key: False
+        for key in [
+            "messages",
+            "media",
+            "polls",
+            "other",
+            "web_preview",
+            "invite",
+            "pin",
+            "info",
+        ]
+    }
     result = await locksdb.update_one(
         {"chat_id": chat_id},
         {"$set": update_data},
         upsert=True,
     )
     return result.modified_count > 0 or result.upserted_id is not None
+
 
 # Function to unlock all permissions for a chat
+
+
 async def unlock_all_permissions(chat_id: int) -> bool:
     """Unlock all permissions for a chat."""
-    update_data = {key: True for key in ["messages", "media", "polls", "other", "web_preview", "invite", "pin", "info"]}
+    update_data = {
+        key: True
+        for key in [
+            "messages",
+            "media",
+            "polls",
+            "other",
+            "web_preview",
+            "invite",
+            "pin",
+            "info",
+        ]
+    }
     result = await locksdb.update_one(
         {"chat_id": chat_id},
         {"$set": update_data},
@@ -56,7 +88,10 @@ async def unlock_all_permissions(chat_id: int) -> bool:
     )
     return result.modified_count > 0 or result.upserted_id is not None
 
+
 # Function to get locked permissions for a chat
+
+
 async def get_locked_permissions(chat_id: int) -> dict:
     """Get all locked permissions for a chat."""
     data = await locksdb.find_one({"chat_id": chat_id})
@@ -79,6 +114,8 @@ PERMISSION_MAP = {
 # Lock specific permission
 
 # Lock specific permission and store in MongoDB
+
+
 @app.on_message(filters.command("lock") & filters.group)
 async def lock_permission_handler(client, message):
     if len(message.command) < 2:
@@ -154,7 +191,11 @@ async def view_locked_permissions(client, message):
     locked_permissions = await get_locked_permissions(message.chat.id)
     if locked_permissions:
         locked_permissions_list = "\n".join(
-            [f"{key.capitalize()} is locked 🚫" for key, value in locked_permissions.items() if value is False]
+            [
+                f"{key.capitalize()} is locked 🚫"
+                for key, value in locked_permissions.items()
+                if value is False
+            ]
         )
         await message.reply(f"**Locked Permissions:**\n\n{locked_permissions_list}")
     else:
