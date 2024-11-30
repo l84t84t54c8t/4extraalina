@@ -6,6 +6,7 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import RPCError
 from pyrogram.types import ChatPrivileges
 
+
 @app.on_message(filters.story)
 async def delete_story(_, message):
     if not message.from_user:
