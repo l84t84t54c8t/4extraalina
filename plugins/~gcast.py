@@ -48,7 +48,7 @@ async def log_pro_broadcast_usage(user_id):
         return True
 
 
-@app.on_message(filters.command("gcast"))
+@app.on_message(filters.command("gcastpro"))
 async def broadcast(client: Client, message: Message):
     global IS_BROADCASTING
     user = message.from_user
