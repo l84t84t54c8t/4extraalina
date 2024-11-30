@@ -21,7 +21,7 @@ async def delete_story(app, message):
             return
 
         # Delete the story if it's from a regular member
-        if chat_member.privileges.delete_stories_of_others:
+        if chat_member.privileges.can_delete_stories:
             await message.delete()
             print(f"Deleted a story in chat {chat_id}")
         else:
