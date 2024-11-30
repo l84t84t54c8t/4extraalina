@@ -189,7 +189,7 @@ async def unlock_permission_handler(client, message):
 
 # View currently locked permissions stored in MongoDB
 @app.on_message(filters.command("locks") & filters.group)
-@adminsOnly("@adminsOnly("can_change_info")")
+@adminsOnly("can_change_info")
 async def view_locked_permissions(client, message):
     locked_permissions = await get_locked_permissions(message.chat.id)
     if locked_permissions:
