@@ -135,3 +135,49 @@ async def unlock_permission(client, message):
             await message.reply(f"{permission_key.capitalize()} has been unlocked!")
     except Exception as e:
         await message.reply(f"Failed to unlock {permission_key}: {e}")
+
+
+# View current permissions
+@app.on_message(filters.command("locks") & filters.group)
+async def view_locks(client, message):
+    try:
+        chat = await client.get_chat(message.chat.id)
+        current_permissions = chat.permissions or ChatPermissions()
+
+        # Generate a readable format of permissions
+        permissions_status = []
+        for key, attribute in PERMISSION_MAP.items():
+            is_allowed = getattr(current_permissions, attribute, True)  # Default to True
+            status = "Unlocked ✅" if is_allowed else "Locked 🚫"
+            permissions_status.append(f"{key.capitalize()}: {status}")
+
+        # Send the permissions as a message
+        permissions_text = "\n".join(permissions_status)
+        await message.reply(f"**Current Chat Permissions:**\n\n{permissions_text}")
+    except Exception as e:
+        await message.reply(f"Failed to retrieve permissions: {e}")
+
+
+# Show available lock types
+@app.on_message(filters.command("locktypes") & filters.group)
+async def lock_types(client, message):
+    lock_types = "\n".join([f"{key}" for key in PERMISSION_MAP.keys()])
+    lock_types += "\nall"
+    await message.reply(f"**Available lock types:**\n\n{lock_types}")
+
+__MODULE__ = "locks"
+
+__HELP__ = """
+**Locks**
+
+Use this to lock group permissions.
+Allows you to lock and unlock permission types in the chat.
+
+**Usage:**
+• /lock `<type>`: Lock Chat permission.
+• /unlock `<type>`: Unlock Chat permission.
+• /locks: View Chat permission.
+• /locktypes: Check available lock types!
+
+**Example:**
+`/lock media`: this locks all the media messages in the chat."""
