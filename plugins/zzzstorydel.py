@@ -1,10 +1,13 @@
 from AlinaMusic import app
+# Import your SUDOERS list from the correct location
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import \
+    is_deletion_enabled  # Import your DB function
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import ChatPrivileges
 from pyrogram.errors import RPCError
-from AlinaMusic.misc import SUDOERS  # Import your SUDOERS list from the correct location
-from AlinaMusic.utils.database import is_deletion_enabled  # Import your DB function
+from pyrogram.types import ChatPrivileges
+
 
 @app.on_message(filters.story)
 async def delete_story(_, message):
@@ -29,9 +32,12 @@ async def delete_story(_, message):
             and isinstance(bot_member.privileges, ChatPrivileges)
             and bot_member.privileges.can_delete_stories
         ):
-            # Skip deletion if the message is from a user in SUDOERS (including bot owner)
+            # Skip deletion if the message is from a user in SUDOERS (including
+            # bot owner)
             if user_id in SUDOERS:
-                print(f"Story from a privileged user (SUDOER) not deleted in chat {chat_id}")
+                print(
+                    f"Story from a privileged user (SUDOER) not deleted in chat {chat_id}"
+                )
                 return  # Skip deletion for users in the SUDOERS list
 
             # Get the membership details of the user who posted the story
