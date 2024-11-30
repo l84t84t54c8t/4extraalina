@@ -3,7 +3,7 @@ from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
 from pyrogram.types import ChatPermissions
 
-# mongo_commands.py
+from utils.permissions import adminsOnly
 
 
 # MongoDB collection for storing locked permissions
@@ -111,12 +111,12 @@ PERMISSION_MAP = {
     "info": "can_change_info",
 }
 
-# Lock specific permission
 
 # Lock specific permission and store in MongoDB
 
 
 @app.on_message(filters.command("lock") & filters.group)
+@adminsOnly("can_restrict_members")
 async def lock_permission_handler(client, message):
     if len(message.command) < 2:
         await message.reply(
@@ -152,6 +152,7 @@ async def lock_permission_handler(client, message):
 
 # Unlock specific permission and remove from MongoDB
 @app.on_message(filters.command("unlock") & filters.group)
+@adminsOnly("can_restrict_members")
 async def unlock_permission_handler(client, message):
     if len(message.command) < 2:
         await message.reply(
@@ -187,6 +188,7 @@ async def unlock_permission_handler(client, message):
 
 # View currently locked permissions stored in MongoDB
 @app.on_message(filters.command("locks") & filters.group)
+@adminsOnly("can_restrict_members")
 async def view_locked_permissions(client, message):
     locked_permissions = await get_locked_permissions(message.chat.id)
     if locked_permissions:
@@ -228,7 +230,7 @@ async def view_locks(client, message):
 
 
 # Show available lock types
-@app.on_message(filters.command("locktypes") & filters.group)
+@app.on_message(filters.command("locktypes"))
 async def lock_types(client, message):
     lock_types = "\n".join([f"{key}" for key in PERMISSION_MAP.keys()])
     lock_types += "\nall"
