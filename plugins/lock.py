@@ -117,7 +117,7 @@ PERMISSION_MAP = {
 
 
 @app.on_message(filters.command("lock") & filters.group)
-@adminsOnly("can_restrict_members")
+@adminsOnly("can_change_info")
 async def lock_permission_handler(client, message):
     if len(message.command) < 2:
         await message.reply(
@@ -153,7 +153,7 @@ async def lock_permission_handler(client, message):
 
 # Unlock specific permission and remove from MongoDB
 @app.on_message(filters.command("unlock") & filters.group)
-@adminsOnly("can_restrict_members")
+@adminsOnly("can_change_info")
 async def unlock_permission_handler(client, message):
     if len(message.command) < 2:
         await message.reply(
@@ -189,7 +189,7 @@ async def unlock_permission_handler(client, message):
 
 # View currently locked permissions stored in MongoDB
 @app.on_message(filters.command("locks") & filters.group)
-@adminsOnly("can_restrict_members")
+@adminsOnly("@adminsOnly("can_change_info")")
 async def view_locked_permissions(client, message):
     locked_permissions = await get_locked_permissions(message.chat.id)
     if locked_permissions:
