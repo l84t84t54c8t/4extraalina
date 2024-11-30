@@ -1,6 +1,42 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import is_deletion_enabled
+from pyrogram import Client, filters
+from pyrogram.enums import ChatMemberStatus
+from pyrogram.errors import RPCError
+
+
+@app.on_message(filters.story)
+async def delete_story(client, message):
+    chat_id = message.chat.id
+
+    # Ensure the story is sent by a user
+    if message.from_user is None:
+        return
+
+    try:
+        # Check if the bot is an admin with "Delete Stories of Others" permission
+        chat_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
+        if chat_member.status != ChatMemberStatus.ADMINISTRATOR:
+            print(f"Bot is not an admin in chat {chat_id}")
+            return
+        
+        # Delete the story if it's from a regular member
+        if chat_member.privileges.delete_stories_of_others:
+            await message.delete()
+            print(f"Deleted a story in chat {chat_id}")
+        else:
+            print(f"Bot lacks the permission to delete stories in chat {chat_id}")
+
+    except RPCError as e:
+        print(f"Failed to delete story in chat {chat_id}: {e}")
+
+
+
+"""
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import is_deletion_enabled
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid, RPCError
@@ -37,3 +73,4 @@ async def delete_story(_, message):
         print("Invalid Peer ID. The user might not be in the group.")
     except RPCError as e:
         print(f"Failed to delete the story: {e}")
+"""
