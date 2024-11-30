@@ -16,11 +16,11 @@ async def delete_story(_, message):
         return
 
     # Ensure from_user exists before proceeding
-    if message.from_user is None:
+    if not message.from_user:
         return  # Exit if there's no user attached to the message
 
     # Skip deletion if the message is from the bot owner
-    if message.from_user.id == SUDOERS:
+    if message.from_user.id in SUDOERS:
         return
 
     try:
@@ -31,8 +31,9 @@ async def delete_story(_, message):
         if member.status == ChatMemberStatus.MEMBER:
             # Attempt to delete the story message
             await message.delete()
-
-    except (PeerIdInvalid, RPCError) as e:
-        print(f"Failed to delete the story: {e}")
     except MessageDeleteForbidden:
         print("Bot does not have permission to delete the story.")
+    except PeerIdInvalid:
+        print("Invalid Peer ID. The user might not be in the group.")
+    except RPCError as e:
+        print(f"Failed to delete the story: {e}")
