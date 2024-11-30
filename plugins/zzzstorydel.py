@@ -1,8 +1,9 @@
 from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import ChatPrivileges
 from pyrogram.errors import RPCError
+from pyrogram.types import ChatPrivileges
+
 
 @app.on_message(filters.story)
 async def delete_story(_, message):
@@ -18,8 +19,9 @@ async def delete_story(_, message):
 
         # Ensure the bot has the required admin privileges to delete stories
         if (
-            bot_member.status == ChatMemberStatus.ADMINISTRATOR 
-            and isinstance(bot_member.privileges, ChatPrivileges)  # Ensure privileges are present
+            bot_member.status == ChatMemberStatus.ADMINISTRATOR
+            # Ensure privileges are present
+            and isinstance(bot_member.privileges, ChatPrivileges)
             and bot_member.privileges.can_delete_stories
         ):
             # Get the sender's membership details
