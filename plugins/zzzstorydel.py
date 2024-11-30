@@ -1,11 +1,12 @@
 from AlinaMusic import app
-from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import is_deletion_enabled
-from pyrogram import filters
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import MessageDeleteForbidden
+
 # Function to delete forwarded messages only from members
+
+
 @app.on_message(filters.story)
 async def delete_forwarded_messages(app, message):
     if message.chat is None or message.from_user is None:
