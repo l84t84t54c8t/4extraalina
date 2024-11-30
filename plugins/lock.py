@@ -3,13 +3,13 @@ from pyrogram import filters
 from pyrogram.types import ChatPermissions
 
 from utils.permissions import adminsOnly
-
 # Expanded permission map
 PERMISSION_MAP = {
     "messages": "can_send_messages",
     "media": "can_send_media_messages",
     "polls": "can_send_polls",
-    "other": "can_send_other_messages",
+    "gif": "can_send_other_messages",
+    "sticker": "can_send_other_messages",
     "web_preview": "can_add_web_page_previews",
     "invite": "can_invite_users",
     "pin": "can_pin_messages",
@@ -17,8 +17,6 @@ PERMISSION_MAP = {
 }
 
 # Lock specific permission
-
-
 @app.on_message(filters.command("lock") & filters.group)
 @adminsOnly("can_restrict_members")
 async def lock_permission(client, message):
