@@ -1,14 +1,9 @@
 from AlinaMusic import app
+from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
 from pyrogram.types import ChatPermissions
 
 from utils.permissions import adminsOnly
-
-
-from AlinaMusic import app
-from pyrogram import filters
-from pyrogram.types import ChatPermissions
-from AlinaMusic.core.mongo import mongodb
 
 # MongoDB collection for storing locked permissions
 lockdb = mongodb.lock
@@ -27,6 +22,8 @@ PERMISSION_MAP = {
 }
 
 # Lock specific permission and store in MongoDB
+
+
 @app.on_message(filters.command("lock") & filters.group)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
@@ -183,11 +180,16 @@ async def view_locks(client, message):
     data = await lockdb.find_one({"chat_id": message.chat.id})
     if data:
         locked_permissions_list = "\n".join(
-            [f"{key.capitalize()} is locked 🚫" for key, value in data.items() if value is False]
+            [
+                f"{key.capitalize()} is locked 🚫"
+                for key, value in data.items()
+                if value is False
+            ]
         )
         await message.reply(f"**Locked Permissions:**\n\n{locked_permissions_list}")
     else:
         await message.reply("No permissions are currently locked.")
+
 
 # View all permissions
 
