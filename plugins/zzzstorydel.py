@@ -7,7 +7,7 @@ from pyrogram.errors import RPCError
 
 
 @app.on_message(filters.story)
-async def delete_story(client, message):
+async def delete_story(app, message):
     chat_id = message.chat.id
 
     # Ensure the story is sent by a user
