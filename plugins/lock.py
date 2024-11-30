@@ -6,7 +6,7 @@ from pyrogram.types import ChatPermissions
 from utils.permissions import adminsOnly
 
 # MongoDB collection for storing locked permissions
-locksdb = mongodb.locke
+locksdb = mongodb.lock
 
 # Function to lock a permission for a chat
 
