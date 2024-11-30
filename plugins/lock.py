@@ -37,10 +37,6 @@ async def lock_permission(client, message):
         )
         return
 
-    if message.from_user.id not in [your_owner_id]:  # Replace with your owner's user ID
-        await message.reply("You are not authorized to use this command!")
-        return
-
     try:
         # Get current permissions and update the specific permission
         chat = await client.get_chat(message.chat.id)
@@ -74,10 +70,6 @@ async def unlock_permission(client, message):
         await message.reply(
             f"Invalid permission type: {permission_key}. Use one of {', '.join(PERMISSION_MAP.keys())}."
         )
-        return
-
-    if message.from_user.id not in [your_owner_id]:  # Replace with your owner's user ID
-        await message.reply("You are not authorized to use this command!")
         return
 
     try:
