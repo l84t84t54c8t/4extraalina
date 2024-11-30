@@ -1,8 +1,7 @@
 from AlinaMusic import app
 # Import your SUDOERS list from the correct location
 from AlinaMusic.misc import SUDOERS
-from AlinaMusic.utils.database import \
-    is_deletion_enabled  # Import your DB function
+from AlinaMusic.utils.database import is_deletion_enabled
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import RPCError
