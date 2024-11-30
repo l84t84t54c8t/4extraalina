@@ -147,7 +147,9 @@ async def view_locks(client, message):
         # Generate a readable format of permissions
         permissions_status = []
         for key, attribute in PERMISSION_MAP.items():
-            is_allowed = getattr(current_permissions, attribute, True)  # Default to True
+            is_allowed = getattr(
+                current_permissions, attribute, True
+            )  # Default to True
             status = "Unlocked ✅" if is_allowed else "Locked 🚫"
             permissions_status.append(f"{key.capitalize()}: {status}")
 
@@ -164,6 +166,7 @@ async def lock_types(client, message):
     lock_types = "\n".join([f"{key}" for key in PERMISSION_MAP.keys()])
     lock_types += "\nall"
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
+
 
 __MODULE__ = "locks"
 
