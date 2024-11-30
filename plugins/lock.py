@@ -142,12 +142,17 @@ async def unlock_permission(client, message):
 async def view_locks(client, message):
     if locked_permissions:
         # Display only locked permissions
-        locked_list = "\n".join([f"{key.capitalize()} is locked 🚫" for key in locked_permissions.keys()])
+        locked_list = "\n".join(
+            [f"{key.capitalize()} is locked 🚫" for key in locked_permissions.keys()]
+        )
         await message.reply(f"**Locked Permissions:**\n\n{locked_list}")
     else:
         await message.reply("No permissions are currently locked.")
 
+
 # View all permissions
+
+
 @app.on_message(filters.command("grouppermissions") & filters.group)
 async def view_locks(client, message):
     try:
