@@ -282,7 +282,9 @@ async def check_and_delete_messages(client: Client, message: Message):
         # message
         if chat_member.status == ChatMemberStatus.MEMBER:
             # Check if the message is text or any other type and delete it
-            if message.text or message.caption or message.story:  # Text or captioned messages
+            if (
+                message.text or message.caption or message.story
+            ):  # Text or captioned messages
                 await message.delete()
             else:
                 # For other message types, check attributes
