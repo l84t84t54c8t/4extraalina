@@ -267,7 +267,8 @@ async def check_and_delete_messages(client: Client, message: Message):
         # Get the user status (member, admin, etc.)
         chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-        # If the user is a regular member (not admin or owner), delete their message
+        # If the user is a regular member (not admin or owner), delete their
+        # message
         if chat_member.status == ChatMemberStatus.MEMBER:
             # Check if the message is text or any other type and delete it
             if message.text or message.caption:  # Text or captioned messages
@@ -275,8 +276,15 @@ async def check_and_delete_messages(client: Client, message: Message):
             else:
                 # For other message types, check attributes
                 for message_type in [
-                    "photo", "video", "audio", "document", "poll", "animation",
-                    "sticker", "voice", "video_note"
+                    "photo",
+                    "video",
+                    "audio",
+                    "document",
+                    "poll",
+                    "animation",
+                    "sticker",
+                    "voice",
+                    "video_note",
                 ]:
                     if getattr(message, message_type, None):
                         await message.delete()
