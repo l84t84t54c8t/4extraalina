@@ -232,7 +232,7 @@ group_settings_collection = mongodb.group_settings
 # Command to enable or disable the functionality (with or without slash)
 
 
-@app.on_message(filters.group & filters.text)
+@app.on_message(filters.group & filters.command(["disable", "enable" , "کردنەوەی گرووپ", "داخستنی گرووپ"], ""))
 @adminsOnly("can_change_info")
 async def toggle_group_settings(client: Client, message: Message):
     chat_id = message.chat.id  # Using chat_id to identify the group
@@ -240,7 +240,7 @@ async def toggle_group_settings(client: Client, message: Message):
 
     # Check if the message starts with 'disable' or 'enable' (with or without
     # slash)
-    if command in ["disable", "/disable", "داخستنی گرووپ"]:
+    if command == "/disable" or command == "داخستنی گرووپ":
         # Update the MongoDB to disable the group
         await group_settings_collection.update_one(
             {"chat_id": chat_id},
@@ -250,7 +250,7 @@ async def toggle_group_settings(client: Client, message: Message):
         await message.reply_text(
             "**گرووپ داخرا\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێنەدراوە.**"
         )
-    elif command in ["enable", "/enable", "کردنەوەی گرووپ"]:
+    elif command == "/enable" or command == "کردنەوەی گرووپ":
         # Update the MongoDB to enable the group
         await group_settings_collection.update_one(
             {"chat_id": chat_id},
