@@ -247,7 +247,9 @@ async def toggle_group_settings(client: Client, message: Message):
         groupactiondb.update_one(
             {"group_id": group_id}, {"$set": {"disabled": False}}, upsert=True
         )
-        await message.reply_text("**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**")
+        await message.reply_text(
+            "**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**"
+        )
 
 
 # Check and delete specified message types
