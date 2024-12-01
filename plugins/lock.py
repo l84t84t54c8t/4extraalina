@@ -8,7 +8,7 @@ from utils.permissions import adminsOnly
 
 # MongoDB collection for storing locked permissions
 lockdb = mongodb.lock
-groupactiondb = mongodb.groupaction
+group_collection = mongodb.group_collection
 
 # Expanded permission map
 PERMISSION_MAP = {
@@ -226,42 +226,42 @@ async def lock_types(client, message):
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
 
 
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from pyrogram.enums import ChatMemberStatus
+
+
 # Command to enable or disable the functionality (with or without slash)
 @app.on_message(filters.group & filters.text)
 async def toggle_group_settings(client: Client, message: Message):
-    group_id = message.chat.id
+    chat_id = message.chat.id  # Correctly using chat_id instead of group_id
     command = message.text.strip().lower()
 
-    # Check if the message starts with 'disable' or 'enable' (with or without
-    # slash)
+    # Check if the message starts with 'disable' or 'enable' (with or without slash)
     if command in ["disable", "/disable", "داخستنی گرووپ"]:
-        groupactiondb.update_one(
-            {"group_id": group_id},
+        group_collection.update_one(
+            {"chat_id": message.chat.id},  # Use chat_id here
             {"$set": {"disabled": True}},
-            upsert=True,  # If the group is not found, create it
+            upsert=True  # If the group is not found, create it
         )
-        await message.reply_text(
-            "**گرووپ داخرا\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێنەدراوە.**"
-        )
+        await message.reply_text("**گرووپ داخرا\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێنەدراوە.**")
     elif command in ["enable", "/enable", "کردنەوەی گرووپ"]:
-        groupactiondb.update_one(
-            {"group_id": group_id}, {"$set": {"disabled": False}}, upsert=True
+        group_collection.update_one(
+            {"chat_id": message.chat.id},  # Use chat_id here
+            {"$set": {"disabled": False}},
+            upsert=True
         )
-        await message.reply_text(
-            "**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**"
-        )
+        await message.reply_text("**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**")
 
-
-# Check and delete specified message types
-
-
+# Check and delete specified message types (only for regular members)
 @app.on_message(filters.group)
 async def check_and_delete_messages(client: Client, message: Message):
-    group_id = message.chat.id
+    chat_id = message.chat.id  # Correctly using chat_id here
 
     # Retrieve the group's settings from MongoDB
-    group_data = groupactiondb.find_one({"group_id": group_id})
+    group_data = group_collection.find_one({"chat_id": message.chat.id})  # Use chat_id here
 
+    # Skip if the group is not disabled
     if not group_data or not group_data.get("disabled", False):
         return
 
@@ -269,8 +269,7 @@ async def check_and_delete_messages(client: Client, message: Message):
         # Get the user status (member, admin, etc.)
         chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-        # If the user is a regular member (not admin or owner), delete their
-        # message
+        # If the user is a regular member (not admin or owner), delete their message
         if chat_member.status == ChatMemberStatus.MEMBER:
             # Check if the message is text or any other type and delete it
             if message.text or message.caption:  # Text or captioned messages
@@ -278,21 +277,15 @@ async def check_and_delete_messages(client: Client, message: Message):
             else:
                 # For other message types, check attributes
                 for message_type in [
-                    "photo",
-                    "video",
-                    "audio",
-                    "document",
-                    "poll",
-                    "animation",
-                    "sticker",
-                    "voice",
-                    "video_note",
+                    "photo", "video", "audio", "document", "poll", "animation",
+                    "sticker", "voice", "video_note"
                 ]:
                     if getattr(message, message_type, None):
                         await message.delete()
                         break
     except Exception as e:
         print(f"Error: {e}")
+
 
 
 __MODULE__ = "locks"
