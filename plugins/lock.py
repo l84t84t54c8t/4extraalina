@@ -223,6 +223,7 @@ async def lock_types(client, message):
     lock_types += "\nall"
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
 
+
 __MODULE__ = "locks"
 
 __HELP__ = """
