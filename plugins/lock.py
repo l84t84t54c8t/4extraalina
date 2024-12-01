@@ -235,19 +235,19 @@ async def toggle_group_settings(client: Client, message: Message):
     # Check if the message starts with 'disable' or 'enable' (with or without
     # slash)
     if command in ["disable", "/disable", "داخستنی گرووپ"]:
-        group_collection.update_one(
+        groupactiondb.update_one(
             {"group_id": group_id},
             {"$set": {"disabled": True}},
             upsert=True,  # If the group is not found, create it
         )
         await message.reply_text(
-            "All messages (including text, media, and polls) are now disabled in this group."
+            "**گرووپ داخرا\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێنەدراوە.**"
         )
     elif command in ["enable", "/enable", "کردنەوەی گرووپ"]:
-        group_collection.update_one(
+        groupactiondb.update_one(
             {"group_id": group_id}, {"$set": {"disabled": False}}, upsert=True
         )
-        await message.reply_text("All messages are now allowed in this group.")
+        await message.reply_text("**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**")
 
 
 # Check and delete specified message types
@@ -258,7 +258,7 @@ async def check_and_delete_messages(client: Client, message: Message):
     group_id = message.chat.id
 
     # Retrieve the group's settings from MongoDB
-    group_data = group_collection.find_one({"group_id": group_id})
+    group_data = groupactiondb.find_one({"group_id": group_id})
 
     if not group_data or not group_data.get("disabled", False):
         return
