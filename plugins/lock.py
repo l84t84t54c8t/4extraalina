@@ -225,14 +225,13 @@ async def lock_types(client, message):
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
 
 
-# Dictionary to track enabled/disabled state for groups
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from pyrogram.enums import ChatMemberStatus  # Import ChatMemberStatus
 
-# Dictionary to track enabled/disabled state for groups
 group_settings = {}
 
 # Command to enable or disable the functionality
-
-
 @app.on_message(filters.group & filters.command(["disable", "enable"]))
 async def toggle_group_settings(client: Client, message: Message):
     group_id = message.chat.id
@@ -240,17 +239,12 @@ async def toggle_group_settings(client: Client, message: Message):
 
     if command == "disable":
         group_settings[group_id] = True
-        await message.reply_text(
-            "All messages (including text, media, and polls) are now disabled in this group."
-        )
+        await message.reply_text("All messages (including text, media, and polls) are now disabled in this group.")
     elif command == "enable":
         group_settings[group_id] = False
         await message.reply_text("All messages are now allowed in this group.")
 
-
-# Check and delete specified message types from regular members
-
-
+# Check and delete specified message types
 @app.on_message(filters.group)
 async def check_and_delete_messages(client: Client, message: Message):
     group_id = message.chat.id
@@ -259,30 +253,27 @@ async def check_and_delete_messages(client: Client, message: Message):
     if not group_settings.get(group_id, False):
         return
 
-    # Get the user's status in the group
-    chat_member = await client.get_chat_member(group_id, message.from_user.id)
+    try:
+        # Get the user status (member, admin, etc.)
+        chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-    # If the user is not an admin or owner, proceed to delete their message
-    if chat_member.status not in ["administrator", "creator"]:
-        # Check if the message is text or any other type and delete it
-        if message.text or message.caption:  # Text or captioned messages
-            await message.delete()
-        else:
-            # For other message types, check attributes
-            for message_type in [
-                "photo",
-                "video",
-                "audio",
-                "document",
-                "poll",
-                "animation",
-                "sticker",
-                "voice",
-                "video_note",
-            ]:
-                if getattr(message, message_type, None):
-                    await message.delete()
-                    break
+        # If the user is a regular member (not admin or owner), delete their message
+        if chat_member.status == ChatMemberStatus.MEMBER:
+            # Check if the message is text or any other type and delete it
+            if message.text or message.caption:  # Text or captioned messages
+                await message.delete()
+            else:
+                # For other message types, check attributes
+                for message_type in [
+                    "photo", "video", "audio", "document", "poll", "animation",
+                    "sticker", "voice", "video_note"
+                ]:
+                    if getattr(message, message_type, None):
+                        await message.delete()
+                        break
+    except Exception as e:
+        print(f"Error: {e}")
+
 
 
 __MODULE__ = "locks"
