@@ -229,7 +229,6 @@ async def lock_types(client, message):
 group_settings = {}
 
 
-
 @app.on_message(filters.group & filters.command(["disable", "enable"]))
 async def toggle_group_settings(client: Client, message: Message):
     group_id = message.chat.id
