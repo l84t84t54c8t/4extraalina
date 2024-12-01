@@ -226,13 +226,13 @@ async def lock_types(client, message):
 
 
 # Dictionary to track enabled/disabled state for groups
-from pyrogram import Client, filters
-from pyrogram.types import Message
 
 # Dictionary to track enabled/disabled state for groups
 group_settings = {}
 
 # Command to enable or disable the functionality
+
+
 @app.on_message(filters.group & filters.command(["disable", "enable"]))
 async def toggle_group_settings(client: Client, message: Message):
     group_id = message.chat.id
@@ -240,12 +240,17 @@ async def toggle_group_settings(client: Client, message: Message):
 
     if command == "disable":
         group_settings[group_id] = True
-        await message.reply_text("All messages (including text, media, and polls) are now disabled in this group.")
+        await message.reply_text(
+            "All messages (including text, media, and polls) are now disabled in this group."
+        )
     elif command == "enable":
         group_settings[group_id] = False
         await message.reply_text("All messages are now allowed in this group.")
 
+
 # Check and delete specified message types from regular members
+
+
 @app.on_message(filters.group)
 async def check_and_delete_messages(client: Client, message: Message):
     group_id = message.chat.id
@@ -265,13 +270,20 @@ async def check_and_delete_messages(client: Client, message: Message):
         else:
             # For other message types, check attributes
             for message_type in [
-                "photo", "video", "audio", "document", "poll", "animation",
-                "sticker", "voice", "video_note"
+                "photo",
+                "video",
+                "audio",
+                "document",
+                "poll",
+                "animation",
+                "sticker",
+                "voice",
+                "video_note",
             ]:
                 if getattr(message, message_type, None):
                     await message.delete()
                     break
-                    
+
 
 __MODULE__ = "locks"
 
