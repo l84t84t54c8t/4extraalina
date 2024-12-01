@@ -1,114 +1,6 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
-from pyrogram.types import Message
-
-# MongoDB collection for storing locked permissions
-lockdb = mongodb.lock
-
-# Expanded permission map
-PERMISSION_MAP = {
-    "messages": "text",
-    "media": "media",
-    "polls": "poll",
-    "gif": "animation",
-    "sticker": "sticker",
-    "web_preview": "web_page",
-    "invite": "invite_link",
-    "info": "info",
-}
-
-# Command to lock specific message types
-
-
-@app.on_message(filters.command("lock") & filters.group)
-async def lock_permission(client, message: Message):
-    if len(message.command) < 2:
-        await message.reply(
-            "Please specify what to lock (e.g., `/lock media`) or use `/lock all` to lock all types."
-        )
-        return
-
-    lock_type = message.command[1].lower()
-
-    if lock_type not in PERMISSION_MAP and lock_type != "all":
-        await message.reply(
-            f"Invalid lock type: {lock_type}. Available types are: {', '.join(PERMISSION_MAP.keys())} or 'all'."
-        )
-        return
-
-    lock_query = (
-        {lock_type: True}
-        if lock_type != "all"
-        else {key: True for key in PERMISSION_MAP}
-    )
-
-    # Save the locked type(s) in MongoDB
-    await lockdb.update_one(
-        {"chat_id": message.chat.id},
-        {"$set": lock_query},
-        upsert=True,
-    )
-
-    await message.reply(f"{lock_type.capitalize()} has been locked!")
-
-
-# Command to unlock specific message types
-@app.on_message(filters.command("unlock") & filters.group)
-async def unlock_permission(client, message: Message):
-    if len(message.command) < 2:
-        await message.reply(
-            "Please specify what to unlock (e.g., `/unlock media`) or use `/unlock all` to unlock all types."
-        )
-        return
-
-    unlock_type = message.command[1].lower()
-
-    if unlock_type not in PERMISSION_MAP and unlock_type != "all":
-        await message.reply(
-            f"Invalid unlock type: {unlock_type}. Available types are: {', '.join(PERMISSION_MAP.keys())} or 'all'."
-        )
-        return
-
-    unlock_query = (
-        {unlock_type: False}
-        if unlock_type != "all"
-        else {key: False for key in PERMISSION_MAP}
-    )
-
-    # Remove the locked type(s) in MongoDB
-    await lockdb.update_one(
-        {"chat_id": message.chat.id},
-        {"$set": unlock_query},
-        upsert=True,
-    )
-
-    await message.reply(f"{unlock_type.capitalize()} has been unlocked!")
-
-
-# Monitor and delete locked message types
-
-
-@app.on_message(filters.group)
-async def delete_locked_messages(client, message: Message):
-    data = await lockdb.find_one({"chat_id": message.chat.id})
-    if not data:
-        return  # No locks set for this chat
-
-    for lock_type, pyrogram_type in PERMISSION_MAP.items():
-        if data.get(lock_type):
-            if getattr(message, pyrogram_type, None):
-                await message.delete()
-                break
-
-    if data.get("messages") and message.text:
-        await message.delete()
-
-
-"""
-from AlinaMusic import app
-from AlinaMusic.core.mongo import mongodb
-from pyrogram import filters
 from pyrogram.types import ChatPermissions
 
 from utils.permissions import adminsOnly
@@ -330,8 +222,6 @@ async def lock_types(client, message):
     lock_types = "\n".join([f"{key}" for key in PERMISSION_MAP.keys()])
     lock_types += "\nall"
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
-
-"""
 
 __MODULE__ = "locks"
 
