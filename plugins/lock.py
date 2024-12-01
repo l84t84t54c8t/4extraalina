@@ -228,13 +228,6 @@ async def lock_types(client, message):
 # Dictionary to track enabled/disabled state for groups
 group_settings = {}
 
-# Command to enable or disable the functionality
-
-
-# Dictionary to track enabled/disabled state for groups
-group_settings = {}
-
-# Command to enable or disable the functionality
 
 
 @app.on_message(filters.group & filters.command(["disable", "enable"]))
