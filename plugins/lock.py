@@ -233,6 +233,7 @@ group_settings_collection = mongodb.group_settings
 
 
 @app.on_message(filters.group & filters.text)
+@adminsOnly("can_change_info")
 async def toggle_group_settings(client: Client, message: Message):
     chat_id = message.chat.id  # Using chat_id to identify the group
     command = message.text.strip().lower()
