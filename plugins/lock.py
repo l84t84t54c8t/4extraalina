@@ -224,6 +224,49 @@ async def lock_types(client, message):
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
 
 
+
+
+from pyrogram import Client, filters
+from pyrogram.types import Message
+
+
+# Dictionary to track enabled/disabled state for groups
+group_settings = {}
+
+# Command to enable or disable the functionality
+@app.on_message(filters.group & filters.command(["disable", "enable"]))
+async def toggle_group_settings(client: Client, message: Message):
+    group_id = message.chat.id
+    command = message.command[0]
+
+    if command == "disable":
+        group_settings[group_id] = True
+        await message.reply_text("Media and polls are now disabled in this group.")
+    elif command == "enable":
+        group_settings[group_id] = False
+        await message.reply_text("Media and polls are now allowed in this group.")
+
+# Check and delete specified message types
+DISABLED_MESSAGE_TYPES = [
+    "photo", "video", "audio", "document", "poll", "animation",
+    "sticker", "voice", "video_note"
+]
+
+@app.on_message(filters.group)
+async def check_and_delete_messages(client: Client, message: Message):
+    group_id = message.chat.id
+
+    # Skip if the group is not disabled
+    if not group_settings.get(group_id, False):
+        return
+
+    # Check if the message type is in the disabled list
+    for message_type in DISABLED_MESSAGE_TYPES:
+        if getattr(message, message_type, None):
+            await message.delete()
+            break
+
+
 __MODULE__ = "locks"
 
 __HELP__ = """
