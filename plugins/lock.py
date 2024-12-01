@@ -253,6 +253,7 @@ async def toggle_group_settings(client: Client, message: Message):
 # Check and delete specified message types (only for regular members)
 
 
+# Check and delete specified message types (only for regular members)
 @app.on_message(filters.group)
 async def check_and_delete_messages(client: Client, message: Message):
     chat_id = message.chat.id  # Using chat_id here
@@ -265,30 +266,28 @@ async def check_and_delete_messages(client: Client, message: Message):
         # Get the user status (member, admin, etc.)
         chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-        # If the user is a regular member (not admin or owner), delete their
-        # message
+        # If the user is a regular member (not admin or owner), delete their message
         if chat_member.status == ChatMemberStatus.MEMBER:
-            # Check if the message is a text or captioned message
-            if message.text:  # If it's a text message
+            # Delete text messages explicitly
+            if message.text:
                 await message.delete()
-            elif message.caption:  # If it's a media message with a caption
-                await message.delete()
-            else:
-                # For other message types, check attributes and delete
-                for message_type in [
-                    "photo",
-                    "video",
-                    "audio",
-                    "document",
-                    "poll",
-                    "animation",
-                    "sticker",
-                    "voice",
-                    "video_note",
-                ]:
-                    if getattr(message, message_type, None):
-                        await message.delete()
-                        break
+                return  # Message deleted, no need to check further
+
+            # Check for other message types and delete if found
+            for message_type in [
+                "photo",
+                "video",
+                "audio",
+                "document",
+                "poll",
+                "animation",
+                "sticker",
+                "voice",
+                "video_note",
+            ]:
+                if getattr(message, message_type, None):
+                    await message.delete()
+                    break
     except Exception as e:
         print(f"Error: {e}")
 
