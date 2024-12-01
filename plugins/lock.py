@@ -225,30 +225,26 @@ async def lock_types(client, message):
     await message.reply(f"**Available lock types:**\n\n{lock_types}")
 
 
-from AlinaMusic import app
-from AlinaMusic.core.mongo import mongodb
-from pyrogram import Client, filters
-from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import Message
-from utils.permissions import adminsOnly
-
-
 # MongoDB collection for storing group settings (disabled or enabled)
-group_settings_collection = mongodb.group_settings  # Assuming you have a 'group_settings' collection in your MongoDB
+# Assuming you have a 'group_settings' collection in your MongoDB
+group_settings_collection = mongodb.group_settings
 
 # Command to enable or disable the functionality (with or without slash)
+
+
 @app.on_message(filters.group & filters.text)
 async def toggle_group_settings(client: Client, message: Message):
     chat_id = message.chat.id  # Using chat_id to identify the group
     command = message.text.strip().lower()
 
-    # Check if the message starts with 'disable' or 'enable' (with or without slash)
+    # Check if the message starts with 'disable' or 'enable' (with or without
+    # slash)
     if command in ["disable", "/disable", "داخستنی گرووپ"]:
         # Update the MongoDB to disable the group
         await group_settings_collection.update_one(
             {"chat_id": chat_id},
             {"$set": {"disabled": True}},
-            upsert=True  # This will insert the document if it doesn't exist
+            upsert=True,  # This will insert the document if it doesn't exist
         )
         await message.reply_text(
             "**گرووپ داخرا\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێنەدراوە.**"
@@ -258,7 +254,7 @@ async def toggle_group_settings(client: Client, message: Message):
         await group_settings_collection.update_one(
             {"chat_id": chat_id},
             {"$set": {"disabled": False}},
-            upsert=True  # This will insert the document if it doesn't exist
+            upsert=True,  # This will insert the document if it doesn't exist
         )
         await message.reply_text(
             "**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**"
@@ -281,7 +277,8 @@ async def check_and_delete_messages(client: Client, message: Message):
         # Get the user status (member, admin, etc.)
         chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-        # If the user is a regular member (not admin or owner), delete their message
+        # If the user is a regular member (not admin or owner), delete their
+        # message
         if chat_member.status == ChatMemberStatus.MEMBER:
             # Check if the message is text or any other type and delete it
             if message.text or message.caption:  # Text or captioned messages
@@ -304,6 +301,7 @@ async def check_and_delete_messages(client: Client, message: Message):
                         break
     except Exception as e:
         print(f"Error: {e}")
+
 
 """
 # Dictionary to track enabled/disabled state for groups
