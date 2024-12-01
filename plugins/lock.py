@@ -19,6 +19,8 @@ PERMISSION_MAP = {
 }
 
 # Command to lock specific message types
+
+
 @app.on_message(filters.command("lock") & filters.group)
 async def lock_permission(client, message: Message):
     if len(message.command) < 2:
@@ -36,7 +38,9 @@ async def lock_permission(client, message: Message):
         return
 
     lock_query = (
-        {lock_type: True} if lock_type != "all" else {key: True for key in PERMISSION_MAP}
+        {lock_type: True}
+        if lock_type != "all"
+        else {key: True for key in PERMISSION_MAP}
     )
 
     # Save the locked type(s) in MongoDB
@@ -47,7 +51,7 @@ async def lock_permission(client, message: Message):
     )
 
     await message.reply(f"{lock_type.capitalize()} has been locked!")
-    
+
 
 # Command to unlock specific message types
 @app.on_message(filters.command("unlock") & filters.group)
@@ -67,7 +71,9 @@ async def unlock_permission(client, message: Message):
         return
 
     unlock_query = (
-        {unlock_type: False} if unlock_type != "all" else {key: False for key in PERMISSION_MAP}
+        {unlock_type: False}
+        if unlock_type != "all"
+        else {key: False for key in PERMISSION_MAP}
     )
 
     # Remove the locked type(s) in MongoDB
@@ -79,7 +85,10 @@ async def unlock_permission(client, message: Message):
 
     await message.reply(f"{unlock_type.capitalize()} has been unlocked!")
 
+
 # Monitor and delete locked message types
+
+
 @app.on_message(filters.group)
 async def delete_locked_messages(client, message: Message):
     data = await lockdb.find_one({"chat_id": message.chat.id})
