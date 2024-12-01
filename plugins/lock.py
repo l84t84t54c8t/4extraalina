@@ -266,7 +266,8 @@ async def check_and_delete_messages(client: Client, message: Message):
         # Get the user status (member, admin, etc.)
         chat_member = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-        # If the user is a regular member (not admin or owner), delete their message
+        # If the user is a regular member (not admin or owner), delete their
+        # message
         if chat_member.status == ChatMemberStatus.MEMBER:
             # Delete text messages explicitly
             if message.text:
