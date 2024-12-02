@@ -233,8 +233,9 @@ group_settings_collection = mongodb.group_settings
 
 
 @app.on_message(
-    filters.group & filters.command(["disable", "enable", "کردنەوەی گرووپ", "داخستنی گرووپ"], ""),
-    group=79
+    filters.group
+    & filters.command(["disable", "enable", "کردنەوەی گرووپ", "داخستنی گرووپ"], ""),
+    group=79,
 )
 @adminsOnly("can_change_info")
 async def toggle_group_settings(client: Client, message: Message):
