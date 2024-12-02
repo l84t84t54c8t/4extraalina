@@ -25,7 +25,7 @@ PERMISSION_MAP = {
 # Lock specific permission and store in MongoDB
 
 
-@app.on_message(filters.command("lock") & filters.group)
+@app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
     if len(message.command) < 2:
@@ -100,7 +100,7 @@ async def lock_permission(client, message):
 
 
 # Unlock specific permission and remove from MongoDB
-@app.on_message(filters.command("unlock") & filters.group)
+@app.on_message(filters.command("unlock") & filters.group, group=76)
 @adminsOnly("can_change_info")
 async def unlock_permission(client, message):
     if len(message.command) < 2:
@@ -175,7 +175,7 @@ async def unlock_permission(client, message):
 
 
 # View currently locked permissions stored in MongoDB
-@app.on_message(filters.command("locks") & filters.group)
+@app.on_message(filters.command("locks") & filters.group, group=77)
 @adminsOnly("can_change_info")
 async def view_locks(client, message):
     data = await lockdb.find_one({"chat_id": message.chat.id})
@@ -195,7 +195,7 @@ async def view_locks(client, message):
 # View all permissions
 
 
-@app.on_message(filters.command("grouppermissions") & filters.group)
+@app.on_message(filters.command("grouppermissions") & filters.group, group=78)
 async def view_locks(client, message):
     try:
         chat = await client.get_chat(message.chat.id)
@@ -233,7 +233,8 @@ group_settings_collection = mongodb.group_settings
 
 
 @app.on_message(
-    filters.group
+    filters.group,
+    group=79
     & filters.command(["disable", "enable", "کردنەوەی گرووپ", "داخستنی گرووپ"], "")
 )
 @adminsOnly("can_change_info")
@@ -266,7 +267,7 @@ async def toggle_group_settings(client: Client, message: Message):
 
 
 # Check and delete specified message types (only for regular members)
-@app.on_message(filters.group)
+@app.on_message(filters.group, group=80)
 async def check_and_delete_messages(client: Client, message: Message):
     chat_id = message.chat.id  # Using chat_id here
 
