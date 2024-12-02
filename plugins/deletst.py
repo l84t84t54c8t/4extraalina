@@ -50,3 +50,20 @@ async def check_forwarded_deletion(client, message):
         await message.reply("**• سڕینەوەی ستۆری چالاککراوە ✅**")
     else:
         await message.reply("**• سڕینەوەی ستۆری ناچالاککراوە ❌**")
+
+
+__MODULE__ = "Story"
+
+__HELP__ = """
+**Story**
+
+Used to delete forwarded story.
+only delete story when member forwarded to group.
+
+**Usage:**
+• /story `off`: for enable action delete story.
+• /story `on`: for disable action delete story.
+• /getstory: View action delete story enable or disable
+
+**Example:**
+`/story off`: bot delete story when member forward to group."""
