@@ -1,8 +1,9 @@
 from AlinaMusic import app
+from AlinaMusic.utils.database import is_deletion_enabled
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import RPCError
-from AlinaMusic.utils.database import is_deletion_enabled
+
 
 @app.on_message(filters.all)  # Capture all messages
 async def delete_story_messages(client, message):
