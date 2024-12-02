@@ -1,6 +1,7 @@
 from AlinaMusic import app
 from AlinaMusic.utils.database import is_deletion_enabled
 from pyrogram import filters
+from AlinaMusic.misc import SUDOERS
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import RPCError
 
@@ -18,6 +19,9 @@ async def delete_story_messages(client, message):
 
     # Check if story deletion is enabled for this chat
     if not await is_deletion_enabled(chat_id):
+        return
+
+    if message.from_user.id in SUDOERS:
         return
 
     try:
