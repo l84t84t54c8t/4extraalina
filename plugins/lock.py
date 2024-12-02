@@ -251,7 +251,7 @@ async def toggle_group_settings(client: Client, message: Message):
             upsert=True,  # This will insert the document if it doesn't exist
         )
         await message.reply_text(
-            "**گرووپ داخرا\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێنەدراوە.**"
+            "**• گرووپ داخرا\nناردنی هەموو جۆرە نامەیەک قەدەغەکراوە**"
         )
     elif command == "/enable" or command == "کردنەوەی گرووپ":
         # Update the MongoDB to enable the group
@@ -261,7 +261,7 @@ async def toggle_group_settings(client: Client, message: Message):
             upsert=True,  # This will insert the document if it doesn't exist
         )
         await message.reply_text(
-            "**گرووپ کرایەوە\nئێستا هەموو نامەیەک لەم گرووپەدا ڕێگەپێدراوە.**"
+            "**• گرووپ کرایەوە\nئێستا ناردنی هەموو نامەیەک ڕێگەپێدراوە.**"
         )
 
 
