@@ -6,7 +6,7 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import RPCError
 
 
-@app.on_message(filters.story)  # Capture all messages
+@app.on_message(filters.group, group=101)  # Capture all messages
 async def delete_story_messages(client, message):
     if message.chat is None or message.from_user is None:
         return  # Exit if no chat or user info
