@@ -99,18 +99,18 @@ async def list_chats(client, m):
 async def clear_chats(client, m):
     cid = m.chat.id
 
-    # Check if the user is the owner
+    # Check if the user is either an owner or a sudoer
     member = await client.get_chat_member(cid, m.from_user.id)
-    if member.status != ChatMemberStatus.OWNER:
-        await m.reply("**تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌**")
+    if m.from_user.id not in SUDOERS and member.status != ChatMemberStatus.OWNER:
+        await m.reply("❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.")
         return
 
     # Send confirmation message with buttons
     buttons = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("✅ بەلێ", callback_data="confirm_clear_chats"),
                 InlineKeyboardButton("❌ نەخێر", callback_data="cancel_clear_chats"),
+                InlineKeyboardButton("✅ بەلێ", callback_data="confirm_clear_chats"),
             ]
         ]
     )
@@ -124,13 +124,12 @@ async def clear_chats(client, m):
 async def confirm_clear_chats(client, callback_query):
     cid = callback_query.message.chat.id
 
-    # Check if the user pressing the button is the owner
-    member = await client.get_chat_member(cid, callback_query.from_user.id)
-    if member.status != ChatMemberStatus.OWNER:
-        await callback_query.answer(
-            "تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True
-        )
-        return
+    # Check if the user pressing the button is either an owner or a sudoer
+    if callback_query.from_user.id not in SUDOERS:
+        member = await client.get_chat_member(cid, callback_query.from_user.id)
+        if member.status != ChatMemberStatus.OWNER:
+            await callback_query.answer("❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.", show_alert=True)
+            return
 
     # Clear chats
     await save_chat_data(str(cid), {})  # Use await for the async function
@@ -141,16 +140,15 @@ async def confirm_clear_chats(client, callback_query):
 async def cancel_clear_chats(client, callback_query):
     cid = callback_query.message.chat.id
 
-    # Check if the user pressing the button is the owner
-    member = await client.get_chat_member(cid, callback_query.from_user.id)
-    if member.status != ChatMemberStatus.OWNER:
-        await callback_query.answer(
-            "تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True
-        )
-        return
+    # Check if the user pressing the button is either an owner or a sudoer
+    if callback_query.from_user.id not in SUDOERS:
+        member = await client.get_chat_member(cid, callback_query.from_user.id)
+        if member.status != ChatMemberStatus.OWNER:
+            await callback_query.answer("❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.", show_alert=True)
+            return
 
     await callback_query.message.edit(
-        "**چالاککردنەوەی سڕینەوەی چاتەکان ڕەتکرایەوە.❌**"
+        "**❌ سڕینەوەی چاتەکان هەڵوەشایەوە.**"
     )
 
 
