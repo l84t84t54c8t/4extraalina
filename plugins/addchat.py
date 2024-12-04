@@ -20,7 +20,7 @@ async def save_chat_data(chat_id, data):
 @app.on_message(filters.regex("^زیادکردنی چات$"))
 async def add_chat(client, m):
     cid = str(m.chat.id)
-    data = await get_chat_data(cid)  # Use await for the async function
+    data = await get_chat_data(cid)
 
     t = await m.chat.ask(
         "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
@@ -31,7 +31,7 @@ async def add_chat(client, m):
         await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
     else:
         tt = await m.chat.ask(
-            "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل)**",
+            "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
             filters=filters.user(t.from_user.id),
             reply_to_message_id=t.id,
         )
@@ -49,14 +49,16 @@ async def add_chat(client, m):
             data[t.text] = f"audio&{tt.audio.file_id}"
         elif tt.document:
             data[t.text] = f"document&{tt.document.file_id}"
+        elif tt.sticker:
+            data[t.text] = f"sticker&{tt.sticker.file_id}"
         else:
             await tt.reply(
-                f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل) ‌♥⚡**",
+                f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
                 quote=True,
             )
             return
 
-        await save_chat_data(cid, data)  # Use await for the async function
+        await save_chat_data(cid, data)
         await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
 
 
@@ -112,7 +114,7 @@ async def delete_chat(client, m):
 @app.on_message(filters.text)
 async def respond(client, m):
     cid = str(m.chat.id)
-    data = await get_chat_data(cid)  # Use await for the async function
+    data = await get_chat_data(cid)
     if m.text in data:
         type_label, content = data[m.text].split("&", 1)
         if type_label == "text":
@@ -129,3 +131,5 @@ async def respond(client, m):
             await m.reply_audio(content)
         elif type_label == "document":
             await m.reply_document(content)
+        elif type_label == "sticker":
+            await m.reply_sticker(content)
