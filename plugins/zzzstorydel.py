@@ -6,26 +6,31 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import RPCError
 
 
-@app.on_message(filters.group, group=101)  # Capture all messages
+@app.on_message(filters.group, group=101)  # Capture all group messages
 async def delete_story_messages(client, message):
-    # Check if the message is a story
+    # Skip if the message is not a story
     if not message.story:
-        return  # Skip non-story messages
+        return
 
-    chat_id = message.chat.id  # Define chat ID
+    # Skip if the message has no sender (e.g., anonymous admin messages)
+    if message.from_user is None:
+        return
 
-    # Check if story deletion is enabled for this chat
+    chat_id = message.chat.id
+
+    # Check if story deletion is enabled for the group
     if not await is_deletion_enabled(chat_id):
         return
 
+    # Skip deletion if the user is in SUDOERS
     if message.from_user.id in SUDOERS:
         return
 
     try:
-        # Get the user's status (member, admin, etc.)
+        # Check the user's status in the group
         chat_member = await client.get_chat_member(chat_id, message.from_user.id)
         if chat_member.status == ChatMemberStatus.MEMBER:
-            # Delete the story if the user is a regular member
-            await message.delete()
+            await message.delete()  # Delete the story if the user is a regular member
     except RPCError as e:
-        print(f"Failed to delete story message: {e}")
+        # Log any errors for debugging
+        print(f"Error while deleting story message in chat {chat_id}: {e}")
