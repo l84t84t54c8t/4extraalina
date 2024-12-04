@@ -2,19 +2,17 @@ from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
 
-addchats_collection = mongodb.addchat
-
+# MongoDB collection for managing chat-related data
+chat_data_collection = mongodb.chat_data
 
 def get_chat_data(chat_id):
-    chat_data = addchats_collection.find_one({"chat_id": chat_id})
+    chat_data = chat_data_collection.find_one({"chat_id": chat_id})
     return chat_data["data"] if chat_data else {}
 
-
 def save_chat_data(chat_id, data):
-    addchats_collection.update_one(
+    chat_data_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"data": data}}, upsert=True
     )
-
 
 @app.on_message(filters.regex("^زیادکردنی چات$"))
 async def add_chat(client, m):
@@ -27,9 +25,7 @@ async def add_chat(client, m):
         reply_to_message_id=m.id,
     )
     if t.text in data:
-        await app.send_message(
-            cid, "**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id
-        )
+        await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
     else:
         tt = await m.chat.ask(
             "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل)**",
@@ -60,7 +56,6 @@ async def add_chat(client, m):
         save_chat_data(cid, data)
         await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
 
-
 @app.on_message(filters.regex("^چاتەکان$"))
 async def list_chats(client, m):
     cid = str(m.chat.id)
@@ -78,20 +73,16 @@ async def list_chats(client, m):
                 "audio": "**گۆرانی**",
                 "document": "**فایل**",
             }
-            response += (
-                f'{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n'
-            )
+            response += f'{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n'
         await m.reply(response)
     else:
         await m.reply("**هیچ چاتێکی زیادکراو نییە♥️**•")
-
 
 @app.on_message(filters.regex("^سڕینەوەی چاتەکان$"))
 async def clear_chats(client, m):
     cid = str(m.chat.id)
     save_chat_data(cid, {})
     await m.reply("**بە سەرکەوتوویی هەموو چاتەکان سڕدرانەوە♥️✅**")
-
 
 @app.on_message(filters.regex("^سڕینەوەی چات$"))
 async def delete_chat(client, m):
@@ -108,7 +99,6 @@ async def delete_chat(client, m):
         await t.reply("**بە سەرکەوتوویی چاتە زیادکراوەکە سڕایەوە♥️**")
     else:
         await t.reply("**هیچ چاتێك بەردەست نییە ئەزیزم👾**")
-
 
 @app.on_message(filters.text)
 async def respond(client, m):
