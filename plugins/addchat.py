@@ -1,6 +1,8 @@
+import json
+
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
-from pyrogram import filters
+from pyrogram import Client, filters, idle
 
 addchats_collection = mongodb.addchat
 
@@ -132,20 +134,14 @@ async def respond(client, m):
             await m.reply_document(content)
 
 
-
-
-
 """
 پڕۆگرامساز : @IQ7amo
 """
 A = " پڕۆگرامساز : @IQ7amo "
-import json
-from pyrogram import Client, filters, idle
-import asyncio
-from pyromod import listen
 
-try:    open("rd.json", "r")
-except:
+try:
+    open("rd.json", "r")
+except BaseException:
     with open("rd.json", "w") as f:
         f.write("{}")
 api_id = "12962251"  # Here Api Id
@@ -156,7 +152,7 @@ da = json.load(open("rd.json", "r"))
 
 
 def save(data):
-    with open("rd.json", "w", encoding='utf-8') as f:
+    with open("rd.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=6, ensure_ascii=False)
         f.close()
 
@@ -173,43 +169,54 @@ def ck(c):
 async def t(client, m):
     cid = str(m.chat.id)
     ck(cid)
-    t = await m.chat.ask('**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**', filters=filters.text & filters.user(m.from_user.id),
-                         reply_to_message_id=m.id)
+    t = await m.chat.ask(
+        "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
+        filters=filters.text & filters.user(m.from_user.id),
+        reply_to_message_id=m.id,
+    )
     if t.text in da[cid]:
-        await app.send_message(cid, "**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
+        await app.send_message(
+            cid, "**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id
+        )
     else:
-        tt = await m.chat.ask("**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل)**",
-                              filters=filters.user(t.from_user.id), reply_to_message_id=t.id)
+        tt = await m.chat.ask(
+            "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل)**",
+            filters=filters.user(t.from_user.id),
+            reply_to_message_id=t.id,
+        )
         if tt.text:
             da[cid][t.text] = f"text&{tt.text}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         elif tt.photo:
             da[cid][t.text] = f"photo&{tt.photo.file_id}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         elif tt.video:
             da[cid][t.text] = f"video&{tt.video.file_id}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         elif tt.animation:
             da[cid][t.text] = f"animation&{tt.animation.file_id}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         elif tt.voice:
             da[cid][t.text] = f"voice&{tt.voice.file_id}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         elif tt.audio:
             da[cid][t.text] = f"audio&{tt.audio.file_id}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         elif tt.document:
             da[cid][t.text] = f"document&{tt.document.file_id}"
             save(da)
-            await tt.reply(f'**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**', quote=True)
+            await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
         else:
-            await tt.reply(f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل) ‌♥⚡**", quote=True)
+            await tt.reply(
+                f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل) ‌♥⚡**",
+                quote=True,
+            )
 
 
 @app.on_message(filters.regex("^چاتەکان$"))
@@ -236,7 +243,7 @@ async def t(client, m):
             elif tp[0] == "document":
                 t = "**فایل**"
             i += 1
-            r += f'{i} => {a} ~ {t}\n'
+            r += f"{i} => {a} ~ {t}\n"
         await m.reply(r)
     else:
         await m.reply("**هیچ چاتێکی زیادکراو نییە♥️**•")
@@ -258,7 +265,11 @@ async def t(client, m):
 async def t(client, m):
     cid = str(m.chat.id)
     ck(cid)
-    t = await m.chat.ask('** ئێستا ئەو وشەیە بنێرە کە زیادتکردووە🎈•**',filters=filters.text & filters.user(m.from_user.id), reply_to_message_id=m.id)
+    t = await m.chat.ask(
+        "** ئێستا ئەو وشەیە بنێرە کە زیادتکردووە🎈•**",
+        filters=filters.text & filters.user(m.from_user.id),
+        reply_to_message_id=m.id,
+    )
     if t.text in da[cid]:
         da[cid].pop(t.text)
         save(da)
@@ -290,8 +301,6 @@ async def t(client, m):
                     await m.reply_document(tp[1])
 
 
-
-
 print("#" * 25)
 print(A.center(25, "#"))
 print("#" * 25)
@@ -299,5 +308,5 @@ print("دەستی بە کارکردن کرد ...")
 app.start()
 idle()
 """
-پڕۆگرامساز : @IQ7amo 
+پڕۆگرامساز : @IQ7amo
 """
