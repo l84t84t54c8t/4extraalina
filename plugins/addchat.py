@@ -75,29 +75,79 @@ async def list_chats(client, m):
         for i, (key, value) in enumerate(data.items(), 1):
             type_label = value.split("&", 1)[0]
             type_map = {
-                "text": "**وشە**",
-                "photo": "**وێنە**",
-                "video": "**ڤیدیۆ**",
-                "animation": "**گیف**",
-                "voice": "**ڤۆیس**",
-                "audio": "**گۆرانی**",
-                "document": "**فایل**",
-                "sticker": "**ستیکەر**",
+                "text": "دەق",
+                "photo": "وێنە",
+                "video": "ڤیدیۆ",
+                "animation": "گیف",
+                "voice": "ڤۆیس",
+                "audio": "گۆرانی",
+                "document": "فایل",
+                "sticker": "ستیکەر",
             }
             response += (
-                f'{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n'
+                f'**{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n**'
             )
         await m.reply(response)
     else:
         await m.reply("**هیچ چاتێکی زیادکراو نییە♥️**•")
 
 
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.enums import ChatMemberStatus
+
 @app.on_message(filters.regex("^سڕینەوەی چاتەکان$"), group=122)
 @adminsOnly("can_change_info")
 async def clear_chats(client, m):
-    cid = str(m.chat.id)
-    await save_chat_data(cid, {})  # Use await for the async function
-    await m.reply("**بە سەرکەوتوویی هەموو چاتەکان سڕدرانەوە♥️✅**")
+    cid = m.chat.id
+
+    # Check if the user is the owner
+    member = await client.get_chat_member(cid, m.from_user.id)
+    if member.status != ChatMemberStatus.OWNER:
+        await m.reply("**تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌**")
+        return
+
+    # Send confirmation message with buttons
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("✅ بەلێ", callback_data="confirm_clear_chats"),
+                InlineKeyboardButton("❌ نەخێر", callback_data="cancel_clear_chats"),
+            ]
+        ]
+    )
+    await m.reply(
+        "**ئایا دڵنیایت کە دەتەوێ هەموو چاتەکان بسڕیتەوە؟**",
+        reply_markup=buttons,
+    )
+
+
+@app.on_callback_query(filters.regex("^confirm_clear_chats$"))
+async def confirm_clear_chats(client, callback_query):
+    cid = callback_query.message.chat.id
+
+    # Check if the user pressing the button is the owner
+    member = await client.get_chat_member(cid, callback_query.from_user.id)
+    if member.status != ChatMemberStatus.OWNER:
+        await callback_query.answer("تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True)
+        return
+
+    # Clear chats
+    await save_chat_data(str(cid), {})  # Use await for the async function
+    await callback_query.message.edit("**بە سەرکەوتوویی هەموو چاتەکان سڕدرانەوە♥️✅**")
+
+
+@app.on_callback_query(filters.regex("^cancel_clear_chats$"))
+async def cancel_clear_chats(client, callback_query):
+    cid = callback_query.message.chat.id
+
+    # Check if the user pressing the button is the owner
+    member = await client.get_chat_member(cid, callback_query.from_user.id)
+    if member.status != ChatMemberStatus.OWNER:
+        await callback_query.answer("تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True)
+        return
+
+    await callback_query.message.edit("**چالاککردنەوەی سڕینەوەی چاتەکان ڕەتکرایەوە.❌**")
+
 
 
 @app.on_message(filters.regex("^سڕینەوەی چات$"), group=123)
