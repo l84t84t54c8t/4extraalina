@@ -78,6 +78,7 @@ async def list_chats(client, m):
                 "voice": "**ڤۆیس**",
                 "audio": "**گۆرانی**",
                 "document": "**فایل**",
+                "sticker": "**ستیکەر**",
             }
             response += (
                 f'{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n'
