@@ -11,12 +11,12 @@ from utils.permissions import adminsOnly
 chat_data_collection = mongodb.chat_data
 
 
-async def get_chat_data(chat_id):
+async def get_chat_data(chat_id: int):
     chat_data = await chat_data_collection.find_one({"chat_id": chat_id})
     return chat_data["data"] if chat_data else {}
 
 
-async def save_chat_data(chat_id, data):
+async def save_chat_data(chat_id: int, data):
     await chat_data_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"data": data}}, upsert=True
     )
