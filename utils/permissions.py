@@ -76,7 +76,7 @@ async def unauthorised(message: Message, permission: str, bot_lacking_permission
     """
     chat_id = message.chat.id
     text = (
-        f"**👮🏻 | ببورە، تۆ ڕۆڵی نییە**\n"
+        f"**👮🏻 | ببورە، تۆ ڕۆڵت نییە**\n"
         f"**👮🏻 | پێویستە ڕۆڵی  __{permission}__ هەبێت!**"
     )
     if bot_lacking_permission:
