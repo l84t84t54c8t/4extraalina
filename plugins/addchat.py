@@ -1,6 +1,6 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
-from pyrogram import Client, filters
+from pyrogram import filters
 
 addchats_collection = mongodb.addchat
 
