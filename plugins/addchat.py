@@ -2,6 +2,8 @@ from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
 
+from utils.permissions import adminsOnly
+
 # MongoDB collection for managing chat-related data
 chat_data_collection = mongodb.chat_data
 
@@ -18,6 +20,7 @@ async def save_chat_data(chat_id, data):
 
 
 @app.on_message(filters.regex("^زیادکردنی چات$"), group=120)
+@adminsOnly("can_change_info")
 async def add_chat(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
@@ -63,6 +66,7 @@ async def add_chat(client, m):
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
+@adminsOnly("can_change_info")
 async def list_chats(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)  # Use await for the async function
@@ -89,6 +93,7 @@ async def list_chats(client, m):
 
 
 @app.on_message(filters.regex("^سڕینەوەی چاتەکان$"), group=122)
+@adminsOnly("can_change_info")
 async def clear_chats(client, m):
     cid = str(m.chat.id)
     await save_chat_data(cid, {})  # Use await for the async function
@@ -96,6 +101,7 @@ async def clear_chats(client, m):
 
 
 @app.on_message(filters.regex("^سڕینەوەی چات$"), group=123)
+@adminsOnly("can_change_info")
 async def delete_chat(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)  # Use await for the async function
