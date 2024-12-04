@@ -1,6 +1,8 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import filters
+from pyrogram.enums import ChatMemberStatus
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from utils.permissions import adminsOnly
 
@@ -92,9 +94,6 @@ async def list_chats(client, m):
         await m.reply("**هیچ چاتێکی زیادکراو نییە♥️**•")
 
 
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from pyrogram.enums import ChatMemberStatus
-
 @app.on_message(filters.regex("^سڕینەوەی چاتەکان$"), group=122)
 @adminsOnly("can_change_info")
 async def clear_chats(client, m):
@@ -128,7 +127,9 @@ async def confirm_clear_chats(client, callback_query):
     # Check if the user pressing the button is the owner
     member = await client.get_chat_member(cid, callback_query.from_user.id)
     if member.status != ChatMemberStatus.OWNER:
-        await callback_query.answer("تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True)
+        await callback_query.answer(
+            "تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True
+        )
         return
 
     # Clear chats
@@ -143,11 +144,14 @@ async def cancel_clear_chats(client, callback_query):
     # Check if the user pressing the button is the owner
     member = await client.get_chat_member(cid, callback_query.from_user.id)
     if member.status != ChatMemberStatus.OWNER:
-        await callback_query.answer("تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True)
+        await callback_query.answer(
+            "تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.❌", show_alert=True
+        )
         return
 
-    await callback_query.message.edit("**چالاککردنەوەی سڕینەوەی چاتەکان ڕەتکرایەوە.❌**")
-
+    await callback_query.message.edit(
+        "**چالاککردنەوەی سڕینەوەی چاتەکان ڕەتکرایەوە.❌**"
+    )
 
 
 @app.on_message(filters.regex("^سڕینەوەی چات$"), group=123)
