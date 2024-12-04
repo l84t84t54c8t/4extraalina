@@ -128,7 +128,9 @@ async def confirm_clear_chats(client, callback_query):
     if callback_query.from_user.id not in SUDOERS:
         member = await client.get_chat_member(cid, callback_query.from_user.id)
         if member.status != ChatMemberStatus.OWNER:
-            await callback_query.answer("❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.", show_alert=True)
+            await callback_query.answer(
+                "❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.", show_alert=True
+            )
             return
 
     # Clear chats
@@ -144,12 +146,12 @@ async def cancel_clear_chats(client, callback_query):
     if callback_query.from_user.id not in SUDOERS:
         member = await client.get_chat_member(cid, callback_query.from_user.id)
         if member.status != ChatMemberStatus.OWNER:
-            await callback_query.answer("❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.", show_alert=True)
+            await callback_query.answer(
+                "❌ تەنها خاوەنی گرووپ دەتوانێت ئەم فرمانە بەکاربهێنێ.", show_alert=True
+            )
             return
 
-    await callback_query.message.edit(
-        "**❌ سڕینەوەی چاتەکان هەڵوەشایەوە.**"
-    )
+    await callback_query.message.edit("**❌ سڕینەوەی چاتەکان هەڵوەشایەوە.**")
 
 
 @app.on_message(filters.regex("^سڕینەوەی چات$"), group=123)
