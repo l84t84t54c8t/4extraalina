@@ -8,9 +8,6 @@ from pyrogram.errors import RPCError
 
 @app.on_message(filters.group, group=101)  # Capture all messages
 async def delete_story_messages(client, message):
-    if message.chat is None or message.from_user is None:
-        return  # Exit if no chat or user info
-
     # Check if the message is a story
     if not message.story:
         return  # Skip non-story messages
