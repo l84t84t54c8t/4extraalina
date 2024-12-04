@@ -17,7 +17,7 @@ async def save_chat_data(chat_id, data):
     )
 
 
-@app.on_message(filters.regex("^زیادکردنی چات$"))
+@app.on_message(filters.regex("^زیادکردنی چات$"), group=120)
 async def add_chat(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
@@ -62,7 +62,7 @@ async def add_chat(client, m):
         await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
 
 
-@app.on_message(filters.regex("^چاتەکان$"))
+@app.on_message(filters.regex("^چاتەکان$"), group=121)
 async def list_chats(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)  # Use await for the async function
@@ -88,14 +88,14 @@ async def list_chats(client, m):
         await m.reply("**هیچ چاتێکی زیادکراو نییە♥️**•")
 
 
-@app.on_message(filters.regex("^سڕینەوەی چاتەکان$"))
+@app.on_message(filters.regex("^سڕینەوەی چاتەکان$"), group=122)
 async def clear_chats(client, m):
     cid = str(m.chat.id)
     await save_chat_data(cid, {})  # Use await for the async function
     await m.reply("**بە سەرکەوتوویی هەموو چاتەکان سڕدرانەوە♥️✅**")
 
 
-@app.on_message(filters.regex("^سڕینەوەی چات$"))
+@app.on_message(filters.regex("^سڕینەوەی چات$"), group=123)
 async def delete_chat(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)  # Use await for the async function
@@ -112,7 +112,7 @@ async def delete_chat(client, m):
         await t.reply("**هیچ چاتێك بەردەست نییە ئەزیزم👾**")
 
 
-@app.on_message(filters.text)
+@app.on_message(filters.text, group=125)
 async def respond(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
