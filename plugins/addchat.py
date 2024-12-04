@@ -5,14 +5,17 @@ from pyrogram import filters
 # MongoDB collection for managing chat-related data
 chat_data_collection = mongodb.chat_data
 
+
 async def get_chat_data(chat_id):
     chat_data = await chat_data_collection.find_one({"chat_id": chat_id})
     return chat_data["data"] if chat_data else {}
+
 
 async def save_chat_data(chat_id, data):
     await chat_data_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"data": data}}, upsert=True
     )
+
 
 @app.on_message(filters.regex("^زیادکردنی چات$"))
 async def add_chat(client, m):
@@ -56,6 +59,7 @@ async def add_chat(client, m):
         await save_chat_data(cid, data)  # Use await for the async function
         await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
 
+
 @app.on_message(filters.regex("^چاتەکان$"))
 async def list_chats(client, m):
     cid = str(m.chat.id)
@@ -73,16 +77,20 @@ async def list_chats(client, m):
                 "audio": "**گۆرانی**",
                 "document": "**فایل**",
             }
-            response += f'{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n'
+            response += (
+                f'{i} => {key} ~ {type_map.get(type_label, "ناونامەی نەزانراو")}\n'
+            )
         await m.reply(response)
     else:
         await m.reply("**هیچ چاتێکی زیادکراو نییە♥️**•")
+
 
 @app.on_message(filters.regex("^سڕینەوەی چاتەکان$"))
 async def clear_chats(client, m):
     cid = str(m.chat.id)
     await save_chat_data(cid, {})  # Use await for the async function
     await m.reply("**بە سەرکەوتوویی هەموو چاتەکان سڕدرانەوە♥️✅**")
+
 
 @app.on_message(filters.regex("^سڕینەوەی چات$"))
 async def delete_chat(client, m):
@@ -99,6 +107,7 @@ async def delete_chat(client, m):
         await t.reply("**بە سەرکەوتوویی چاتە زیادکراوەکە سڕایەوە♥️**")
     else:
         await t.reply("**هیچ چاتێك بەردەست نییە ئەزیزم👾**")
+
 
 @app.on_message(filters.text)
 async def respond(client, m):
