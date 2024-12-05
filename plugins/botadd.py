@@ -1,8 +1,7 @@
 import random
 
 from AlinaMusic import app
-from AlinaMusic.utils.database import (add_served_chat, delete_served_chat,
-                                       get_assistant)
+from AlinaMusic.utils.database import delete_served_chat, get_assistant
 from config import LOG_GROUP_ID
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -65,7 +64,7 @@ async def join_watcher(_, message):
                         ]
                     ),
                 )
-                #await add_served_chat(message.chat.id)
+                # await add_served_chat(message.chat.id)
                 await userbot.join_chat(link)
 
     except Exception as e:
