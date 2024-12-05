@@ -21,21 +21,34 @@ async def set_deletion_feature(chat_id: int, status: bool):
 
 
 # Function to check if forwarded message deletion is enabled, default to True
+from pyrogram.errors import PeerIdInvalid
+
 async def is_deletion_enabled(chat_id: int) -> bool:
-    data = await forwarddb.find_one({"chat_id": chat_id})
-    if data is None:
-        # Check if the bot is an admin; if so, enable deletion by default
+    try:
+        # Check if the bot is an admin in the group/chat
         chat_member = await app.get_chat_member(chat_id, (await app.get_me()).id)
         if chat_member.status == ChatMemberStatus.ADMINISTRATOR:
             await set_deletion_feature(chat_id, True)  # Enable by default
             return True
-        return False  # Otherwise, return disabled
-    # Default to True if not set
+    except ValueError:
+        print(f"The chat_id {chat_id} belongs to a user, skipping admin check.")
+        return False  # Cannot check for a user ID
+    except PeerIdInvalid:
+        print(f"Invalid chat ID: {chat_id}")
+        return False  # Handle invalid chat IDs
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return False
+
+    # Check in the database for existing settings
+    data = await forwarddb.find_one({"chat_id": chat_id})
+    if data is None:
+        return False  # Default to disabled if no data exists
     return data.get("forwarded_message_deletion", True)
 
 
 # Function to delete forwarded messages only from members
-@app.on_message(filters.forwarded)
+@app.on_message(filters.forwarded & filters.group, group=150)
 async def delete_forwarded_messages(app, message):
     if message.chat is None or message.from_user is None:
         return  # Exit if no chat or user info
