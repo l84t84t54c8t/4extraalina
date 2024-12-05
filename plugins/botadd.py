@@ -64,8 +64,8 @@ async def join_watcher(_, message):
                         ]
                     ),
                 )
-                # await add_served_chat(message.chat.id)
-                await userbot.join_chat(link)
+                await add_served_chat(message.chat.id)
+                # await userbot.join_chat(link)
 
     except Exception as e:
         print(f"Error: {e}")
