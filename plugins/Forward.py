@@ -3,7 +3,7 @@ from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.plugins.play.play import joinch
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import MessageDeleteForbidden
+from pyrogram.errors import MessageDeleteForbidden, PeerIdInvalid
 
 from utils.permissions import adminsOnly
 
@@ -21,7 +21,7 @@ async def set_deletion_feature(chat_id: int, status: bool):
 
 
 # Function to check if forwarded message deletion is enabled, default to True
-from pyrogram.errors import PeerIdInvalid
+
 
 async def is_deletion_enabled(chat_id: int) -> bool:
     try:
