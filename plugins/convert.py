@@ -1,19 +1,22 @@
 import os
 import time
-from pyrogram import Client, filters
-from pyrogram.types import Message
 
 from AlinaMusic import app
-from utils.tools import convert_to_gif, runcmd  # Ensure these are correctly implemented
+from pyrogram import filters
+from pyrogram.types import Message
+
+# Ensure these are correctly implemented
+from utils.tools import convert_to_gif, runcmd
 
 TEMP_DIR = "./temp/"
-
 
 
 @app.on_message(filters.command("stog"))
 async def sticker_to_gif(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.sticker:
-        return await message.reply_text("Reply to an animated/video sticker to convert it to a GIF.")
+        return await message.reply_text(
+            "Reply to an animated/video sticker to convert it to a GIF."
+        )
 
     progress_message = await message.reply_text("Converting sticker to GIF...")
     sticker = message.reply_to_message.sticker
@@ -42,7 +45,9 @@ async def sticker_to_image(_, message: Message):
 
     progress_message = await message.reply_text("Converting sticker to image...")
     try:
-        dwl_path = await message.reply_to_message.download(file_name=f"{TEMP_DIR}image_{round(time.time())}.png")
+        dwl_path = await message.reply_to_message.download(
+            file_name=f"{TEMP_DIR}image_{round(time.time())}.png"
+        )
         await message.reply_photo(dwl_path)
         await progress_message.delete()
     except Exception as e:
@@ -59,7 +64,9 @@ async def image_to_sticker(_, message: Message):
 
     progress_message = await message.reply_text("Converting image to sticker...")
     try:
-        dwl_path = await message.reply_to_message.download(file_name=f"{TEMP_DIR}sticker_{round(time.time())}.webp")
+        dwl_path = await message.reply_to_message.download(
+            file_name=f"{TEMP_DIR}sticker_{round(time.time())}.webp"
+        )
         await message.reply_sticker(dwl_path)
         await progress_message.delete()
     except Exception as e:
@@ -79,7 +86,9 @@ async def file_to_image(_, message: Message):
 
     progress_message = await message.reply_text("Converting file to image...")
     try:
-        dwl_path = await message.reply_to_message.download(file_name=f"{TEMP_DIR}image_{round(time.time())}.png")
+        dwl_path = await message.reply_to_message.download(
+            file_name=f"{TEMP_DIR}image_{round(time.time())}.png"
+        )
         await message.reply_photo(dwl_path)
         await progress_message.delete()
     except Exception as e:
@@ -96,7 +105,9 @@ async def image_to_file(_, message: Message):
 
     progress_message = await message.reply_text("Converting image to file...")
     try:
-        dwl_path = await message.reply_to_message.download(file_name=f"{TEMP_DIR}file_{round(time.time())}.png")
+        dwl_path = await message.reply_to_message.download(
+            file_name=f"{TEMP_DIR}file_{round(time.time())}.png"
+        )
         await message.reply_document(dwl_path)
         await progress_message.delete()
     except Exception as e:
@@ -109,15 +120,27 @@ async def image_to_file(_, message: Message):
 @app.on_message(filters.command("tovoice"))
 async def media_to_voice(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.media:
-        return await message.reply_text("Reply to a media file to convert it to a voice note.")
+        return await message.reply_text(
+            "Reply to a media file to convert it to a voice note."
+        )
 
     progress_message = await message.reply_text("Converting media to voice...")
     try:
         dwl_path = await message.reply_to_message.download(file_name=TEMP_DIR)
         voice_path = os.path.join(TEMP_DIR, f"voice_{round(time.time())}.ogg")
         cmd_list = [
-            "ffmpeg", "-i", dwl_path, "-map", "0:a", "-codec:a", "libopus",
-            "-b:a", "100k", "-vbr", "on", voice_path
+            "ffmpeg",
+            "-i",
+            dwl_path,
+            "-map",
+            "0:a",
+            "-codec:a",
+            "libopus",
+            "-b:a",
+            "100k",
+            "-vbr",
+            "on",
+            voice_path,
         ]
         _, stderr, _, _ = await runcmd(" ".join(cmd_list))
 
@@ -137,7 +160,9 @@ async def media_to_voice(_, message: Message):
 @app.on_message(filters.command("tomp3"))
 async def media_to_mp3(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.media:
-        return await message.reply_text("Reply to a media message to convert it to MP3.")
+        return await message.reply_text(
+            "Reply to a media message to convert it to MP3."
+        )
 
     progress_message = await message.reply_text("Converting media to MP3...")
     try:
