@@ -27,7 +27,7 @@ async def sticker_to_gif(_, message: Message):
     else:
         return await hellbot.delete(hell, "Reply to an animated/video sticker.")
 
-    dwl_path = await message.reply_to_message.download(Config.TEMP_DIR)
+    dwl_path = await message.reply_to_message.download(TEMP_DIR)
     gif_path = await convert_to_gif(dwl_path, is_video)
 
     await message.reply_animation(gif_path)
@@ -46,7 +46,7 @@ async def sticker_to_image(_, message: Message):
 
     hell = await hellbot.edit(message, "Converting ...")
     fileName = f"image_{round(time.time())}.png"
-    dwl_path = await message.reply_to_message.download(f"{Config.TEMP_DIR}{fileName}")
+    dwl_path = await message.reply_to_message.download(f"{TEMP_DIR}{fileName}")
 
     await message.reply_photo(dwl_path)
     await hellbot.delete(hell, "Converted to image successfully!")
@@ -63,7 +63,7 @@ async def image_to_sticker(_, message: Message):
 
     hell = await hellbot.edit(message, "Converting ...")
     fileName = f"sticker_{round(time.time())}.webp"
-    dwl_path = await message.reply_to_message.download(f"{Config.TEMP_DIR}{fileName}")
+    dwl_path = await message.reply_to_message.download(f"{TEMP_DIR}{fileName}")
 
     await message.reply_sticker(dwl_path)
     await hellbot.delete(hell, "Converted to sticker successfully!")
@@ -81,7 +81,7 @@ async def file_to_image(_, message: Message):
 
     hell = await hellbot.edit(message, "Converting ...")
     fileName = f"image_{round(time.time())}.png"
-    dwl_path = await message.reply_to_message.download(f"{Config.TEMP_DIR}{fileName}")
+    dwl_path = await message.reply_to_message.download(f"{TEMP_DIR}{fileName}")
 
     await message.reply_photo(dwl_path)
     await hellbot.delete(hell, "Converted to image successfully!")
@@ -89,14 +89,14 @@ async def file_to_image(_, message: Message):
     os.remove(dwl_path)
 
 
-@on_message("itof", allow_stan=True)
+@app.on_message(filters.command("itof"))
 async def image_to_file(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.photo:
         return await hellbot.delete(message, "Reply to an image to convert it to file.")
 
     hell = await hellbot.edit(message, "Converting ...")
     fileName = f"file_{round(time.time())}.png"
-    dwl_path = await message.reply_to_message.download(f"{Config.TEMP_DIR}{fileName}")
+    dwl_path = await message.reply_to_message.download(f"{TEMP_DIR}{fileName}")
 
     await message.reply_document(dwl_path)
     await hellbot.delete(hell, "Converted to file successfully!")
@@ -109,7 +109,7 @@ async def media_to_voice(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.media:
         return await hellbot.delete(message, "Reply to a media to convert it to voice.")
     hell = await hellbot.edit(message, "Converting ...")
-    dwl_path = await message.reply_to_message.download(f"{Config.TEMP_DIR}")
+    dwl_path = await message.reply_to_message.download(f"{TEMP_DIR}")
     voice_path = f"{round(time.time())}.ogg"
 
     cmd_list = [
@@ -139,30 +139,47 @@ async def media_to_voice(_, message: Message):
     os.remove(dwl_path)
 
 
-@app.on_message(filters.command(("tomp3"))
+import os
+import time
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from config import Config
+from helpers.runcmd import runcmd  # Ensure this helper is correctly implemented
+
+@app.on_message(filters.command("tomp3"))
 async def media_to_mp3(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.media:
-        return await hellbot.delete(message, "Reply to a media to convert it to mp3.")
+        return await message.reply_text("Reply to a media message to convert it to MP3.")
 
-    hell = await hellbot.edit(message, "Converting ...")
-    dwl_path = await message.reply_to_message.download(f"{Config.TEMP_DIR}")
-    mp3_path = f"{round(time.time())}.mp3"
+    # Notify user
+    progress_message = await message.reply_text("Converting media to MP3...")
 
-    cmd_list = [
-        "ffmpeg",
-        "-i",
-        dwl_path,
-        "-vn",
-        mp3_path,
-    ]
+    try:
+        # Download media
+        dwl_path = await message.reply_to_message.download(file_name=Config.TEMP_DIR)
+        mp3_path = os.path.join(TEMP_DIR, f"{round(time.time())}.mp3")
 
-    _, stderr, _, _ = await runcmd(" ".join(cmd_list))
+        # Conversion command
+        cmd_list = [
+            "ffmpeg",
+            "-i", dwl_path,
+            "-vn",
+            mp3_path
+        ]
 
-    if os.path.exists(mp3_path):
-        await message.reply_audio(mp3_path)
-        await hellbot.delete(hell, "Converted to mp3 successfully!")
-        os.remove(mp3_path)
-    else:
-        await hellbot.error(hell, f"`{stderr}`")
+        # Execute the ffmpeg command
+        _, stderr, _, _ = await runcmd(" ".join(cmd_list))
 
-    os.remove(dwl_path)
+        # Check if MP3 file is created
+        if os.path.exists(mp3_path):
+            await message.reply_audio(mp3_path, caption="Here is your MP3 file!")
+            await progress_message.delete()
+            os.remove(mp3_path)  # Clean up MP3 file
+        else:
+            await progress_message.edit_text(f"Failed to convert media to MP3:\n`{stderr}`")
+    except Exception as e:
+        await progress_message.edit_text(f"An error occurred:\n`{str(e)}`")
+    finally:
+        # Clean up downloaded file
+        if os.path.exists(dwl_path):
+            os.remove(dwl_path)
