@@ -2,9 +2,6 @@ import os
 import time
 
 from AlinaMusic import app
-from config import Config
-from helpers.runcmd import \
-    runcmd  # Ensure this helper is correctly implemented
 from pyrogram import filters
 from pyrogram.types import Message
 
@@ -155,7 +152,7 @@ async def media_to_mp3(_, message: Message):
 
     try:
         # Download media
-        dwl_path = await message.reply_to_message.download(file_name=Config.TEMP_DIR)
+        dwl_path = await message.reply_to_message.download(file_name=TEMP_DIR)
         mp3_path = os.path.join(TEMP_DIR, f"{round(time.time())}.mp3")
 
         # Conversion command
