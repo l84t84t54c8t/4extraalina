@@ -11,7 +11,7 @@ from utils.tools import convert_to_gif, runcmd
 TEMP_DIR = "./temp/"
 
 
-@app.on_message(filters.command("stog"))
+@app.on_message(filters.command("togif"))
 async def sticker_to_gif(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.sticker:
         return await message.reply_text(
@@ -38,7 +38,7 @@ async def sticker_to_gif(_, message: Message):
             os.remove(dwl_path)
 
 
-@app.on_message(filters.command("stoi"))
+@app.on_message(filters.command("tophoto"))
 async def sticker_to_image(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.sticker:
         return await message.reply_text("Reply to a sticker to convert it to an image.")
@@ -57,7 +57,7 @@ async def sticker_to_image(_, message: Message):
             os.remove(dwl_path)
 
 
-@app.on_message(filters.command("itos"))
+@app.on_message(filters.command("tosticker"))
 async def image_to_sticker(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.photo:
         return await message.reply_text("Reply to an image to convert it to a sticker.")
@@ -76,7 +76,7 @@ async def image_to_sticker(_, message: Message):
             os.remove(dwl_path)
 
 
-@app.on_message(filters.command("ftoi"))
+@app.on_message(filters.command("toimage"))
 async def file_to_image(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.document:
         return await message.reply_text("Reply to a file to convert it to an image.")
@@ -98,7 +98,7 @@ async def file_to_image(_, message: Message):
             os.remove(dwl_path)
 
 
-@app.on_message(filters.command("itof"))
+@app.on_message(filters.command("tofile"))
 async def image_to_file(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.photo:
         return await message.reply_text("Reply to an image to convert it to a file.")
