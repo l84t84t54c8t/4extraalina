@@ -1,12 +1,16 @@
 import os
 import time
-from pyrogram import filters, Client
+
+from AlinaMusic import app
+from config import Config
+from helpers.runcmd import \
+    runcmd  # Ensure this helper is correctly implemented
+from pyrogram import filters
 from pyrogram.types import Message
+
 from utils.tools import convert_to_gif, runcmd
 
 TEMP_DIR = "./temp/"
-
-from AlinaMusic import app
 
 
 @app.on_message(filters.command("stog"))
@@ -139,17 +143,12 @@ async def media_to_voice(_, message: Message):
     os.remove(dwl_path)
 
 
-import os
-import time
-from pyrogram import Client, filters
-from pyrogram.types import Message
-from config import Config
-from helpers.runcmd import runcmd  # Ensure this helper is correctly implemented
-
 @app.on_message(filters.command("tomp3"))
 async def media_to_mp3(_, message: Message):
     if not message.reply_to_message or not message.reply_to_message.media:
-        return await message.reply_text("Reply to a media message to convert it to MP3.")
+        return await message.reply_text(
+            "Reply to a media message to convert it to MP3."
+        )
 
     # Notify user
     progress_message = await message.reply_text("Converting media to MP3...")
@@ -160,12 +159,7 @@ async def media_to_mp3(_, message: Message):
         mp3_path = os.path.join(TEMP_DIR, f"{round(time.time())}.mp3")
 
         # Conversion command
-        cmd_list = [
-            "ffmpeg",
-            "-i", dwl_path,
-            "-vn",
-            mp3_path
-        ]
+        cmd_list = ["ffmpeg", "-i", dwl_path, "-vn", mp3_path]
 
         # Execute the ffmpeg command
         _, stderr, _, _ = await runcmd(" ".join(cmd_list))
@@ -176,7 +170,9 @@ async def media_to_mp3(_, message: Message):
             await progress_message.delete()
             os.remove(mp3_path)  # Clean up MP3 file
         else:
-            await progress_message.edit_text(f"Failed to convert media to MP3:\n`{stderr}`")
+            await progress_message.edit_text(
+                f"Failed to convert media to MP3:\n`{stderr}`"
+            )
     except Exception as e:
         await progress_message.edit_text(f"An error occurred:\n`{str(e)}`")
     finally:
