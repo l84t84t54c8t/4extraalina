@@ -2,6 +2,7 @@ import os
 import random
 
 from AlinaMusic import app
+from AlinaMusic.core.mongo import mongodb
 from config import BANNED_USERS, OWNER_ID
 from PIL import Image, ImageDraw
 from pyrogram import filters
@@ -10,8 +11,21 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from utils.permissions import adminsOnly
 
-# Lock state variable (you can also use a database)
-command_locked = False
+
+# MongoDB collection for storing locked permissions
+coupledb = mongodb.couple
+
+# Lock state functions for MongoDB
+async def update_lock_state(chat_id: int, state: bool):
+    """Update the lock state for a specific chat in the lockdb collection."""
+    await coupledb.update_one(
+        {"chat_id": chat_id}, {"$set": {"locked": state}}, upsert=True
+    )
+
+async def get_lock_state(chat_id: int) -> bool:
+    """Retrieve the lock state for a specific chat from the lockdb collection."""
+    chat = await coupledb.find_one({"chat_id": chat_id})
+    return chat.get("locked", False) if chat else False
 
 
 @app.on_message(
@@ -20,8 +34,8 @@ command_locked = False
 )
 @adminsOnly("can_change_info")
 async def lock_couples_command(app, message):
-    global command_locked
-    command_locked = True
+    chat_id = message.chat.id
+    await update_lock_state(chat_id, True)
     await message.reply_text("**🔒 فەرمانی کەپڵ داخرا**")
 
 
@@ -33,8 +47,8 @@ async def lock_couples_command(app, message):
 )
 @adminsOnly("can_change_info")
 async def unlock_couples_command(app, message):
-    global command_locked
-    command_locked = False
+    chat_id = message.chat.id
+    await update_lock_state(chat_id, False)
     await message.reply_text("**🔓 فەرمانی کەپڵ کرایەوە **")
 
 
@@ -46,11 +60,13 @@ async def unlock_couples_command(app, message):
     & ~BANNED_USERS
 )
 async def couples(app, message):
-    global command_locked
+    cid = message.chat.id
+
+    # Check lock state from database
+    command_locked = await get_lock_state(cid)
     if command_locked:
         return await message.reply_text("**🔒 ببورە ئەم فەرمانە داخراوە**")
 
-    cid = message.chat.id
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text("**تەنیا لە گرووپ کارەکات😂🙂**")
 
