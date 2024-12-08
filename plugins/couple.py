@@ -37,8 +37,12 @@ async def get_lock_state(chat_id: int) -> bool:
 @adminsOnly("can_change_info")
 async def lock_couples_command(app, message):
     chat_id = message.chat.id
+    current_state = await get_lock_state(chat_id)
+    if current_state:
+        return await message.reply_text("**🔒 فەرمانی کەپڵ پێشتر داخراوە !**")
+
     await update_lock_state(chat_id, True)
-    await message.reply_text("**🔒 فەرمانی کەپڵ داخرا**")
+    await message.reply_text("**🔒 فەرمانی کەپڵ داخرا !**")
 
 
 @app.on_message(
@@ -50,8 +54,13 @@ async def lock_couples_command(app, message):
 @adminsOnly("can_change_info")
 async def unlock_couples_command(app, message):
     chat_id = message.chat.id
+    current_state = await get_lock_state(chat_id)
+    if not current_state:
+        return await message.reply_text("**🔓 فەرمانی کەپڵ پێشتر کراوەتەوە !**")
+
     await update_lock_state(chat_id, False)
-    await message.reply_text("**🔓 فەرمانی کەپڵ کرایەوە **")
+    await message.reply_text("**🔓 فەرمانی کەپڵ کرایەوە !**")
+
 
 
 @app.on_message(
