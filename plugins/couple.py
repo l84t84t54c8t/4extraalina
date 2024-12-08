@@ -9,8 +9,10 @@ from pyrogram.enums import ChatAction, ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from utils.permissions import adminsOnly
+
 # Lock state variable (you can also use a database)
 command_locked = False
+
 
 @app.on_message(filters.command("lock_couples") & ~BANNED_USERS)
 @adminsOnly("can_change_info")
@@ -19,12 +21,14 @@ async def lock_couples_command(app, message):
     command_locked = True
     await message.reply_text("The 'couples' command has been locked! 🔒")
 
+
 @app.on_message(filters.command("unlock_couples") & ~BANNED_USERS)
 @adminsOnly("can_change_info")
 async def unlock_couples_command(app, message):
     global command_locked
     command_locked = False
     await message.reply_text("The 'couples' command has been unlocked! 🔓")
+
 
 @app.on_message(
     filters.command(
