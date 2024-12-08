@@ -11,16 +11,18 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from utils.permissions import adminsOnly
 
-
 # MongoDB collection for storing locked permissions
 coupledb = mongodb.couple
 
 # Lock state functions for MongoDB
+
+
 async def update_lock_state(chat_id: int, state: bool):
     """Update the lock state for a specific chat in the lockdb collection."""
     await coupledb.update_one(
         {"chat_id": chat_id}, {"$set": {"locked": state}}, upsert=True
     )
+
 
 async def get_lock_state(chat_id: int) -> bool:
     """Retrieve the lock state for a specific chat from the lockdb collection."""
