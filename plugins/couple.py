@@ -48,7 +48,7 @@ async def unlock_couples_command(app, message):
 async def couples(app, message):
     global command_locked
     if command_locked:
-        return await message.reply_text("This command is currently locked! 🔒")
+        return await message.reply_text("**🔒 ببورە ئەم فەرمانە داخراوە**")
 
     cid = message.chat.id
     if message.chat.type == ChatType.PRIVATE:
