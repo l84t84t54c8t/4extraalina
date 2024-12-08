@@ -62,7 +62,6 @@ async def unlock_couples_command(app, message):
     await message.reply_text("**🔓 فەرمانی کەپڵ کرایەوە !**")
 
 
-
 @app.on_message(
     filters.command(
         ["couples", "couple", "kapl", "قل", "کەپل", "کەپڵ"],
