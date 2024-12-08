@@ -14,7 +14,10 @@ from utils.permissions import adminsOnly
 command_locked = False
 
 
-@app.on_message(filters.command(["/lock_couples", "/lockkapl", "داخستنی کەپڵ", "داخستنی کەپل"], "") & ~BANNED_USERS)
+@app.on_message(
+    filters.command(["/lock_couples", "/lockkapl", "داخستنی کەپڵ", "داخستنی کەپل"], "")
+    & ~BANNED_USERS
+)
 @adminsOnly("can_change_info")
 async def lock_couples_command(app, message):
     global command_locked
@@ -22,7 +25,12 @@ async def lock_couples_command(app, message):
     await message.reply_text("**🔒 فەرمانی کەپڵ داخرا**")
 
 
-@app.on_message(filters.command(["/unlock_couples", "/unlockkapl", "کردنەوەی کەپڵ", "کردنەوەی کەپل"], "") & ~BANNED_USERS)
+@app.on_message(
+    filters.command(
+        ["/unlock_couples", "/unlockkapl", "کردنەوەی کەپڵ", "کردنەوەی کەپل"], ""
+    )
+    & ~BANNED_USERS
+)
 @adminsOnly("can_change_info")
 async def unlock_couples_command(app, message):
     global command_locked
