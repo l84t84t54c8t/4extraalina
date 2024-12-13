@@ -514,8 +514,6 @@ async def check_forcesub(client: Client, message: Message):
         )
         return False
 
-    return False
-
 
 @app.on_message(filters.group, group=30)
 async def enforce_forcesub(client: Client, message: Message):
