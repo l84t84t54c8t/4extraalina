@@ -404,7 +404,6 @@ async def get_fsub_stats(client: Client, message: Message):
     os.remove(file_path)
 
 
-
 async def check_forcesub(client: Client, message: Message):
     if message.from_user is None:
         return False  # Exit early if no user is associated with the message
