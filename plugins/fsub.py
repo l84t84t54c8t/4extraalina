@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
@@ -334,58 +335,74 @@ async def get_fsub_stats(client: Client, message: Message):
 
 
 @app.on_message(
-    filters.command(["/fsubstats", "/fsubinfo", "زانیاری جۆینی ناچاری"], "") & SUDOERS
+    filters.command(["/fsubstats", "/fsubinfo", "ئاماری جۆینی ناچاری"], "") & SUDOERS
 )
 async def get_fsub_stats(client: Client, message: Message):
     if await joinch(message):
         return
+
     # Fetch all groups where FSub is enabled from the database
     enabled_groups = forcesub_collection.find({"channel_id": {"$exists": True}})
 
     if forcesub_collection.count_documents({"channel_id": {"$exists": True}}) == 0:
         return await message.reply_text("**• جۆینی ناچاری چالاک نەکراوە**")
 
-    # Prepare the response message
-    text = "**• زانیاری گرووپ و کەناڵی جۆینی ناچاری :**\n\n"
+    # Prepare the text content for the file
+    content = "• زانیاری گرووپ و کەناڵی جۆینی ناچاری:\n\n"
 
     for group in enabled_groups:
         chat_id = group["chat_id"]
-        group_info = await client.get_chat(
-            chat_id
-        )  # Fetch group information from Telegram
-
-        group_title = group_info.title
-        group_username = group_info.username if group_info.username else "N/A"
+        try:
+            # Fetch group information
+            group_info = await client.get_chat(chat_id)
+            group_title = group_info.title
+            group_username = group_info.username if group_info.username else "N/A"
+        except Exception:
+            group_title = "Unknown"
+            group_username = "N/A"
 
         channel_id = group["channel_id"]
-        channel_info = await client.get_chat(
-            channel_id
-        )  # Fetch channel information from Telegram
-        channel_title = channel_info.title
-        channel_username = channel_info.username if channel_info.username else "N/A"
+        try:
+            # Fetch channel information
+            channel_info = await client.get_chat(channel_id)
+            channel_title = channel_info.title
+            channel_username = channel_info.username if channel_info.username else "N/A"
+        except Exception:
+            channel_title = "Unknown"
+            channel_username = "N/A"
 
-        # Append group and channel details to the message
-        text += (
-            f"**ناوی گرووپ : {group_title}**\n"
-            f"**ئایدی گرووپ :** `{chat_id}`\n"
-            f"**یوزەری گرووپ : @{group_username if group_username != 'N/A' else 'None'}**\n\n"
-            f"**ناوی کەناڵ : {channel_title}**\n"
-            f"**ئایدی کەناڵ :** `{channel_id}`\n"
-            f"**یوزەری کەناڵ : @{channel_username if channel_username != 'N/A' else 'None'}**\n\n"
+        # Append group and channel details to the file content
+        content += (
+            f"**ناوی گرووپ:** {group_title}\n"
+            f"**ئایدی گرووپ:** `{chat_id}`\n"
+            f"**یوزەری گرووپ:** @{group_username if group_username != 'N/A' else 'None'}\n\n"
+            f"**ناوی کەناڵ:** {channel_title}\n"
+            f"**ئایدی کەناڵ:** `{channel_id}`\n"
+            f"**یوزەری کەناڵ:** @{channel_username if channel_username != 'N/A' else 'None'}\n\n"
         )
 
-    await message.reply_text(
-        text,
+    # Save the content to a file
+    file_path = "fsub_stats.txt"
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
+    # Send the file as a document
+    await message.reply_document(
+        file_path,
+        caption="**• زانیاری گرووپ و کەناڵی جۆینی ناچاری بە وردەکاری:**",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
+                        "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url="https://t.me/GroupAlina"
                     )
                 ]
             ]
         ),
-    )
+
+    # Clean up by removing the file after sending
+    os.remove(file_path)
+
 
 
 async def check_forcesub(client: Client, message: Message):
