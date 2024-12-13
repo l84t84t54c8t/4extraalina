@@ -429,18 +429,25 @@ async def check_forcesub(client: Client, message: Message):
         if user_member:
             return True  # User is a member
     except UserNotParticipant:
-        # If user is not a participant, delete the message and send force sub message
+        # If user is not a participant, delete the message and send force sub
+        # message
         await message.delete()
 
         # Create the channel link (username or invite link)
-        channel_url = f"https://t.me/{channel_username}" if channel_username else await client.export_chat_invite_link(channel_id)
+        channel_url = (
+            f"https://t.me/{channel_username}"
+            if channel_username
+            else await client.export_chat_invite_link(channel_id)
+        )
 
-        # Send message with photo if custom_photo_id is available, otherwise send caption only
+        # Send message with photo if custom_photo_id is available, otherwise
+        # send caption only
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
                 caption=final_caption.format(
-                    name=message.from_user.mention, mention=channel_username or "Channel"
+                    name=message.from_user.mention,
+                    mention=channel_username or "Channel",
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -461,7 +468,8 @@ async def check_forcesub(client: Client, message: Message):
         else:
             await message.reply_text(
                 final_caption.format(
-                    name=message.from_user.mention, mention=channel_username or "Channel"
+                    name=message.from_user.mention,
+                    mention=channel_username or "Channel",
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
