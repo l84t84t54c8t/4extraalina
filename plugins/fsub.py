@@ -398,10 +398,14 @@ async def check_forcesub(client: Client, message: Message):
     # Fetch force subscription data from the database
     forcesub_data = forcesub_collection.find_one({"chat_id": chat_id})
     if not forcesub_data:
-        return  # If no force sub data is found, exit early
+        return False  # Exit early if no force sub data is found
 
     channel_id = forcesub_data.get("channel_id")
     channel_username = forcesub_data.get("channel_username")
+
+    # Validate channel_id
+    if not channel_id:
+        return False  # Exit early if channel_id is missing or invalid
 
     # Retrieve custom photo and caption from the database
     custom_photo_id = forcesub_data.get("custom_photo_id")
@@ -423,26 +427,20 @@ async def check_forcesub(client: Client, message: Message):
         # Check if the user is a member of the channel
         user_member = await client.get_chat_member(channel_id, user_id)
         if user_member:
-            return  # User is a member, no further action needed
+            return True  # User is a member
     except UserNotParticipant:
-        # If user is not a participant, delete the message and send force sub
-        # message
+        # If user is not a participant, delete the message and send force sub message
         await message.delete()
 
         # Create the channel link (username or invite link)
-        if channel_username:
-            channel_url = f"https://t.me/{channel_username}"
-        else:
-            invite_link = await client.export_chat_invite_link(channel_id)
-            channel_url = invite_link
+        channel_url = f"https://t.me/{channel_username}" if channel_username else await client.export_chat_invite_link(channel_id)
 
-        # Send message with photo if custom_photo_id is available, otherwise
-        # send caption only
+        # Send message with photo if custom_photo_id is available, otherwise send caption only
         if custom_photo_id:
             await message.reply_photo(
                 photo=custom_photo_id,
                 caption=final_caption.format(
-                    name=message.from_user.mention, mention=channel_username
+                    name=message.from_user.mention, mention=channel_username or "Channel"
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -461,10 +459,9 @@ async def check_forcesub(client: Client, message: Message):
                 ),
             )
         else:
-            # Send only the text if no photo is available
             await message.reply_text(
                 final_caption.format(
-                    name=message.from_user.mention, mention=channel_username
+                    name=message.from_user.mention, mention=channel_username or "Channel"
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -483,15 +480,17 @@ async def check_forcesub(client: Client, message: Message):
                 ),
                 disable_web_page_preview=True,
             )
-
         await asyncio.sleep(1)
 
     except ChatAdminRequired:
         # Handle the case where the bot is not an admin in the channel
         forcesub_collection.delete_one({"chat_id": chat_id})
-        return await message.reply_text(
+        await message.reply_text(
             "**🚫 من ئەدمین نیم لە کەناڵ\n🚫 جۆینی ناچاری ناچالاککراوە**"
         )
+        return False
+
+    return False
 
 
 @app.on_message(filters.group, group=30)
