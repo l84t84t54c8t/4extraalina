@@ -10,32 +10,49 @@ from utils.permissions import adminsOnly
 # MongoDB collection for storing locked permissions
 lockdb = mongodb.lock
 
-# Expanded permission map
-PERMISSION_MAP = {
+# Expanded permission maps
+SEND_PERMISSION_MAP = {
     "messages": "can_send_messages",
     "media": "can_send_media_messages",
     "polls": "can_send_polls",
     "gif": "can_send_other_messages",
     "sticker": "can_send_other_messages",
     "web_preview": "can_add_web_page_previews",
+}
+
+ADMIN_PERMISSION_MAP = {
     "invite": "can_invite_users",
     "pin": "can_pin_messages",
     "info": "can_change_info",
 }
 
-# Send button for locking permissions
-
-
+# Send button for locking send permissions
 @app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
     keyboard = [
+        # Row 1: Message permissions
         [
             InlineKeyboardButton(
                 permission.capitalize(), callback_data=f"lock_{permission}"
             )
-            for permission in PERMISSION_MAP.keys()
+            for permission in ["messages", "media", "polls"]
         ],
+        # Row 2: Other send permissions
+        [
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"lock_{permission}"
+            )
+            for permission in ["gif", "sticker", "web_preview"]
+        ],
+        # Row 3: Admin permissions
+        [
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"lock_{permission}"
+            )
+            for permission in ADMIN_PERMISSION_MAP.keys()
+        ],
+        # Row 4: Lock All button
         [InlineKeyboardButton("Lock All", callback_data="lock_all")],
     ]
     msg = await message.reply(
@@ -43,29 +60,39 @@ async def lock_permission(client, message):
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
-
-# Send button for unlocking permissions
-
-
+# Send button for unlocking send permissions
 @app.on_message(filters.command("unlock") & filters.group, group=76)
 @adminsOnly("can_change_info")
 async def unlock_permission(client, message):
     keyboard = [
+        # Row 1: Message permissions
         [
             InlineKeyboardButton(
                 permission.capitalize(), callback_data=f"unlock_{permission}"
             )
-            for permission in PERMISSION_MAP.keys()
+            for permission in ["messages", "media", "polls"]
         ],
+        # Row 2: Other send permissions
+        [
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"unlock_{permission}"
+            )
+            for permission in ["gif", "sticker", "web_preview"]
+        ],
+        # Row 3: Admin permissions
+        [
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"unlock_{permission}"
+            )
+            for permission in ADMIN_PERMISSION_MAP.keys()
+        ],
+        # Row 4: Unlock All button
         [InlineKeyboardButton("Unlock All", callback_data="unlock_all")],
     ]
     msg = await message.reply(
         "Please choose a permission to unlock:",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
-
-
-# Handle callback queries for locking/unlocking permissions
 
 
 @app.on_callback_query()
