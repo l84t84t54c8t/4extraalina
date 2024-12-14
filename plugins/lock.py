@@ -2,7 +2,9 @@ from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import ChatPermissions, Message, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import (ChatPermissions, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
+
 from utils.permissions import adminsOnly
 
 # MongoDB collection for storing locked permissions
@@ -22,39 +24,57 @@ PERMISSION_MAP = {
 }
 
 # Send button for locking permissions
+
+
 @app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
     keyboard = [
-        [InlineKeyboardButton(permission.capitalize(), callback_data=f"lock_{permission}") for permission in PERMISSION_MAP.keys()],
-        [InlineKeyboardButton("Lock All", callback_data="lock_all")]
+        [
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"lock_{permission}"
+            )
+            for permission in PERMISSION_MAP.keys()
+        ],
+        [InlineKeyboardButton("Lock All", callback_data="lock_all")],
     ]
     msg = await message.reply(
         "Please choose a permission to lock:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
+
 # Send button for unlocking permissions
+
+
 @app.on_message(filters.command("unlock") & filters.group, group=76)
 @adminsOnly("can_change_info")
 async def unlock_permission(client, message):
     keyboard = [
-        [InlineKeyboardButton(permission.capitalize(), callback_data=f"unlock_{permission}") for permission in PERMISSION_MAP.keys()],
-        [InlineKeyboardButton("Unlock All", callback_data="unlock_all")]
+        [
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"unlock_{permission}"
+            )
+            for permission in PERMISSION_MAP.keys()
+        ],
+        [InlineKeyboardButton("Unlock All", callback_data="unlock_all")],
     ]
     msg = await message.reply(
         "Please choose a permission to unlock:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
+
 # Handle callback queries for locking/unlocking permissions
+
+
 @app.on_callback_query()
 async def handle_callback(client, callback_query):
     data = callback_query.data
     chat_id = callback_query.message.chat.id
 
     if data.startswith("lock_"):
-        permission_key = data[len("lock_"):]
+        permission_key = data[len("lock_") :]
 
         if permission_key == "all":
             # Lock all permissions
@@ -107,10 +127,12 @@ async def handle_callback(client, callback_query):
                     upsert=True,
                 )
 
-                await client.send_message(chat_id, f"{permission_key.capitalize()} has been locked!")
+                await client.send_message(
+                    chat_id, f"{permission_key.capitalize()} has been locked!"
+                )
 
     elif data.startswith("unlock_"):
-        permission_key = data[len("unlock_"):]
+        permission_key = data[len("unlock_") :]
 
         if permission_key == "all":
             # Unlock all permissions
@@ -163,11 +185,12 @@ async def handle_callback(client, callback_query):
                     upsert=True,
                 )
 
-                await client.send_message(chat_id, f"{permission_key.capitalize()} has been unlocked!")
+                await client.send_message(
+                    chat_id, f"{permission_key.capitalize()} has been unlocked!"
+                )
 
     # Delete the callback query message and inline buttons after the action
     await callback_query.message.delete()
-
 
 
 # View currently locked permissions stored in MongoDB
