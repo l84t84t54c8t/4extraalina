@@ -3,15 +3,18 @@ from AlinaMusic.core.mongo import mongodb
 greetingsdb = mongodb.greetings
 
 
-async def set_welcome_status(chat_id: int, status: bool):
+async def set_welcome_status(chat_id: int, status: bool): 
     await greetingsdb.update_one(
-        {"chat_id": chat_id}, {"$set": {"welcome_enabled": status}}, upsert=True
+        {"chat_id": chat_id}, 
+        {"$set": {"welcome_enabled": status}}, 
+        upsert=True
     )
-
 
 async def get_welcome_status(chat_id: int) -> bool:
     group = await greetingsdb.find_one({"chat_id": chat_id})
-    return group.get("welcome_enabled", False) if group else False
+    # Return the 'welcome_enabled' status if it exists, otherwise default to True
+    return group.get("welcome_enabled", True) if group else True
+
 
 
 async def set_welcome(chat_id: int, message: str, raw_text: str, file_id: str):
