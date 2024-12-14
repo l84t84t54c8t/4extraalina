@@ -209,15 +209,15 @@ async def set_welcome_func(_, message):
 async def del_welcome_func(_, message):
     # Create an InlineKeyboardMarkup with both buttons on the same line
     keyboard = InlineKeyboardMarkup(
-    [
         [
-            InlineKeyboardButton("بەڵێ", callback_data="dwelcome"),
-        ],
-        [
-            InlineKeyboardButton("نەخێر", callback_data="cdelete"),
+            [
+                InlineKeyboardButton("بەڵێ", callback_data="dwelcome"),
+            ],
+            [
+                InlineKeyboardButton("نەخێر", callback_data="cdelete"),
+            ],
         ]
-    ]
-)
+    )
 
     await message.reply_text(
         "**کردارێک هەڵبژێرە بۆ سڕینەوەی بەخێرهاتن:**", reply_markup=keyboard
