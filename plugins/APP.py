@@ -16,7 +16,7 @@ from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
 from utils.error import capture_err
 from utils.permissions import adminsOnly
 from utils.welcomedb import (del_welcome, get_welcome, get_welcome_status,
-                             set_welcome_status)
+                             set_welcome, set_welcome_status)
 
 
 async def handle_new_member(member, chat):
