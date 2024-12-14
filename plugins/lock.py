@@ -124,7 +124,9 @@ async def handle_callback(client, callback_query):
                 await callback_query.answer("Permissions are already locked.")
                 return
 
-            await client.set_chat_permissions(chat_id=chat_id, permissions=updated_permissions)
+            await client.set_chat_permissions(
+                chat_id=chat_id, permissions=updated_permissions
+            )
 
             # Store all locked permissions in MongoDB
             await lockdb.update_one(
@@ -153,10 +155,14 @@ async def handle_callback(client, callback_query):
                 setattr(updated_permissions, permission_name, False)
 
                 if current_permissions == updated_permissions:
-                    await callback_query.answer(f"{permission_key.capitalize()} is already locked.")
+                    await callback_query.answer(
+                        f"{permission_key.capitalize()} is already locked."
+                    )
                     return
 
-                await client.set_chat_permissions(chat_id=chat_id, permissions=updated_permissions)
+                await client.set_chat_permissions(
+                    chat_id=chat_id, permissions=updated_permissions
+                )
 
                 # Store the locked permission in MongoDB
                 await lockdb.update_one(
@@ -165,7 +171,9 @@ async def handle_callback(client, callback_query):
                     upsert=True,
                 )
 
-                await client.send_message(chat_id, f"{permission_key.capitalize()} has been locked!")
+                await client.send_message(
+                    chat_id, f"{permission_key.capitalize()} has been locked!"
+                )
 
     elif data.startswith("unlock_"):
         permission_key = data[len("unlock_") :]
@@ -191,7 +199,9 @@ async def handle_callback(client, callback_query):
                 await callback_query.answer("Permissions are already unlocked.")
                 return
 
-            await client.set_chat_permissions(chat_id=chat_id, permissions=updated_permissions)
+            await client.set_chat_permissions(
+                chat_id=chat_id, permissions=updated_permissions
+            )
 
             # Remove all locked permissions from MongoDB
             await lockdb.update_one(
@@ -220,10 +230,14 @@ async def handle_callback(client, callback_query):
                 setattr(updated_permissions, permission_name, True)
 
                 if current_permissions == updated_permissions:
-                    await callback_query.answer(f"{permission_key.capitalize()} is already unlocked.")
+                    await callback_query.answer(
+                        f"{permission_key.capitalize()} is already unlocked."
+                    )
                     return
 
-                await client.set_chat_permissions(chat_id=chat_id, permissions=updated_permissions)
+                await client.set_chat_permissions(
+                    chat_id=chat_id, permissions=updated_permissions
+                )
 
                 # Remove the unlocked permission from MongoDB
                 await lockdb.update_one(
@@ -232,11 +246,12 @@ async def handle_callback(client, callback_query):
                     upsert=True,
                 )
 
-                await client.send_message(chat_id, f"{permission_key.capitalize()} has been unlocked!")
+                await client.send_message(
+                    chat_id, f"{permission_key.capitalize()} has been unlocked!"
+                )
 
     # Delete the callback query message and inline buttons after the action
     await callback_query.message.delete()
-
 
 
 # View currently locked permissions stored in MongoDB
