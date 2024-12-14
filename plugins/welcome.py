@@ -10,8 +10,8 @@ from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
-from pyrogram.types import (Chat, CallbackQuery, ChatMemberUpdated, InlineKeyboardButton,
-                            InlineKeyboardMarkup)
+from pyrogram.types import (CallbackQuery, Chat, ChatMemberUpdated,
+                            InlineKeyboardButton, InlineKeyboardMarkup)
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly
@@ -221,6 +221,7 @@ async def delete_welcome_callback(_, query: CallbackQuery):
     await del_welcome(chat_id)
     await query.message.edit_text("**Welcome message deleted successfully.**")
 
+
 """
 @app.on_message(
     filters.command(
@@ -236,6 +237,7 @@ async def del_welcome_func(_, message):
     await message.reply_text("**بە سەرکەوتوویی نامەی بەخێرهاتن سڕدرایەوە**")
 
 """
+
 
 @app.on_message(
     filters.command(["/getwelcome", "هێنانی بەخێرهاتن"], "") & ~filters.private
@@ -256,6 +258,7 @@ async def get_welcome_func(_, message):
     await message.reply_text(
         f'**بەخێرهاتن: {welcome}\n\nشێوازی نامەی دانراو: **`{file_id}`\n\n`{raw_text.replace("`", "")}`'
     )
+
 
 @app.on_message(filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group)
 @adminsOnly("can_change_info")
@@ -285,7 +288,10 @@ async def toggle_welcome_callback(_, query: CallbackQuery):
         await set_welcome_status(chat_id, False)
         await query.message.edit_text("**Welcome messages disabled.**")
 
+
 # Command to enable or disable /welcome
+
+
 @app.on_message(filters.command(["/welcofefeme", "بەخffێرهاتن"], "") & ~filters.private)
 @adminsOnly("can_change_info")
 async def toggle_welcome(_, message):
