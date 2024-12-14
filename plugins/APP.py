@@ -5,7 +5,7 @@ import pytz
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import is_gbanned_user
-from AlinaMusic.utils.functions import extract_text_and_keyb
+from AlinaMusic.utils.functions import check_format, extract_text_and_keyb
 from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus as CMS
