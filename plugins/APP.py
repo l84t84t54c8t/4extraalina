@@ -1,0 +1,186 @@
+import datetime
+from re import findall
+
+import pytz
+from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
+from AlinaMusic.utils.database import is_gbanned_user
+from AlinaMusic.utils.functions import check_format, extract_text_and_keyb
+from AlinaMusic.utils.keyboard import ikb
+from pyrogram import filters
+from pyrogram.enums import ChatMemberStatus as CMS
+from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
+
+from utils.error import capture_err
+from utils.permissions import adminsOnly
+from utils.welcomedb import (del_welcome, get_welcome, get_welcome_status,
+                             set_welcome, set_welcome_status)
+
+from .notes import extract_urls
+
+async def handle_new_member(member, chat):
+    try:
+        if not member or not member.id:
+            return
+        if member.id in SUDOERS:
+            return
+        if await is_gbanned_user(member.id):
+            await chat.ban_member(member.id)
+            await app.send_message(
+                chat.id,
+                f"**• بەکارهێنەر : {member.mention}\n- باندی گشتی کراوە**\n"
+                + "**- دەرکراوە لە هەموو گرووپ و کەناڵەکان**\n"
+                + "**- بەهۆی ئەنجامدانی کاری نادروست**",
+            )
+            return
+        if member.is_bot:
+            return
+        return await send_welcome_message(chat, member.id)
+    except ChatAdminRequired:
+        return
+
+@app.on_chat_member_updated(filters.group, group=6)
+@capture_err
+async def welcome(_, user):
+    if not (
+        user.new_chat_member
+        and user.new_chat_member.status not in {CMS.RESTRICTED}
+        and not user.old_chat_member
+    ):
+        return
+
+    member = user.new_chat_member.user if user.new_chat_member else user.from_user
+    if not member:
+        return
+
+    chat = user.chat
+
+    is_welcome_enabled = await get_welcome_status(chat.id)
+    if not is_welcome_enabled:
+        return
+
+    return await handle_new_member(member, chat)
+
+async def send_welcome_message(chat, user_id, delete=False):
+    welcome, raw_text, file_id = await get_welcome(chat.id)
+    tz = pytz.timezone("Asia/Baghdad")
+
+    if not raw_text:
+        return
+    text = raw_text
+    keyb = None
+    if findall(r"~.+,.+~", raw_text):
+        text, keyb = extract_text_and_keyb(ikb, raw_text)
+    u = await app.get_users(user_id)
+    if "{GROUPNAME}" in text:
+        text = text.replace("{GROUPNAME}", chat.title)
+    if "{NAME}" in text:
+        text = text.replace("{NAME}", u.mention)
+    if "{ID}" in text:
+        text = text.replace("{ID}", f"`{user_id}`")
+    if "{FIRSTNAME}" in text:
+        text = text.replace("{FIRSTNAME}", u.first_name)
+    if "{SURNAME}" in text:
+        sname = u.last_name or "None"
+        text = text.replace("{SURNAME}", sname)
+    if "{USERNAME}" in text:
+        susername = u.username or "None"
+        text = text.replace("{USERNAME}", susername)
+    if "{DATE}" in text:
+        DATE = datetime.datetime.now().strftime("%Y-%m-%d")
+        text = text.replace("{DATE}", DATE)
+    if "{WEEKDAY}" in text:
+        WEEKDAY = datetime.datetime.now(tz).strftime("%A")
+        text = text.replace("{WEEKDAY}", WEEKDAY)
+    if "{TIME}" in text:
+        TIME = datetime.datetime.now(tz).strftime("%H:%M:%S")
+        text = text.replace("{TIME}", f"{TIME}")
+
+    if welcome == "Text":
+        m = await app.send_message(
+            chat.id,
+            text=text,
+            reply_markup=keyb,
+            disable_web_page_preview=True,
+        )
+    elif welcome == "Photo":
+        m = await app.send_photo(
+            chat.id,
+            photo=file_id,
+            caption=text,
+            reply_markup=keyb,
+        )
+    elif welcome == "Video":
+        m = await app.send_video(
+            chat.id,
+            video=file_id,
+            caption=text,
+            reply_markup=keyb,
+        )
+    else:
+        m = await app.send_animation(
+            chat.id,
+            animation=file_id,
+            caption=text,
+            reply_markup=keyb,
+        )
+
+@app.on_message(
+    filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group
+)
+@adminsOnly("can_change_info")
+async def toggle_welcome(_, message):
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("Enable", callback_data="welcome_enable"),
+                InlineKeyboardButton("Disable", callback_data="welcome_disable"),
+            ]
+        ]
+    )
+    await message.reply_text("**Choose an action for welcome messages:**", reply_markup=keyboard)
+
+@app.on_callback_query(filters.regex("welcome_enable|welcome_disable"))
+async def toggle_welcome_callback(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    action = query.data
+
+    if action == "welcome_enable":
+        await set_welcome_status(chat_id, True)
+        await query.message.edit_text("**Welcome messages enabled.**")
+    elif action == "welcome_disable":
+        await set_welcome_status(chat_id, False)
+        await query.message.edit_text("**Welcome messages disabled.**")
+
+@app.on_message(
+    filters.command(["/setwelcome", "دانانی بەخێرهاتن"], "") & filters.group
+)
+@adminsOnly("can_change_info")
+async def set_welcome_func(_, message):
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Set Welcome", callback_data="set_welcome")]]
+    )
+    await message.reply_text("**Click below to set a new welcome message.**", reply_markup=keyboard)
+
+@app.on_callback_query(filters.regex("set_welcome"))
+async def set_welcome_callback(_, query: CallbackQuery):
+    await query.message.edit_text("**Reply to a message (text, photo, etc.) to set it as the welcome message.**")
+    # Logic for setting welcome based on the reply can go here
+
+@app.on_message(
+    filters.command(["/delwelcome", "سڕینەوەی بەخێرهاتن"], "") & filters.group
+)
+@adminsOnly("can_change_info")
+async def del_welcome_func(_, message):
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Delete Welcome", callback_data="delete_welcome")]]
+    )
+    await message.reply_text("**Click below to delete the welcome message.**", reply_markup=keyboard)
+
+@app.on_callback_query(filters.regex("delete_welcome"))
+async def delete_welcome_callback(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    await del_welcome(chat_id)
+    await query.message.edit_text("**Welcome message deleted successfully.**")
