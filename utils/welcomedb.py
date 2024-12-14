@@ -5,10 +5,9 @@ greetingsdb = mongodb.greetings
 
 async def set_welcome_status(chat_id: int, status: bool):
     await mongodb.groups.update_one(
-        {"chat_id": chat_id},
-        {"$set": {"welcome_enabled": status}},
-        upsert=True
+        {"chat_id": chat_id}, {"$set": {"welcome_enabled": status}}, upsert=True
     )
+
 
 async def get_welcome_status(chat_id: int) -> bool:
     group = await mongodb.groups.find_one({"chat_id": chat_id})
