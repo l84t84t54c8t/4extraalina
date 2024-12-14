@@ -209,8 +209,12 @@ async def set_welcome_func(_, message):
 async def del_welcome_func(_, message):
     # Create an InlineKeyboardMarkup with both buttons on the same line
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("بەڵێ", callback_data="delete_welcome"),
-          InlineKeyboardButton("نەخێر", callback_data="cancel_delete")]]
+        [
+            [
+                InlineKeyboardButton("بەڵێ", callback_data="delete_welcome"),
+                InlineKeyboardButton("نەخێر", callback_data="cancel_delete"),
+            ]
+        ]
     )
     await message.reply_text(
         "**کردارێک هەڵبژێرە بۆ سڕینەوەی بەخێرهاتن:**", reply_markup=keyboard
@@ -228,7 +232,6 @@ async def delete_welcome_callback(_, query: CallbackQuery):
 async def cancel_delete_callback(_, query: CallbackQuery):
     # Edit the message to inform the user that the action has been canceled
     await query.message.edit_text("**بە سەرکەوتوویی هەڵوەشێنرایەوە.**")
-
 
 
 """
