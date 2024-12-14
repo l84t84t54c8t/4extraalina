@@ -5,20 +5,19 @@ import pytz
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from AlinaMusic.utils.database import is_gbanned_user
-from AlinaMusic.utils.functions import check_format, extract_text_and_keyb
+from AlinaMusic.utils.functions import extract_text_and_keyb
 from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
-                            InlineKeyboardMarkup, Message)
+                            InlineKeyboardMarkup)
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly
 from utils.welcomedb import (del_welcome, get_welcome, get_welcome_status,
-                             set_welcome, set_welcome_status)
+                             set_welcome_status)
 
-from .notes import extract_urls
 
 async def handle_new_member(member, chat):
     try:
@@ -41,6 +40,7 @@ async def handle_new_member(member, chat):
     except ChatAdminRequired:
         return
 
+
 @app.on_chat_member_updated(filters.group, group=6)
 @capture_err
 async def welcome(_, user):
@@ -62,6 +62,7 @@ async def welcome(_, user):
         return
 
     return await handle_new_member(member, chat)
+
 
 async def send_welcome_message(chat, user_id, delete=False):
     welcome, raw_text, file_id = await get_welcome(chat.id)
@@ -127,9 +128,8 @@ async def send_welcome_message(chat, user_id, delete=False):
             reply_markup=keyb,
         )
 
-@app.on_message(
-    filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group
-)
+
+@app.on_message(filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group)
 @adminsOnly("can_change_info")
 async def toggle_welcome(_, message):
     keyboard = InlineKeyboardMarkup(
@@ -140,7 +140,10 @@ async def toggle_welcome(_, message):
             ]
         ]
     )
-    await message.reply_text("**Choose an action for welcome messages:**", reply_markup=keyboard)
+    await message.reply_text(
+        "**Choose an action for welcome messages:**", reply_markup=keyboard
+    )
+
 
 @app.on_callback_query(filters.regex("welcome_enable|welcome_disable"))
 async def toggle_welcome_callback(_, query: CallbackQuery):
@@ -154,6 +157,7 @@ async def toggle_welcome_callback(_, query: CallbackQuery):
         await set_welcome_status(chat_id, False)
         await query.message.edit_text("**Welcome messages disabled.**")
 
+
 @app.on_message(
     filters.command(["/setwelcome", "دانانی بەخێرهاتن"], "") & filters.group
 )
@@ -162,12 +166,18 @@ async def set_welcome_func(_, message):
     keyboard = InlineKeyboardMarkup(
         [[InlineKeyboardButton("Set Welcome", callback_data="set_welcome")]]
     )
-    await message.reply_text("**Click below to set a new welcome message.**", reply_markup=keyboard)
+    await message.reply_text(
+        "**Click below to set a new welcome message.**", reply_markup=keyboard
+    )
+
 
 @app.on_callback_query(filters.regex("set_welcome"))
 async def set_welcome_callback(_, query: CallbackQuery):
-    await query.message.edit_text("**Reply to a message (text, photo, etc.) to set it as the welcome message.**")
+    await query.message.edit_text(
+        "**Reply to a message (text, photo, etc.) to set it as the welcome message.**"
+    )
     # Logic for setting welcome based on the reply can go here
+
 
 @app.on_message(
     filters.command(["/delwelcome", "سڕینەوەی بەخێرهاتن"], "") & filters.group
@@ -177,7 +187,10 @@ async def del_welcome_func(_, message):
     keyboard = InlineKeyboardMarkup(
         [[InlineKeyboardButton("Delete Welcome", callback_data="delete_welcome")]]
     )
-    await message.reply_text("**Click below to delete the welcome message.**", reply_markup=keyboard)
+    await message.reply_text(
+        "**Click below to delete the welcome message.**", reply_markup=keyboard
+    )
+
 
 @app.on_callback_query(filters.regex("delete_welcome"))
 async def delete_welcome_callback(_, query: CallbackQuery):
