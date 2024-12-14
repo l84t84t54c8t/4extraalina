@@ -27,6 +27,8 @@ ADMIN_PERMISSION_MAP = {
 }
 
 # Send button for locking send permissions
+
+
 @app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
@@ -60,7 +62,10 @@ async def lock_permission(client, message):
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
+
 # Send button for unlocking send permissions
+
+
 @app.on_message(filters.command("unlock") & filters.group, group=76)
 @adminsOnly("can_change_info")
 async def unlock_permission(client, message):
