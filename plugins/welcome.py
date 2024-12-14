@@ -10,7 +10,7 @@ from AlinaMusic.utils.keyboard import ikb
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
-from pyrogram.types import (Chat, ChatMemberUpdated, InlineKeyboardButton,
+from pyrogram.types import (Chat, CallbackQuery, ChatMemberUpdated, InlineKeyboardButton,
                             InlineKeyboardMarkup)
 
 from utils.error import capture_err
@@ -203,6 +203,26 @@ async def set_welcome_func(_, message):
 
 
 @app.on_message(
+    filters.command(["/delwelcome", "سڕینەوەی بەخێرهاتن"], "") & filters.group
+)
+@adminsOnly("can_change_info")
+async def del_welcome_func(_, message):
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Delete Welcome", callback_data="delete_welcome")]]
+    )
+    await message.reply_text(
+        "**Click below to delete the welcome message.**", reply_markup=keyboard
+    )
+
+
+@app.on_callback_query(filters.regex("delete_welcome"))
+async def delete_welcome_callback(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    await del_welcome(chat_id)
+    await query.message.edit_text("**Welcome message deleted successfully.**")
+
+"""
+@app.on_message(
     filters.command(
         ["/delwelcome", "/deletewelcome", "سڕینەوەی بەخێرهاتن", "سرینەوەی بەخێرهاتن"],
         "",
@@ -215,6 +235,7 @@ async def del_welcome_func(_, message):
     await del_welcome(chat_id)
     await message.reply_text("**بە سەرکەوتوویی نامەی بەخێرهاتن سڕدرایەوە**")
 
+"""
 
 @app.on_message(
     filters.command(["/getwelcome", "هێنانی بەخێرهاتن"], "") & ~filters.private
@@ -236,9 +257,36 @@ async def get_welcome_func(_, message):
         f'**بەخێرهاتن: {welcome}\n\nشێوازی نامەی دانراو: **`{file_id}`\n\n`{raw_text.replace("`", "")}`'
     )
 
+@app.on_message(filters.command(["/welcome", "بەخێرهاتن"], "") & filters.group)
+@adminsOnly("can_change_info")
+async def toggle_welcome(_, message):
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("Enable", callback_data="welcome_enable"),
+                InlineKeyboardButton("Disable", callback_data="welcome_disable"),
+            ]
+        ]
+    )
+    await message.reply_text(
+        "**Choose an action for welcome messages:**", reply_markup=keyboard
+    )
+
+
+@app.on_callback_query(filters.regex("welcome_enable|welcome_disable"))
+async def toggle_welcome_callback(_, query: CallbackQuery):
+    chat_id = query.message.chat.id
+    action = query.data
+
+    if action == "welcome_enable":
+        await set_welcome_status(chat_id, True)
+        await query.message.edit_text("**Welcome messages enabled.**")
+    elif action == "welcome_disable":
+        await set_welcome_status(chat_id, False)
+        await query.message.edit_text("**Welcome messages disabled.**")
 
 # Command to enable or disable /welcome
-@app.on_message(filters.command(["/welcome", "بەخێرهاتن"], "") & ~filters.private)
+@app.on_message(filters.command(["/welcofefeme", "بەخffێرهاتن"], "") & ~filters.private)
 @adminsOnly("can_change_info")
 async def toggle_welcome(_, message):
     if len(message.command) < 2:
