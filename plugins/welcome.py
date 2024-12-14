@@ -15,7 +15,8 @@ from pyrogram.types import (Chat, ChatMemberUpdated, InlineKeyboardButton,
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly
-from utils.welcomedb import del_welcome, get_welcome, set_welcome, set_welcome_status, get_welcome_status
+from utils.welcomedb import (del_welcome, get_welcome, get_welcome_status,
+                             set_welcome, set_welcome_status)
 
 from .notes import extract_urls
 
@@ -249,7 +250,10 @@ async def toggle_welcome(_, message):
     else:
         await message.reply_text("**هەڵە نووسیوتە! بنووسە /welcome [on|off]**")
 
+
 # Update the welcome handler to check the status
+
+
 @app.on_chat_member_updated(filters.group, group=7)
 @capture_err
 async def welcome(_, user: ChatMemberUpdated):
@@ -263,16 +267,15 @@ async def welcome(_, user: ChatMemberUpdated):
     member = user.new_chat_member.user if user.new_chat_member else user.from_user
     if not member:
         return  # Prevent AttributeError if member is None
-    
+
     chat = user.chat
-    
+
     # Check if welcome is enabled for this group
     is_welcome_enabled = await get_welcome_status(chat.id)
     if not is_welcome_enabled:
         return
 
     return await handle_new_member(member, chat)
-
 
 
 __MODULE__ = "Wᴇʟᴄᴏᴍᴇ"
