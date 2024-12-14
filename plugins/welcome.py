@@ -207,11 +207,13 @@ async def set_welcome_func(_, message):
 )
 @adminsOnly("can_change_info")
 async def del_welcome_func(_, message):
+    # Create an InlineKeyboardMarkup with both buttons on the same line
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Delete Welcome", callback_data="delete_welcome")]]
+        [[InlineKeyboardButton("بەڵێ", callback_data="delete_welcome"),
+          InlineKeyboardButton("نەخێر", callback_data="cancel_delete")]]
     )
     await message.reply_text(
-        "**Click below to delete the welcome message.**", reply_markup=keyboard
+        "**کردارێک هەڵبژێرە بۆ سڕینەوەی بەخێرهاتن:**", reply_markup=keyboard
     )
 
 
@@ -219,7 +221,14 @@ async def del_welcome_func(_, message):
 async def delete_welcome_callback(_, query: CallbackQuery):
     chat_id = query.message.chat.id
     await del_welcome(chat_id)
-    await query.message.edit_text("**Welcome message deleted successfully.**")
+    await query.message.edit_text("**بە سەرکەوتوویی نامەی بەخێرهاتن سڕدرایەوە.**")
+
+
+@app.on_callback_query(filters.regex("cancel_delete"))
+async def cancel_delete_callback(_, query: CallbackQuery):
+    # Edit the message to inform the user that the action has been canceled
+    await query.message.edit_text("**بە سەرکەوتوویی هەڵوەشێنرایەوە.**")
+
 
 
 """
@@ -266,13 +275,13 @@ async def toggle_welcome(_, message):
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("Enable", callback_data="welcome_enable"),
-                InlineKeyboardButton("Disable", callback_data="welcome_disable"),
+                InlineKeyboardButton("چالاککردن", callback_data="welcome_enable"),
+                InlineKeyboardButton("لە کارخستن", callback_data="welcome_disable"),
             ]
         ]
     )
     await message.reply_text(
-        "**Choose an action for welcome messages:**", reply_markup=keyboard
+        "**کردارێک هەڵبژێرە بۆ بەخێرهاتن:**", reply_markup=keyboard
     )
 
 
@@ -283,10 +292,10 @@ async def toggle_welcome_callback(_, query: CallbackQuery):
 
     if action == "welcome_enable":
         await set_welcome_status(chat_id, True)
-        await query.message.edit_text("**Welcome messages enabled.**")
+        await query.message.edit_text("**ناردنی نامەی بەخێرهاتن چالاککرا.**")
     elif action == "welcome_disable":
         await set_welcome_status(chat_id, False)
-        await query.message.edit_text("**Welcome messages disabled.**")
+        await query.message.edit_text("**ناردنی نامەی بەخێرهاتن لە کارخرا.**")
 
 
 # Command to enable or disable /welcome
