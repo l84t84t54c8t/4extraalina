@@ -15,7 +15,7 @@ from pyrogram.types import (Chat, ChatMemberUpdated, InlineKeyboardButton,
 
 from utils.error import capture_err
 from utils.permissions import adminsOnly
-from utils.welcomedb import del_welcome, get_welcome, set_welcome
+from utils.welcomedb import del_welcome, get_welcome, set_welcome, set_welcome_status, get_welcome_status
 
 from .notes import extract_urls
 
@@ -230,9 +230,55 @@ async def get_welcome_func(_, message):
     )
 
 
+# Command to enable or disable /welcome
+@app.on_message(filters.command(["/welcome", "بەخێرهاتن"], "") & ~filters.private)
+@adminsOnly("can_change_info")
+async def toggle_welcome(_, message):
+    if len(message.command) < 2:
+        return await message.reply_text("**بەکارهێنان:** /welcome [on|off]")
+
+    status = message.command[1].lower()
+    chat_id = message.chat.id
+
+    if status == "on" or status == "چالاک":
+        await set_welcome_status(chat_id, True)
+        await message.reply_text("**ناردنی نامەی بەخێرهاتن چالاککرا**")
+    elif status == "off" or status == "ناچالاک":
+        await set_welcome_status(chat_id, False)
+        await message.reply_text("**ناردنی نامەی بەخێرهاتن ناچالاککرا**")
+    else:
+        await message.reply_text("**هەڵە نووسیوتە! بنووسە /welcome [on|off]**")
+
+# Update the welcome handler to check the status
+@app.on_chat_member_updated(filters.group, group=7)
+@capture_err
+async def welcome(_, user: ChatMemberUpdated):
+    if not (
+        user.new_chat_member
+        and user.new_chat_member.status not in {CMS.RESTRICTED}
+        and not user.old_chat_member
+    ):
+        return
+
+    member = user.new_chat_member.user if user.new_chat_member else user.from_user
+    if not member:
+        return  # Prevent AttributeError if member is None
+    
+    chat = user.chat
+    
+    # Check if welcome is enabled for this group
+    is_welcome_enabled = await get_welcome_status(chat.id)
+    if not is_welcome_enabled:
+        return
+
+    return await handle_new_member(member, chat)
+
+
+
 __MODULE__ = "Wᴇʟᴄᴏᴍᴇ"
 __HELP__ = """
-/welcome - Rᴇᴘʟʏ ᴛʜɪs ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴀɪɴɪɴɢ ᴄᴏʀʀᴇᴄᴛ
+/welcome  [ᴏɴ, ʏ, ᴛʀᴜᴇ, ᴇɴᴀʙʟᴇ, ᴛ] - ᴛᴏ ᴛᴜʀɴ ᴏɴ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
+/welcome [ᴏғғ, ɴ, ғᴀʟsᴇ, ᴅɪsᴀʙʟᴇ, ғ, ɴᴏ] - ᴛᴏ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
 /setwelcome - Rᴇᴘʟʏ ᴛʜɪs ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴀɪɴɪɴɢ ᴄᴏʀʀᴇᴄᴛ
 ғᴏʀᴍᴀᴛ ғᴏʀ ᴀ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ, ᴄʜᴇᴄᴋ ᴇɴᴅ ᴏғ ᴛʜɪs ᴍᴇssᴀɢᴇ.
 
