@@ -11,22 +11,18 @@ from utils.permissions import adminsOnly
 lockdb = mongodb.lock
 
 # Expanded permission maps
-SEND_PERMISSION_MAP = {
+PERMISSION_MAP = {
     "messages": "can_send_messages",
     "media": "can_send_media_messages",
     "polls": "can_send_polls",
     "gif": "can_send_other_messages",
     "sticker": "can_send_other_messages",
     "web_preview": "can_add_web_page_previews",
-}
-
-ADMIN_PERMISSION_MAP = {
     "invite": "can_invite_users",
     "pin": "can_pin_messages",
     "info": "can_change_info",
 }
 
-# Send button for locking send permissions
 
 
 @app.on_message(filters.command("lock") & filters.group, group=75)
@@ -52,7 +48,7 @@ async def lock_permission(client, message):
             InlineKeyboardButton(
                 permission.capitalize(), callback_data=f"lock_{permission}"
             )
-            for permission in ADMIN_PERMISSION_MAP.keys()
+            for permission in ["invite", "info", "pin"]
         ],
         # Row 4: Lock All button
         [InlineKeyboardButton("Lock All", callback_data="lock_all")],
@@ -89,7 +85,7 @@ async def unlock_permission(client, message):
             InlineKeyboardButton(
                 permission.capitalize(), callback_data=f"unlock_{permission}"
             )
-            for permission in ADMIN_PERMISSION_MAP.keys()
+            for permission in ["invite", "info", "pin"]
         ],
         # Row 4: Unlock All button
         [InlineKeyboardButton("Unlock All", callback_data="unlock_all")],
