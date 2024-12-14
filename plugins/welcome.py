@@ -211,8 +211,8 @@ async def del_welcome_func(_, message):
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("بەڵێ", callback_data="delete_welcome"),
-                InlineKeyboardButton("نەخێر", callback_data="cancel_delete"),
+                InlineKeyboardButton("بەڵێ", callback_data="dwelcome"),
+                InlineKeyboardButton("نەخێر", callback_data="cdelete"),
             ]
         ]
     )
@@ -221,14 +221,14 @@ async def del_welcome_func(_, message):
     )
 
 
-@app.on_callback_query(filters.regex("delete_welcome"))
+@app.on_callback_query(filters.regex("dwelcome"))
 async def delete_welcome_callback(_, query: CallbackQuery):
     chat_id = query.message.chat.id
     await del_welcome(chat_id)
     await query.message.edit_text("**بە سەرکەوتوویی نامەی بەخێرهاتن سڕدرایەوە.**")
 
 
-@app.on_callback_query(filters.regex("cancel_delete"))
+@app.on_callback_query(filters.regex("cdelete"))
 async def cancel_delete_callback(_, query: CallbackQuery):
     # Edit the message to inform the user that the action has been canceled
     await query.message.edit_text("**بە سەرکەوتوویی هەڵوەشێنرایەوە.**")
