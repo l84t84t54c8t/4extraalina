@@ -257,7 +257,6 @@ async def toggle_welcome(_, message):
         await message.reply_text("**هەڵە نووسیوتە! بنووسە /welcome [on|off]**")
 
 
-
 __MODULE__ = "Wᴇʟᴄᴏᴍᴇ"
 __HELP__ = """
 /welcome  [ᴏɴ, ʏ, ᴛʀᴜᴇ, ᴇɴᴀʙʟᴇ, ᴛ] - ᴛᴏ ᴛᴜʀɴ ᴏɴ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
