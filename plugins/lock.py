@@ -24,7 +24,6 @@ PERMISSION_MAP = {
 }
 
 
-
 @app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
