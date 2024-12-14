@@ -1,17 +1,27 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, filters
-from pyrogram.enums import ChatMemberStatus  # Import ChatMemberStatus
-from pyrogram.types import (ChatPermissions, InlineKeyboardButton,
-                            InlineKeyboardMarkup, Message)
-
+from pyrogram.enums import ChatMemberStatus
+from pyrogram.types import ChatPermissions, Message, InlineKeyboardButton, InlineKeyboardMarkup
 from utils.permissions import adminsOnly
 
 # MongoDB collection for storing locked permissions
 lockdb = mongodb.lock
 
-# Expanded permission map
-PERMISSION_MAP = {
+# Expanded permission map for locking and unlocking
+LOCK_PERMISSION_MAP = {
+    "messages": "can_send_messages",
+    "media": "can_send_media_messages",
+    "polls": "can_send_polls",
+    "gif": "can_send_other_messages",
+    "sticker": "can_send_other_messages",
+    "web_preview": "can_add_web_page_previews",
+    "invite": "can_invite_users",
+    "pin": "can_pin_messages",
+    "info": "can_change_info",
+}
+
+UNLOCK_PERMISSION_MAP = {
     "messages": "can_send_messages",
     "media": "can_send_media_messages",
     "polls": "can_send_polls",
@@ -24,57 +34,49 @@ PERMISSION_MAP = {
 }
 
 # Send button for locking permissions
-
-
 @app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
+    # Separate capitalized permissions into a different row
     keyboard = [
-        [
-            InlineKeyboardButton(
-                permission.capitalize(), callback_data=f"lock_{permission}"
-            )
-            for permission in PERMISSION_MAP.keys()
-        ],
+        # Normal permissions
+        [InlineKeyboardButton(permission, callback_data=f"lock_{permission}") for permission in LOCK_PERMISSION_MAP.keys()],
+        # Row for "Lock All"
         [InlineKeyboardButton("Lock All", callback_data="lock_all")],
+        # New row for capitalized permissions
+        [InlineKeyboardButton(permission.capitalize(), callback_data=f"lock_{permission}") for permission in LOCK_PERMISSION_MAP.keys()]
     ]
     await message.reply(
         "Please choose a permission to lock:",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-
 # Send button for unlocking permissions
-
-
 @app.on_message(filters.command("unlock") & filters.group, group=76)
 @adminsOnly("can_change_info")
 async def unlock_permission(client, message):
+    # Separate capitalized permissions into a different row
     keyboard = [
-        [
-            InlineKeyboardButton(
-                permission.capitalize(), callback_data=f"unlock_{permission}"
-            )
-            for permission in PERMISSION_MAP.keys()
-        ],
+        # Normal permissions
+        [InlineKeyboardButton(permission, callback_data=f"unlock_{permission}") for permission in UNLOCK_PERMISSION_MAP.keys()],
+        # Row for "Unlock All"
         [InlineKeyboardButton("Unlock All", callback_data="unlock_all")],
+        # New row for capitalized permissions
+        [InlineKeyboardButton(permission.capitalize(), callback_data=f"unlock_{permission}") for permission in UNLOCK_PERMISSION_MAP.keys()]
     ]
     await message.reply(
         "Please choose a permission to unlock:",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-
 # Handle callback queries for locking/unlocking permissions
-
-
 @app.on_callback_query()
 async def handle_callback(client, callback_query):
     data = callback_query.data
     chat_id = callback_query.message.chat.id
 
     if data.startswith("lock_"):
-        permission_key = data[len("lock_") :]
+        permission_key = data[len("lock_"):]
 
         if permission_key == "all":
             # Lock all permissions
@@ -95,14 +97,14 @@ async def handle_callback(client, callback_query):
             # Store all locked permissions in MongoDB
             await lockdb.update_one(
                 {"chat_id": chat_id},
-                {"$set": {permission_key: False for permission_key in PERMISSION_MAP}},
+                {"$set": {permission_key: False for permission_key in LOCK_PERMISSION_MAP}},
                 upsert=True,
             )
 
-            await callback_query.answer("All permissions have been locked!")
+            await client.send_message(chat_id, "All permissions have been locked!")
         else:
             # Lock specific permission
-            permission_name = PERMISSION_MAP.get(permission_key)
+            permission_name = LOCK_PERMISSION_MAP.get(permission_key)
 
             if permission_name:
                 # Get current permissions and create a new permissions object
@@ -111,7 +113,7 @@ async def handle_callback(client, callback_query):
                 updated_permissions = ChatPermissions(
                     **{
                         key: getattr(current_permissions, key)
-                        for key in PERMISSION_MAP.values()
+                        for key in LOCK_PERMISSION_MAP.values()
                     }
                 )
                 setattr(updated_permissions, permission_name, False)
@@ -127,12 +129,10 @@ async def handle_callback(client, callback_query):
                     upsert=True,
                 )
 
-                await callback_query.answer(
-                    f"{permission_key.capitalize()} has been locked!"
-                )
+                await client.send_message(chat_id, f"{permission_key.capitalize()} has been locked!")
 
     elif data.startswith("unlock_"):
-        permission_key = data[len("unlock_") :]
+        permission_key = data[len("unlock_"):]
 
         if permission_key == "all":
             # Unlock all permissions
@@ -153,14 +153,14 @@ async def handle_callback(client, callback_query):
             # Remove all locked permissions from MongoDB
             await lockdb.update_one(
                 {"chat_id": chat_id},
-                {"$set": {permission_key: True for permission_key in PERMISSION_MAP}},
+                {"$set": {permission_key: True for permission_key in UNLOCK_PERMISSION_MAP}},
                 upsert=True,
             )
 
-            await callback_query.answer("All permissions have been unlocked!")
+            await client.send_message(chat_id, "All permissions have been unlocked!")
         else:
             # Unlock specific permission
-            permission_name = PERMISSION_MAP.get(permission_key)
+            permission_name = UNLOCK_PERMISSION_MAP.get(permission_key)
 
             if permission_name:
                 # Get current permissions and create a new permissions object
@@ -169,7 +169,7 @@ async def handle_callback(client, callback_query):
                 updated_permissions = ChatPermissions(
                     **{
                         key: getattr(current_permissions, key)
-                        for key in PERMISSION_MAP.values()
+                        for key in UNLOCK_PERMISSION_MAP.values()
                     }
                 )
                 setattr(updated_permissions, permission_name, True)
@@ -185,9 +185,7 @@ async def handle_callback(client, callback_query):
                     upsert=True,
                 )
 
-                await callback_query.answer(
-                    f"{permission_key.capitalize()} has been unlocked!"
-                )
+                await client.send_message(chat_id, f"{permission_key.capitalize()} has been unlocked!")
 
 
 # View currently locked permissions stored in MongoDB
