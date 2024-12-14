@@ -163,20 +163,77 @@ async def toggle_welcome_callback(_, query: CallbackQuery):
 )
 @adminsOnly("can_change_info")
 async def set_welcome_func(_, message):
-    keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Set Welcome", callback_data="set_welcome")]]
-    )
-    await message.reply_text(
-        "**Click below to set a new welcome message.**", reply_markup=keyboard
+    usage = "**Usage:**\nSend a message or media along with /setwelcome to set a welcome message.\n\n**Note:** For photos, videos, and animations, add a caption."
+    key = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text="Learn More",
+                    url=f"t.me/{app.username}?start=greetings",
+                )
+            ],
+        ]
     )
 
+    chat_id = message.chat.id
+    replied_message = message.reply_to_message
+    welcome_type = None
+    file_id = None
+    raw_text = None
 
-@app.on_callback_query(filters.regex("set_welcome"))
-async def set_welcome_callback(_, query: CallbackQuery):
-    await query.message.edit_text(
-        "**Reply to a message (text, photo, etc.) to set it as the welcome message.**"
-    )
-    # Logic for setting welcome based on the reply can go here
+    try:
+        # Check if the user replied to a message
+        if replied_message:
+            if replied_message.animation:
+                welcome_type = "Animation"
+                file_id = replied_message.animation.file_id
+                raw_text = replied_message.caption or ""
+            elif replied_message.video:
+                welcome_type = "Video"
+                file_id = replied_message.video.file_id
+                raw_text = replied_message.caption or ""
+            elif replied_message.photo:
+                welcome_type = "Photo"
+                file_id = replied_message.photo.file_id
+                raw_text = replied_message.caption or ""
+            elif replied_message.text:
+                welcome_type = "Text"
+                file_id = None
+                raw_text = replied_message.text
+
+        # No reply: Handle message text directly from the command
+        else:
+            args = message.text.split(maxsplit=1)
+            if len(args) < 2:
+                return await message.reply_text(usage, reply_markup=key)
+
+            welcome_type = "Text"
+            raw_text = args[1]
+
+        # Process buttons if included
+        if message.reply_markup and not findall(r".+\,.+", raw_text):
+            urls = extract_urls(message.reply_markup)
+            if urls:
+                response = "\n".join(
+                    [f"{name}=[{text}, {url}]" for name, text, url in urls]
+                )
+                raw_text = raw_text + response
+
+        # Validate the format and store the welcome message
+        raw_text = await check_format(ikb, raw_text)
+        if raw_text:
+            await set_welcome(chat_id, welcome_type, raw_text, file_id)
+            return await message.reply_text(
+                "**Welcome message has been successfully set for the group.**"
+            )
+        else:
+            return await message.reply_text(
+                "**Error in text formatting!**\n\n**Usage:**\nText: `Text`\nText + Buttons: `Text ~ Buttons`",
+                reply_markup=key,
+            )
+
+    except UnboundLocalError:
+        return await message.reply_text("**Only supports text, photo, GIF, or video.**")
 
 
 @app.on_message(
