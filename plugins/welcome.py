@@ -126,8 +126,8 @@ async def send_welcome_message(chat: Chat, user_id: int, delete: bool = False):
 
 
 @app.on_message(
-    filters.command(["/setwelcome", "دانانی بەخێرهاتن", "/welcome", "بەخێرهاتن"], "")
-    & ~filters.private
+    filters.command(["/setwelcome", "دانانی بەخێرهاتن"], "")
+    & filters.group
 )
 @adminsOnly("can_change_info")
 async def set_welcome_func(_, message):
