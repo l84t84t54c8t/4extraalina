@@ -3,10 +3,11 @@ import json
 
 from AlinaMusic import app
 from pyrogram import Client, enums, filters, types
+from pyrogram.errors import ChatAdminRequired
 
+# Constants
 ON_TYPES = {True: "✅", False: "❌"}
-Temp = {}
-ChatPrivileges_Types = {
+DEFAULT_PRIVILEGES = {
     "edit_info": False,
     "delete_message": False,
     "restrict_members": False,
@@ -15,177 +16,142 @@ ChatPrivileges_Types = {
     "Manage_video": False,
     "promote_members": False,
 }
+Temp = {}
 
 
-# Pyrogrma Filters Create .
+# Check if user is an admin or owner
 def is_admin():
-    async def func(_, app, message):
-        user_id = message.from_user.id
+    async def func(_, app: Client, message: types.Message) -> bool:
         try:
             chat_id = message.chat.id
-        except AttributeError as e:
-            chat_id = message.message.chat.id
-        Res = await app.get_chat_member(chat_id, user_id)
-        return (
-            Res.status == enums.ChatMemberStatus.OWNER
-            or Res.status == enums.ChatMemberStatus.ADMINISTRATOR
-            or message.from_user.id != "833360381"
-        )
+            user_id = message.from_user.id
+            member = await app.get_chat_member(chat_id, user_id)
+            return member.status in [
+                enums.ChatMemberStatus.OWNER,
+                enums.ChatMemberStatus.ADMINISTRATOR,
+            ]
+        except AttributeError:
+            return False
 
     return filters.create(func)
 
 
-def is_onCall(data):
-    async def func(flt, _, query):
+# Filter for specific callback queries
+def is_on_call(data: str):
+    async def func(flt, _, query: types.CallbackQuery) -> bool:
         return query.data.split("|")[0] == flt.data
 
     return filters.create(func, data=data)
 
 
-# Keyboard UP Admin
-def keyboard(user_id: int):
+# Generate the admin privileges keyboard
+def generate_keyboard(user_id: int) -> types.InlineKeyboardMarkup:
     return types.InlineKeyboardMarkup(
         [
             [
                 types.InlineKeyboardButton(
-                    ON_TYPES[False if False in Temp[user_id].values() else True],
-                    f"up_all_prom|" + json.dumps({"user_id": user_id}),
+                    ON_TYPES[False not in Temp[user_id].values()],
+                    f"up_all_prom|{json.dumps({'user_id': user_id})}",
                 ),
-                types.InlineKeyboardButton("هەموو ڕۆڵەکان", "None"),
+                types.InlineKeyboardButton("هەموو ڕۆڵەکان", callback_data="none"),
             ],
-            [
-                types.InlineKeyboardButton(
-                    ON_TYPES[Temp[user_id]["edit_info"]],
-                    f"up_prom|"
-                    + json.dumps({"user_id": user_id, "promote": "edit_info"}),
-                ),
-                types.InlineKeyboardButton("گۆرینی زانیاری", "None"),
-            ],
-            [
-                types.InlineKeyboardButton(
-                    ON_TYPES[Temp[user_id]["delete_message"]],
-                    f"up_prom|"
-                    + json.dumps({"user_id": user_id, "promote": "delete_message"}),
-                ),
-                types.InlineKeyboardButton("سڕینەوەی چات", "None"),
-            ],
-            [
-                types.InlineKeyboardButton(
-                    ON_TYPES[Temp[user_id]["restrict_members"]],
-                    f"up_prom|"
-                    + json.dumps({"user_id": user_id, "promote": "restrict_members"}),
-                ),
-                types.InlineKeyboardButton("باند و میوت", "None"),
-            ],
-            [
-                types.InlineKeyboardButton(
-                    ON_TYPES[Temp[user_id]["pin_message"]],
-                    f"up_prom|"
-                    + json.dumps({"user_id": user_id, "promote": "pin_message"}),
-                ),
-                types.InlineKeyboardButton("بانگهێشت کردن", "None"),
-            ],
-            [
-                types.InlineKeyboardButton(
-                    ON_TYPES[Temp[user_id]["Manage_video"]],
-                    f"up_prom|"
-                    + json.dumps({"user_id": user_id, "promote": "Manage_video"}),
-                ),
-                types.InlineKeyboardButton("کۆنتڕۆلکردنی تێل", "None"),
-            ],
-            [
-                types.InlineKeyboardButton(
-                    ON_TYPES[Temp[user_id]["promote_members"]],
-                    f"up_prom|"
-                    + json.dumps({"user_id": user_id, "promote": "promote_members"}),
-                ),
-                types.InlineKeyboardButton("زیادکردنی ئەدمین", "None"),
+            *[
+                [
+                    types.InlineKeyboardButton(
+                        ON_TYPES[Temp[user_id][key]],
+                        f"up_prom|{json.dumps({'user_id': user_id, 'promote': key})}",
+                    ),
+                    types.InlineKeyboardButton(description, callback_data="none"),
+                ]
+                for key, description in {
+                    "edit_info": "گۆرینی زانیاری",
+                    "delete_message": "سڕینەوەی چات",
+                    "restrict_members": "باند و میوت",
+                    "pin_message": "بانگهێشت کردن",
+                    "Manage_video": "کۆنتڕۆلکردنی تێل",
+                    "promote_members": "زیادکردنی ئەدمین",
+                }.items()
             ],
             [
                 types.InlineKeyboardButton(
                     "ئێستا ئەندام بکە ئەدمین",
-                    f"save|" + json.dumps({"user_id": user_id}),
+                    f"save|{json.dumps({'user_id': user_id})}",
                 )
             ],
-            [
-                types.InlineKeyboardButton(text="داخستن", callback_data="close"),
-            ],
+            [types.InlineKeyboardButton("داخستن", callback_data="close")],
         ]
     )
 
 
-# /up_admin WIth Group .
+# Command to initiate admin privilege updates
 @app.on_message(
     filters.regex("^/upadmin$") & filters.group & filters.reply & is_admin()
 )
-async def ON_RPLY(app: Client, Message: types.Message):
-    chat_id, message_id, user_id = Message.chat.id, Message.id, Message.from_user.id
-    member_up_id = Message.reply_to_message.from_user.id
-    Stateus = await app.get_chat_member(chat_id, member_up_id)
-    Temp.update({member_up_id: ChatPrivileges_Types})
+async def on_reply(app: Client, message: types.Message):
+    chat_id = message.chat.id
+    member_up_id = message.reply_to_message.from_user.id
+
+    # Initialize user privileges
+    Temp[member_up_id] = DEFAULT_PRIVILEGES.copy()
+
     await app.send_message(
         chat_id,
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=keyboard(member_up_id),
+        reply_markup=generate_keyboard(member_up_id),
     )
 
 
-@app.on_callback_query(is_onCall("up_prom") & is_admin())
-async def Call_Up(app: Client, query: types.CallbackQuery):
-    ONE = {True: False, False: True}
-    JSobj = json.loads(query.data.split("|")[1])
-    Temp[JSobj["user_id"]][JSobj["promote"]] = ONE[
-        Temp[JSobj["user_id"]][JSobj["promote"]]
-    ]
-    await app.edit_message_text(
+# Callback for toggling individual privileges
+@app.on_callback_query(is_on_call("up_prom") & is_admin())
+async def toggle_privilege(app: Client, query: types.CallbackQuery):
+    data = json.loads(query.data.split("|")[1])
+    user_id = data["user_id"]
+    privilege = data["promote"]
+
+    # Toggle privilege
+    Temp[user_id][privilege] = not Temp[user_id][privilege]
+
+    await query.message.edit_text(
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=keyboard(JSobj["user_id"]),
-        chat_id=query.message.chat.id,
-        message_id=query.message.id,
+        reply_markup=generate_keyboard(user_id),
     )
 
 
-@app.on_callback_query(is_onCall("up_all_prom") & is_admin())
-async def Call_Up(app: Client, query: types.CallbackQuery):
-    JSobj = json.loads(query.data.split("|")[1])
-    for P in Temp[JSobj["user_id"]]:
-        Temp[JSobj["user_id"]][P] = True
-    await app.edit_message_text(
+# Callback for enabling all privileges
+@app.on_callback_query(is_on_call("up_all_prom") & is_admin())
+async def enable_all_privileges(app: Client, query: types.CallbackQuery):
+    data = json.loads(query.data.split("|")[1])
+    user_id = data["user_id"]
+
+    # Enable all privileges
+    for key in Temp[user_id]:
+        Temp[user_id][key] = True
+
+    await query.message.edit_text(
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=keyboard(JSobj["user_id"]),
-        chat_id=query.message.chat.id,
-        message_id=query.message.id,
+        reply_markup=generate_keyboard(user_id),
     )
 
 
-@app.on_callback_query(is_onCall("save"))
-async def Call_Up(app: Client, query: types.CallbackQuery):
-    JSobj = json.loads(query.data.split("|")[1])
+# Callback for saving and promoting the user
+@app.on_callback_query(is_on_call("save"))
+async def save_and_promote(app: Client, query: types.CallbackQuery):
+    data = json.loads(query.data.split("|")[1])
+    user_id = data["user_id"]
     chat_id = query.message.chat.id
+
     try:
+        # Promote the user with selected privileges
         await app.promote_chat_member(
             chat_id,
-            JSobj["user_id"],
-            types.ChatPrivileges(
-                can_change_info=Temp[JSobj["user_id"]]["edit_info"],
-                can_delete_messages=Temp[JSobj["user_id"]]["delete_message"],
-                can_restrict_members=Temp[JSobj["user_id"]]["restrict_members"],
-                can_invite_users=Temp[JSobj["user_id"]]["invite_users"],
-                can_pin_messages=Temp[JSobj["user_id"]]["pin_message"],
-                can_manage_video_chats=Temp[JSobj["user_id"]]["Manage_video"],
-                can_promote_members=Temp[JSobj["user_id"]]["promote_members"],
-            ),
+            user_id,
+            types.ChatPrivileges(**Temp[user_id]),
         )
-        await app.edit_message_text(
-            text="**✧¦ بە سەرکەوتوویی کرا بە ئەدمین♥️•**",
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
+        await query.message.edit_text("**✧¦ بە سەرکەوتوویی کرا بە ئەدمین♥️•**")
+    except ChatAdminRequired:
+        await query.message.edit_text(
+            "**✧¦ پێویستە بۆت ئەدمین بێت و ڕۆڵی زیادکردنی ئەدمینی هەبێت♥️•**"
         )
-    except ChatAdminRequired as Err:
-        await app.edit_message_text(
-            text="**✧¦ پێویستە بۆت ئەدمین بێت و ڕۆڵی زیادکردنی ئەدمینی هەبێت♥️•**",
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
-        )
-    await asyncio.sleep(60)
-    await app.delete_messages(query.message.chat.id, query.message.id)
+    finally:
+        await asyncio.sleep(60)
+        await app.delete_messages(chat_id, query.message.id)
