@@ -19,19 +19,17 @@ DEFAULT_PRIVILEGES = {
 }
 
 # Helper functions for MongoDB
-
-
-def get_user_privileges(user_id: int):
-    privileges = upadmindb.find_one({"user_id": user_id})
+async def get_user_privileges(user_id: int):
+    privileges = await upadmindb.find_one({"user_id": user_id})
     if privileges is None:
         # Insert default privileges if user is not found
         privileges = {"user_id": user_id, "privileges": DEFAULT_PRIVILEGES}
-        upadmindb.insert_one(privileges)
+        await upadmindb.insert_one(privileges)
     return privileges["privileges"]
 
 
-def update_user_privileges(user_id: int, updated_privileges: dict):
-    upadmindb.update_one(
+async def update_user_privileges(user_id: int, updated_privileges: dict):
+    await upadmindb.update_one(
         {"user_id": user_id}, {"$set": {"privileges": updated_privileges}}, upsert=True
     )
 
@@ -61,8 +59,8 @@ def is_onCall(data):
 
 
 # Keyboard generator
-def keyboard(user_id: int):
-    privileges = get_user_privileges(user_id)
+async def keyboard(user_id: int):
+    privileges = await get_user_privileges(user_id)
     return types.InlineKeyboardMarkup(
         [
             [
@@ -101,11 +99,11 @@ def keyboard(user_id: int):
 )
 async def ON_RPLY(app: Client, message: types.Message):
     user_id = message.reply_to_message.from_user.id
-    get_user_privileges(user_id)  # Ensure the user exists in the database
+    await get_user_privileges(user_id)  # Ensure the user exists in the database
     await app.send_message(
         message.chat.id,
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=keyboard(user_id),
+        reply_markup=await keyboard(user_id),
     )
 
 
@@ -115,13 +113,13 @@ async def toggle_privilege(app: Client, query: types.CallbackQuery):
     user_id = int(user_id)
 
     # Toggle privilege in MongoDB
-    privileges = get_user_privileges(user_id)
+    privileges = await get_user_privileges(user_id)
     privileges[privilege] = not privileges[privilege]
-    update_user_privileges(user_id, privileges)
+    await update_user_privileges(user_id, privileges)
 
     await query.message.edit_text(
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=keyboard(user_id),
+        reply_markup=await keyboard(user_id),
     )
 
 
@@ -132,11 +130,11 @@ async def enable_all_privileges(app: Client, query: types.CallbackQuery):
 
     # Enable all privileges in MongoDB
     privileges = {key: True for key in DEFAULT_PRIVILEGES}
-    update_user_privileges(user_id, privileges)
+    await update_user_privileges(user_id, privileges)
 
     await query.message.edit_text(
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=keyboard(user_id),
+        reply_markup=await keyboard(user_id),
     )
 
 
@@ -145,7 +143,7 @@ async def save_and_promote(app: Client, query: types.CallbackQuery):
     _, user_id = query.data.split("|")
     user_id = int(user_id)
 
-    privileges = get_user_privileges(user_id)
+    privileges = await get_user_privileges(user_id)
     chat_id = query.message.chat.id
 
     try:
