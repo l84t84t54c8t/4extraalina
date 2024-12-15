@@ -5,7 +5,6 @@ from AlinaMusic import app
 from pyrogram import Client, enums, filters, types
 from pyrogram.errors import ChatAdminRequired
 
-
 ON_TYPES = {True: "✅", False: "❌"}
 Temp = {}
 ChatPrivileges_Types = {
