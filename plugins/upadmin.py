@@ -133,7 +133,6 @@ async def enable_all_privileges(app: Client, query: types.CallbackQuery):
     )
 
 
-# Callback for saving and promoting the user
 @app.on_callback_query(is_on_call("save"))
 async def save_and_promote(app: Client, query: types.CallbackQuery):
     data = json.loads(query.data.split("|")[1])
@@ -152,6 +151,14 @@ async def save_and_promote(app: Client, query: types.CallbackQuery):
         await query.message.edit_text(
             "**✧¦ پێویستە بۆت ئەدمین بێت و ڕۆڵی زیادکردنی ئەدمینی هەبێت♥️•**"
         )
+    except Exception as e:
+        # Handle unexpected errors
+        await query.message.edit_text(f"**✧¦ هەڵە ڕوویدا: {e}**")
     finally:
-        await asyncio.sleep(60)
-        await app.delete_messages(chat_id, query.message.id)
+        # Delete the message after a delay (ensure this always runs)
+        try:
+            await asyncio.sleep(10)  # Adjust delay if needed
+            await query.message.delete()
+        except Exception as e:
+            # Log or handle deletion error (optional)
+            print(f"Error deleting message: {e}")
