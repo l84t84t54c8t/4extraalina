@@ -25,41 +25,45 @@ PERMISSION_MAP = {
 
 # Send button for locking permissions
 
+def generate_permission_buttons(action):
+    """
+    Generates InlineKeyboardButton rows dynamically in a 3x3 layout
+    using the PERMISSION_MAP keys.
+    """
+    buttons = []
+    row = []
+
+    for idx, permission in enumerate(PERMISSION_MAP.keys()):
+        row.append(InlineKeyboardButton(permission.capitalize(), callback_data=f"{action}_{permission}"))
+
+        if (idx + 1) % 3 == 0:  # Add a row after every 3 buttons
+            buttons.append(row)
+            row = []
+
+    if row:  # Add remaining buttons, if any
+        buttons.append(row)
+
+    # Add "All" button at the bottom
+    buttons.append([InlineKeyboardButton(f"{action.capitalize()} All", callback_data=f"{action}_all")])
+
+    return buttons
+
 
 @app.on_message(filters.command("lock") & filters.group, group=75)
 @adminsOnly("can_change_info")
 async def lock_permission(client, message):
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                permission.capitalize(), callback_data=f"lock_{permission}"
-            )
-            for permission in PERMISSION_MAP.keys()
-        ],
-        [InlineKeyboardButton("Lock All", callback_data="lock_all")],
-    ]
-    msg = await message.reply(
+    keyboard = generate_permission_buttons("lock")
+    await message.reply(
         "Please choose a permission to lock:",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
 
-# Send button for unlocking permissions
-
-
 @app.on_message(filters.command("unlock") & filters.group, group=76)
 @adminsOnly("can_change_info")
 async def unlock_permission(client, message):
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                permission.capitalize(), callback_data=f"unlock_{permission}"
-            )
-            for permission in PERMISSION_MAP.keys()
-        ],
-        [InlineKeyboardButton("Unlock All", callback_data="unlock_all")],
-    ]
-    msg = await message.reply(
+    keyboard = generate_permission_buttons("unlock")
+    await message.reply(
         "Please choose a permission to unlock:",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
