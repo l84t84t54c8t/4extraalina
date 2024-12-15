@@ -19,6 +19,8 @@ DEFAULT_PRIVILEGES = {
 }
 
 # Helper functions for MongoDB
+
+
 async def get_user_privileges(user_id: int):
     privileges = await upadmindb.find_one({"user_id": user_id})
     if privileges is None:
@@ -99,7 +101,8 @@ async def keyboard(user_id: int):
 )
 async def ON_RPLY(app: Client, message: types.Message):
     user_id = message.reply_to_message.from_user.id
-    await get_user_privileges(user_id)  # Ensure the user exists in the database
+    # Ensure the user exists in the database
+    await get_user_privileges(user_id)
     await app.send_message(
         message.chat.id,
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
