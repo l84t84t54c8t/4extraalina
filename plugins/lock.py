@@ -25,6 +25,7 @@ PERMISSION_MAP = {
 
 # Send button for locking permissions
 
+
 def generate_permission_buttons(action):
     """
     Generates InlineKeyboardButton rows dynamically in a 3x3 layout
@@ -34,7 +35,11 @@ def generate_permission_buttons(action):
     row = []
 
     for idx, permission in enumerate(PERMISSION_MAP.keys()):
-        row.append(InlineKeyboardButton(permission.capitalize(), callback_data=f"{action}_{permission}"))
+        row.append(
+            InlineKeyboardButton(
+                permission.capitalize(), callback_data=f"{action}_{permission}"
+            )
+        )
 
         if (idx + 1) % 3 == 0:  # Add a row after every 3 buttons
             buttons.append(row)
@@ -44,7 +49,13 @@ def generate_permission_buttons(action):
         buttons.append(row)
 
     # Add "All" button at the bottom
-    buttons.append([InlineKeyboardButton(f"{action.capitalize()} All", callback_data=f"{action}_all")])
+    buttons.append(
+        [
+            InlineKeyboardButton(
+                f"{action.capitalize()} All", callback_data=f"{action}_all"
+            )
+        ]
+    )
 
     return buttons
 
