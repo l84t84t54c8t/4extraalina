@@ -1,4 +1,5 @@
 import asyncio
+
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, enums, filters, types
@@ -18,6 +19,8 @@ DEFAULT_PRIVILEGES = {
 }
 
 # Helper functions for MongoDB
+
+
 def get_user_privileges(user_id: int):
     privileges = upadmindb.find_one({"user_id": user_id})
     if privileges is None:
@@ -86,11 +89,7 @@ def keyboard(user_id: int):
                     "promote_members": "زیادکردنی ئەدمین",
                 }.items()
             ],
-            [
-                types.InlineKeyboardButton(
-                    "ئێستا ئەندام بکە ئەدمین", f"save|{user_id}"
-                )
-            ],
+            [types.InlineKeyboardButton("ئێستا ئەندام بکە ئەدمین", f"save|{user_id}")],
             [types.InlineKeyboardButton("داخستن", callback_data="close")],
         ]
     )
@@ -156,12 +155,8 @@ async def save_and_promote(app: Client, query: types.CallbackQuery):
             user_id,
             types.ChatPrivileges(**privileges),
         )
-        await query.message.edit_text(
-            text="**✧¦ بە سەرکەوتوویی کرا بە ئەدمین♥️•**"
-        )
+        await query.message.edit_text(text="**✧¦ بە سەرکەوتوویی کرا بە ئەدمین♥️•**")
     except Exception as e:
-        await query.message.edit_text(
-            text=f"**✧¦ هەڵە ڕوویدا: {str(e)}**"
-        )
+        await query.message.edit_text(text=f"**✧¦ هەڵە ڕوویدا: {str(e)}**")
     await asyncio.sleep(60)
     await query.message.delete()
