@@ -1,9 +1,9 @@
 import asyncio
-import json
-
 from AlinaMusic import app
+from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, enums, filters, types
-from pyrogram.errors import ChatAdminRequired
+
+upadmindb = mongodb.upadmin
 
 # Constants
 ON_TYPES = {True: "✅", False: "❌"}
@@ -16,52 +16,66 @@ DEFAULT_PRIVILEGES = {
     "Manage_video": False,
     "promote_members": False,
 }
-Temp = {}
+
+# Helper functions for MongoDB
+def get_user_privileges(user_id: int):
+    privileges = upadmindb.find_one({"user_id": user_id})
+    if privileges is None:
+        # Insert default privileges if user is not found
+        privileges = {"user_id": user_id, "privileges": DEFAULT_PRIVILEGES}
+        upadmindb.insert_one(privileges)
+    return privileges["privileges"]
 
 
-# Check if user is an admin or owner
+def update_user_privileges(user_id: int, updated_privileges: dict):
+    upadmindb.update_one(
+        {"user_id": user_id}, {"$set": {"privileges": updated_privileges}}, upsert=True
+    )
+
+
+# Pyrogram filters
 def is_admin():
-    async def func(_, app: Client, message: types.Message) -> bool:
+    async def func(_, app, message):
+        user_id = message.from_user.id
         try:
             chat_id = message.chat.id
-            user_id = message.from_user.id
-            member = await app.get_chat_member(chat_id, user_id)
-            return member.status in [
-                enums.ChatMemberStatus.OWNER,
-                enums.ChatMemberStatus.ADMINISTRATOR,
-            ]
         except AttributeError:
-            return False
+            chat_id = message.message.chat.id
+        member = await app.get_chat_member(chat_id, user_id)
+        return member.status in [
+            enums.ChatMemberStatus.OWNER,
+            enums.ChatMemberStatus.ADMINISTRATOR,
+        ]
 
     return filters.create(func)
 
 
-# Filter for specific callback queries
-def is_on_call(data: str):
-    async def func(flt, _, query: types.CallbackQuery) -> bool:
+def is_onCall(data):
+    async def func(flt, _, query):
         return query.data.split("|")[0] == flt.data
 
     return filters.create(func, data=data)
 
 
-# Generate the admin privileges keyboard
-def generate_keyboard(user_id: int) -> types.InlineKeyboardMarkup:
+# Keyboard generator
+def keyboard(user_id: int):
+    privileges = get_user_privileges(user_id)
     return types.InlineKeyboardMarkup(
         [
             [
                 types.InlineKeyboardButton(
-                    ON_TYPES[False not in Temp[user_id].values()],
-                    f"up_all_prom|{json.dumps({'user_id': user_id})}",
+                    ON_TYPES[all(privileges.values())],
+                    f"up_all_prom|{user_id}",
                 ),
-                types.InlineKeyboardButton("هەموو ڕۆڵەکان", callback_data="none"),
+                types.InlineKeyboardButton("هەموو ڕۆڵەکان", callback_data="None"),
             ],
             *[
                 [
                     types.InlineKeyboardButton(
-                        ON_TYPES[Temp[user_id][key]],
-                        f"up_prom|{json.dumps({'user_id': user_id, 'promote': key})}",
+                        ON_TYPES[privileges[key]],
+                        f"up_prom|{user_id}|{key}",
                     ),
-                    types.InlineKeyboardButton(description, callback_data="none"),
+                    types.InlineKeyboardButton(description, callback_data="None"),
                 ]
                 for key, description in {
                     "edit_info": "گۆرینی زانیاری",
@@ -74,8 +88,7 @@ def generate_keyboard(user_id: int) -> types.InlineKeyboardMarkup:
             ],
             [
                 types.InlineKeyboardButton(
-                    "ئێستا ئەندام بکە ئەدمین",
-                    f"save|{json.dumps({'user_id': user_id})}",
+                    "ئێستا ئەندام بکە ئەدمین", f"save|{user_id}"
                 )
             ],
             [types.InlineKeyboardButton("داخستن", callback_data="close")],
@@ -83,82 +96,72 @@ def generate_keyboard(user_id: int) -> types.InlineKeyboardMarkup:
     )
 
 
-# Command to initiate admin privilege updates
+# Command to initialize admin privilege management
 @app.on_message(
     filters.regex("^/upadmin$") & filters.group & filters.reply & is_admin()
 )
-async def on_reply(app: Client, message: types.Message):
-    chat_id = message.chat.id
-    member_up_id = message.reply_to_message.from_user.id
-
-    # Initialize user privileges
-    Temp[member_up_id] = DEFAULT_PRIVILEGES.copy()
-
+async def ON_RPLY(app: Client, message: types.Message):
+    user_id = message.reply_to_message.from_user.id
+    get_user_privileges(user_id)  # Ensure the user exists in the database
     await app.send_message(
-        chat_id,
+        message.chat.id,
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=generate_keyboard(member_up_id),
+        reply_markup=keyboard(user_id),
     )
 
 
-# Callback for toggling individual privileges
-@app.on_callback_query(is_on_call("up_prom") & is_admin())
+@app.on_callback_query(is_onCall("up_prom") & is_admin())
 async def toggle_privilege(app: Client, query: types.CallbackQuery):
-    data = json.loads(query.data.split("|")[1])
-    user_id = data["user_id"]
-    privilege = data["promote"]
+    _, user_id, privilege = query.data.split("|")
+    user_id = int(user_id)
 
-    # Toggle privilege
-    Temp[user_id][privilege] = not Temp[user_id][privilege]
+    # Toggle privilege in MongoDB
+    privileges = get_user_privileges(user_id)
+    privileges[privilege] = not privileges[privilege]
+    update_user_privileges(user_id, privileges)
 
     await query.message.edit_text(
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=generate_keyboard(user_id),
+        reply_markup=keyboard(user_id),
     )
 
 
-# Callback for enabling all privileges
-@app.on_callback_query(is_on_call("up_all_prom") & is_admin())
+@app.on_callback_query(is_onCall("up_all_prom") & is_admin())
 async def enable_all_privileges(app: Client, query: types.CallbackQuery):
-    data = json.loads(query.data.split("|")[1])
-    user_id = data["user_id"]
+    _, user_id = query.data.split("|")
+    user_id = int(user_id)
 
-    # Enable all privileges
-    for key in Temp[user_id]:
-        Temp[user_id][key] = True
+    # Enable all privileges in MongoDB
+    privileges = {key: True for key in DEFAULT_PRIVILEGES}
+    update_user_privileges(user_id, privileges)
 
     await query.message.edit_text(
         text="**ڕۆڵەکانی ئەدمینی نوێ دیاریبکە دواتر بیکە بە ئەدمین👾🖤•**",
-        reply_markup=generate_keyboard(user_id),
+        reply_markup=keyboard(user_id),
     )
 
 
-@app.on_callback_query(is_on_call("save"))
+@app.on_callback_query(is_onCall("save"))
 async def save_and_promote(app: Client, query: types.CallbackQuery):
-    data = json.loads(query.data.split("|")[1])
-    user_id = data["user_id"]
+    _, user_id = query.data.split("|")
+    user_id = int(user_id)
+
+    privileges = get_user_privileges(user_id)
     chat_id = query.message.chat.id
 
     try:
-        # Promote the user with selected privileges
+        # Promote user with selected privileges
         await app.promote_chat_member(
             chat_id,
             user_id,
-            types.ChatPrivileges(**Temp[user_id]),
+            types.ChatPrivileges(**privileges),
         )
-        await query.message.edit_text("**✧¦ بە سەرکەوتوویی کرا بە ئەدمین♥️•**")
-    except ChatAdminRequired:
         await query.message.edit_text(
-            "**✧¦ پێویستە بۆت ئەدمین بێت و ڕۆڵی زیادکردنی ئەدمینی هەبێت♥️•**"
+            text="**✧¦ بە سەرکەوتوویی کرا بە ئەدمین♥️•**"
         )
     except Exception as e:
-        # Handle unexpected errors
-        await query.message.edit_text(f"**✧¦ هەڵە ڕوویدا: {e}**")
-    finally:
-        # Delete the message after a delay (ensure this always runs)
-        try:
-            await asyncio.sleep(10)  # Adjust delay if needed
-            await query.message.delete()
-        except Exception as e:
-            # Log or handle deletion error (optional)
-            print(f"Error deleting message: {e}")
+        await query.message.edit_text(
+            text=f"**✧¦ هەڵە ڕوویدا: {str(e)}**"
+        )
+    await asyncio.sleep(60)
+    await query.message.delete()
