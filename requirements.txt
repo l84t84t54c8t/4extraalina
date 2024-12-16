@@ -3,7 +3,6 @@ deep_translator
 gTTS
 googlesearch-python
 gpytranslate
-httpx[http2]
 instaloader
 lexica-api
 MukeshAPI
