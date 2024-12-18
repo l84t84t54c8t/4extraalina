@@ -25,11 +25,11 @@ async def must_join_channel(app: Client, msg: Message):
                 )  # Re-assign channel_name if a title is available
             try:
                 await msg.reply(
-                    f"**• Sorry . . {msg.from_user.mention}\n• You must first join group to use me\n• Group : « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی گرووپ بکەیت بۆ بەکارهێنانم\n• گرووپ : «  @{MUST_JOIN2} »**",
+                    f"**• Sorry . . {msg.from_user.mention}\n• You must first join Channel to use me\n• Channel : « @{MUST_JOIN2} »\n\n• ببووره . . ئەزیزم {msg.from_user.mention}\n• سەرەتا پێویستە جۆینی کەناڵ بکەیت بۆ بەکارهێنانم\n• کەناڵ : «  @{MUST_JOIN2} »**",
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton(text="گرووپی ئەلینا", url=link),
+                                InlineKeyboardButton(text="چەناڵی بۆتەکان🦋🤍", url=link),
                             ]
                         ]
                     ),
