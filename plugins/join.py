@@ -29,7 +29,9 @@ async def must_join_channel(app: Client, msg: Message):
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
-                                InlineKeyboardButton(text="چەناڵی بۆتەکان🦋🤍", url=link),
+                                InlineKeyboardButton(
+                                    text="چەناڵی بۆتەکان🦋🤍", url=link
+                                ),
                             ]
                         ]
                     ),
