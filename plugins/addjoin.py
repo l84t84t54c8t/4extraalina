@@ -1,12 +1,42 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
+from AlinaMusic.core.mongo import mongodb
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-# List of forced join channels and join status
-forced_channels = []
-join_required = True
+addjoin = mongodb.addjoin 
 
+# Load forced channels from MongoDB
+def load_forced_channels():
+    return [channel['channel_id'] for channel in addjoin.find()]
+
+# Save a new forced channel to MongoDB
+def save_forced_channel(channel_id):
+    if not addjoin.find_one({"channel_id": channel_id}):
+        addjoin.insert_one({"channel_id": channel_id})
+
+# Remove a forced channel from MongoDB
+def remove_forced_channel(channel_id):
+    addjoin.delete_one({"channel_id": channel_id})
+
+# Load the join_required status from MongoDB (default is True)
+def load_join_required():
+    settings = addjoin.find_one({"setting": "join_required"})
+    if settings and "value" in settings:
+        return settings["value"]
+    return True  # Default to True if not set
+
+# Save the join_required status to MongoDB
+def save_join_required(status):
+    addjoin.update_one(
+        {"setting": "join_required"},
+        {"$set": {"value": status}},
+        upsert=True  # Create if it doesn't exist
+    )
+
+# List of forced join channels
+forced_channels = load_forced_channels()
+join_required = load_join_required()  # Load the join status from MongoDB
 
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
@@ -31,6 +61,7 @@ async def handle_commands(client: Client, message: Message):
 
         if channel_id not in forced_channels:
             forced_channels.append(channel_id)
+            save_forced_channel(channel_id)  # Save to MongoDB
             await message.reply(
                 f"کانال {channel_id} به لیست جوین اجباری اضافه شد.\nChannel {channel_id} has been added to the forced join list."
             )
@@ -72,6 +103,7 @@ async def handle_commands(client: Client, message: Message):
 
         if channel_id in forced_channels:
             forced_channels.remove(channel_id)
+            remove_forced_channel(channel_id)  # Remove from MongoDB
             await message.reply(
                 f"کانال {channel_id} از لیست حذف شد.\nChannel {channel_id} has been removed from the list."
             )
@@ -82,12 +114,13 @@ async def handle_commands(client: Client, message: Message):
 
     elif text in ["جوین روشن", "enable join"]:
         join_required = True
+        save_join_required(True)  # Save to MongoDB
         await message.reply("جوین اجباری فعال شد.\nForced join has been enabled.")
 
     elif text in ["جوین خاموش", "disable join"]:
         join_required = False
+        save_join_required(False)  # Save to MongoDB
         await message.reply("جوین اجباری غیرفعال شد.\nForced join has been disabled.")
-
 
 @app.on_callback_query(filters.regex("check_join"))
 async def check_user_join(client: Client, callback_query):
@@ -109,7 +142,6 @@ async def check_user_join(client: Client, callback_query):
             await callback_query.message.reply(
                 "🤨 هنوز عضو همه کانال‌ها نشدی!\nYou haven't joined all the channels yet!"
             )
-
 
 @app.on_message(filters.private, group=-3)
 async def enforce_join(client: Client, message: Message):
