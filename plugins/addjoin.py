@@ -125,10 +125,6 @@ async def check_user_join(client: Client, callback_query):
 async def enforce_join(client: Client, message: Message):
     if join_required and forced_channels:
 
-        # Respond only if the message is from the target user
-        if message.from_user.id != TARGET_USER_ID:
-            return
-
         not_joined = []
         for channel in forced_channels:
             try:
