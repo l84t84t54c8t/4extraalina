@@ -8,7 +8,7 @@ forced_channels = []
 join_required = True
 
 
-@app.on_message(filters.text & filters.private)
+@app.on_message(filters.private)
 async def handle_commands(client: Client, message: Message):
     global join_required
 
