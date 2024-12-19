@@ -6,65 +6,12 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 addjoin = mongodb.addjoin
 
-# Load forced channels from MongoDB
-
-
-# Load forced channels from MongoDB
-async def load_forced_channels():
-    return [channel["channel_id"] async for channel in addjoin.find()]
-
-
-# Save a new forced channel to MongoDB
-
-
-def save_forced_channel(channel_id):
-    if not addjoin.find_one({"channel_id": channel_id}):
-        addjoin.insert_one({"channel_id": channel_id})
-
-
-# Remove a forced channel from MongoDB
-
-
-def remove_forced_channel(channel_id):
-    addjoin.delete_one({"channel_id": channel_id})
-
-
-# Load the join_required status from MongoDB (default is True)
-
-
-# Load the join_required status from MongoDB (default is True)
-async def load_join_required():
-    settings = await addjoin.find_one({"setting": "join_required"})
-    if settings and "value" in settings:
-        return settings["value"]
-    return True  # Default to True if not set
-
-
-# Save the join_required status to MongoDB
-
-
-def save_join_required(status):
-    addjoin.update_one(
-        {"setting": "join_required"},
-        {"$set": {"value": status}},
-        upsert=True,  # Create if it doesn't exist
-    )
-
-
-async def init():
-    # Initialize forced channels asynchronously
-    global forced_channels
-    forced_channels = await load_forced_channels()
-    # You can add other initialization steps here
-
-
-join_required = load_join_required()  # Load the join status from MongoDB
-
+# Default value for join_required in DB
+if addjoin.count_documents({}) == 0:
+    addjoin.insert_one({"join_required": True})
 
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
-    global join_required
-
     # Restrict access to SUDOERS only
     if message.from_user.id not in SUDOERS:
         await message.reply(
@@ -74,6 +21,10 @@ async def handle_commands(client: Client, message: Message):
 
     text = message.text.strip().lower()
 
+    # Access forced channels from DB
+    forced_channels = [channel["channel_id"] for channel in addjoin.find()]
+
+    # Handle adding a join channel
     if text in ["اضافه کردن جوین", "add join"]:
         reply = await message.chat.ask(
             "کانال را وارد کنید:\nEnter the channel:",
@@ -82,9 +33,8 @@ async def handle_commands(client: Client, message: Message):
         )
         channel_id = reply.text.strip()
 
-        if channel_id not in forced_channels:
-            forced_channels.append(channel_id)
-            save_forced_channel(channel_id)  # Save to MongoDB
+        if addjoin.count_documents({"channel_id": channel_id}) == 0:
+            addjoin.insert_one({"channel_id": channel_id})
             await message.reply(
                 f"کانال {channel_id} به لیست جوین اجباری اضافه شد.\nChannel {channel_id} has been added to the forced join list."
             )
@@ -93,6 +43,7 @@ async def handle_commands(client: Client, message: Message):
                 "این کانال قبلاً در لیست وجود دارد.\nThis channel is already in the list."
             )
 
+    # Show join channels
     elif text in ["نمایش لیست جوین", "show join list"]:
         if forced_channels:
             buttons = [
@@ -116,6 +67,7 @@ async def handle_commands(client: Client, message: Message):
                 "هیچ کانالی در لیست وجود ندارد.\nNo channels in the list."
             )
 
+    # Handle removing a join channel
     elif text in ["حذف جوین", "remove join"]:
         reply = await message.chat.ask(
             "کانالی که می‌خواهید حذف کنید را وارد کنید:\nEnter the channel to remove:",
@@ -124,9 +76,8 @@ async def handle_commands(client: Client, message: Message):
         )
         channel_id = reply.text.strip()
 
-        if channel_id in forced_channels:
-            forced_channels.remove(channel_id)
-            remove_forced_channel(channel_id)  # Remove from MongoDB
+        if addjoin.count_documents({"channel_id": channel_id}) > 0:
+            addjoin.delete_one({"channel_id": channel_id})
             await message.reply(
                 f"کانال {channel_id} از لیست حذف شد.\nChannel {channel_id} has been removed from the list."
             )
@@ -135,28 +86,29 @@ async def handle_commands(client: Client, message: Message):
                 "این کانال در لیست وجود ندارد.\nThis channel is not in the list."
             )
 
+    # Enable forced join
     elif text in ["جوین روشن", "enable join"]:
-        join_required = True
-        save_join_required(True)  # Save to MongoDB
+        addjoin.update_one({}, {"$set": {"join_required": True}})
         await message.reply("جوین اجباری فعال شد.\nForced join has been enabled.")
 
+    # Disable forced join
     elif text in ["جوین خاموش", "disable join"]:
-        join_required = False
-        save_join_required(False)  # Save to MongoDB
+        addjoin.update_one({}, {"$set": {"join_required": False}})
         await message.reply("جوین اجباری غیرفعال شد.\nForced join has been disabled.")
-
 
 @app.on_callback_query(filters.regex("check_join"))
 async def check_user_join(client: Client, callback_query):
-    if join_required and forced_channels:
+    join_required = addjoin.find_one().get("join_required", True)
+
+    if join_required and addjoin.count_documents({}) > 0:
         user_id = callback_query.from_user.id
 
         not_joined = []
-        for channel in forced_channels:
+        for channel in addjoin.find():
             try:
-                await client.get_chat_member(channel, user_id)
+                await client.get_chat_member(channel["channel_id"], user_id)
             except BaseException:
-                not_joined.append(channel)
+                not_joined.append(channel["channel_id"])
 
         if not not_joined:
             await callback_query.message.reply(
@@ -167,17 +119,18 @@ async def check_user_join(client: Client, callback_query):
                 "🤨 هنوز عضو همه کانال‌ها نشدی!\nYou haven't joined all the channels yet!"
             )
 
-
 @app.on_message(filters.private, group=-3)
 async def enforce_join(client: Client, message: Message):
-    if join_required and forced_channels:
+    join_required = addjoin.find_one().get("join_required", True)
+
+    if join_required and addjoin.count_documents({}) > 0:
 
         not_joined = []
-        for channel in forced_channels:
+        for channel in addjoin.find():
             try:
-                await client.get_chat_member(channel, message.from_user.id)
+                await client.get_chat_member(channel["channel_id"], message.from_user.id)
             except BaseException:
-                not_joined.append(channel)
+                not_joined.append(channel["channel_id"])
 
         if not_joined:
             buttons = [
