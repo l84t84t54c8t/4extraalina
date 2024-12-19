@@ -1,4 +1,5 @@
 from AlinaMusic import app
+from AlinaMusic.misc import SUDOERS
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -14,7 +15,7 @@ async def handle_commands(client: Client, message: Message):
     # Skip deletion if the user is in SUDOERS
     if message.from_user.id in SUDOERS:
         return
-
+        
     text = message.text.strip().lower()
 
     if text in ["اضافه کردن جوین", "add join"]:
