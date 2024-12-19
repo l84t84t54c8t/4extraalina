@@ -14,7 +14,9 @@ async def handle_commands(client: Client, message: Message):
 
     # Restrict access to SUDOERS only
     if message.from_user.id not in SUDOERS:
-        await message.reply("⛔ این دستور فقط برای مدیران مجاز است.\n⛔ This command is restricted to SUDOERS.")
+        await message.reply(
+            "⛔ این دستور فقط برای مدیران مجاز است.\n⛔ This command is restricted to SUDOERS."
+        )
         return
 
     text = message.text.strip().lower()
