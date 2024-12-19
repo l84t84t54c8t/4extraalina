@@ -1,7 +1,8 @@
 from AlinaMusic import app
 from AlinaMusic.misc import SUDOERS
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 # List of forced join channels and join status
 forced_channels = []
@@ -36,7 +37,9 @@ async def add_join(client: Client, message: Message):
                 "این کانال قبلاً در لیست وجود دارد.\nThis channel is already in the list."
             )
     else:
-        await message.reply("⛔ زمان برای ارسال پاسخ تمام شد.\n⛔ Timeout while waiting for your response.")
+        await message.reply(
+            "⛔ زمان برای ارسال پاسخ تمام شد.\n⛔ Timeout while waiting for your response."
+        )
 
 
 @app.on_message(filters.private & filters.command(["showjoin", "جۆینن"]))
@@ -59,9 +62,7 @@ async def show_join_list(client: Client, message: Message):
             reply_markup=InlineKeyboardMarkup(buttons),
         )
     else:
-        await message.reply(
-            "هیچ کانالی در لیست وجود ندارد.\nNo channels in the list."
-        )
+        await message.reply("هیچ کانالی در لیست وجود ندارد.\nNo channels in the list.")
 
 
 @app.on_message(filters.private & filters.command(["removejoin", "حذف_جوین"]))
@@ -92,7 +93,9 @@ async def remove_join(client: Client, message: Message):
                 "این کانال در لیست وجود ندارد.\nThis channel is not in the list."
             )
     else:
-        await message.reply("⛔ زمان برای ارسال پاسخ تمام شد.\n⛔ Timeout while waiting for your response.")
+        await message.reply(
+            "⛔ زمان برای ارسال پاسخ تمام شد.\n⛔ Timeout while waiting for your response."
+        )
 
 
 @app.on_callback_query(filters.regex("check_join"))
