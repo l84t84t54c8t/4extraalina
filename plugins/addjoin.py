@@ -32,8 +32,9 @@ def remove_forced_channel(channel_id):
 # Load the join_required status from MongoDB (default is True)
 
 
-def load_join_required():
-    settings = addjoin.find_one({"setting": "join_required"})
+# Load the join_required status from MongoDB (default is True)
+async def load_join_required():
+    settings = await addjoin.find_one({"setting": "join_required"})
     if settings and "value" in settings:
         return settings["value"]
     return True  # Default to True if not set
