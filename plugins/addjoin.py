@@ -100,10 +100,6 @@ async def check_user_join(client: Client, callback_query):
     if join_required and forced_channels:
         user_id = callback_query.from_user.id
 
-        # Respond only if the callback is from the target user
-        if user_id != TARGET_USER_ID:
-            return
-
         not_joined = []
         for channel in forced_channels:
             try:
