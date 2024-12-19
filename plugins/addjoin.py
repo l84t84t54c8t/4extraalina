@@ -12,8 +12,7 @@ addjoin = mongodb.addjoin
 # Load forced channels from MongoDB
 async def load_forced_channels():
     # Use async for to iterate over the cursor
-    return [channel['channel_id'] async for channel in addjoin.find()]
-
+    return [channel["channel_id"] async for channel in addjoin.find()]
 
 
 # Save a new forced channel to MongoDB
@@ -50,6 +49,7 @@ def save_join_required(status):
         {"$set": {"value": status}},
         upsert=True,  # Create if it doesn't exist
     )
+
 
 # List of forced join channels (ensure it's loaded asynchronously)
 forced_channels = await load_forced_channels()
