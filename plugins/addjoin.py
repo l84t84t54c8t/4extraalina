@@ -10,6 +10,7 @@ addjoin = mongodb.addjoin
 if addjoin.count_documents({}) == 0:
     addjoin.insert_one({"join_required": True})
 
+
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
     # Restrict access to SUDOERS only
@@ -96,6 +97,7 @@ async def handle_commands(client: Client, message: Message):
         addjoin.update_one({}, {"$set": {"join_required": False}})
         await message.reply("جوین اجباری غیرفعال شد.\nForced join has been disabled.")
 
+
 @app.on_callback_query(filters.regex("check_join"))
 async def check_user_join(client: Client, callback_query):
     join_required = addjoin.find_one().get("join_required", True)
@@ -119,6 +121,7 @@ async def check_user_join(client: Client, callback_query):
                 "🤨 هنوز عضو همه کانال‌ها نشدی!\nYou haven't joined all the channels yet!"
             )
 
+
 @app.on_message(filters.private, group=-3)
 async def enforce_join(client: Client, message: Message):
     join_required = addjoin.find_one().get("join_required", True)
@@ -128,7 +131,9 @@ async def enforce_join(client: Client, message: Message):
         not_joined = []
         for channel in addjoin.find():
             try:
-                await client.get_chat_member(channel["channel_id"], message.from_user.id)
+                await client.get_chat_member(
+                    channel["channel_id"], message.from_user.id
+                )
             except BaseException:
                 not_joined.append(channel["channel_id"])
 
