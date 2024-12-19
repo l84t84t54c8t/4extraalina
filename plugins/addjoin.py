@@ -8,7 +8,6 @@ forced_channels = []
 join_required = True
 
 
-
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
     global join_required
@@ -19,7 +18,7 @@ async def handle_commands(client: Client, message: Message):
             "⛔ این دستور فقط برای مدیران مجاز است.\n⛔ This command is restricted to SUDOERS."
         )
         return
-      
+
     text = message.text.strip().lower()
 
     if text in ["اضافه کردن جوین", "add join"]:
@@ -109,7 +108,7 @@ async def check_user_join(client: Client, callback_query):
         for channel in forced_channels:
             try:
                 await client.get_chat_member(channel, user_id)
-            except:
+            except BaseException:
                 not_joined.append(channel)
 
         if not not_joined:
@@ -134,7 +133,7 @@ async def enforce_join(client: Client, message: Message):
         for channel in forced_channels:
             try:
                 await client.get_chat_member(channel, message.from_user.id)
-            except:
+            except BaseException:
                 not_joined.append(channel)
 
         if not_joined:
