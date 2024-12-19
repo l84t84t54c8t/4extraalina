@@ -7,6 +7,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 forced_channels = []
 join_required = True
 
+
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
     global join_required
@@ -86,6 +87,7 @@ async def handle_commands(client: Client, message: Message):
     elif text in ["جوین خاموش", "disable join"]:
         join_required = False
         await message.reply("جوین اجباری غیرفعال شد.\nForced join has been disabled.")
+
 
 @app.on_callback_query(filters.regex("check_join"))
 async def check_user_join(client: Client, callback_query):
