@@ -1,4 +1,5 @@
 import asyncio
+
 from AlinaMusic import app
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
@@ -7,12 +8,15 @@ from pyrogram.errors import FloodWait, RPCError
 # Global variable to keep track of active tagging chats
 SPAM_CHATS = []
 
+
 async def is_admin(chat_id, user_id):
     """Check if a user is an admin in the chat."""
     try:
         admin_ids = [
             admin.user.id
-            async for admin in app.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS)
+            async for admin in app.get_chat_members(
+                chat_id, filter=ChatMembersFilter.ADMINISTRATORS
+            )
         ]
         return user_id in admin_ids
     except RPCError as e:
@@ -36,7 +40,9 @@ async def tag_all_users(_, message):
     replied = message.reply_to_message
     text = message.text.split(None, 1)[1] if len(message.command) > 1 else ""
     if not text and not replied:
-        return await message.reply_text("**نامەیەک بنووسە یان ڕیپلە بکە.** `@all Hi Friends`")
+        return await message.reply_text(
+            "**نامەیەک بنووسە یان ڕیپلە بکە.** `@all Hi Friends`"
+        )
 
     SPAM_CHATS.append(message.chat.id)
     user_count = 0
@@ -49,12 +55,18 @@ async def tag_all_users(_, message):
             if member.user.is_deleted or member.user.is_bot:
                 continue
             user_count += 1
-            mention_text += f"[{member.user.first_name}](tg://user?id={member.user.id})  "
+            mention_text += (
+                f"[{member.user.first_name}](tg://user?id={member.user.id})  "
+            )
             if user_count == 7:
                 if replied:
-                    await replied.reply_text(mention_text, disable_web_page_preview=True)
+                    await replied.reply_text(
+                        mention_text, disable_web_page_preview=True
+                    )
                 else:
-                    await message.reply_text(f"{text}\n\n{mention_text}", disable_web_page_preview=True)
+                    await message.reply_text(
+                        f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                    )
                 await asyncio.sleep(2)
                 user_count = 0
                 mention_text = ""
@@ -63,7 +75,9 @@ async def tag_all_users(_, message):
             if replied:
                 await replied.reply_text(mention_text, disable_web_page_preview=True)
             else:
-                await message.reply_text(f"{text}\n\n{mention_text}", disable_web_page_preview=True)
+                await message.reply_text(
+                    f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                )
     except FloodWait as e:
         print(f"FloodWait: Sleeping for {e.value} seconds")
         await asyncio.sleep(e.value)
@@ -101,7 +115,9 @@ async def cancelcmd(_, message):
         await message.reply_text("**پڕۆسەی تاگکردن بوونی نییە**")
 
 
-@app.on_message(filters.command(["admin", "report"], prefixes=["/", "@"]) & filters.group)
+@app.on_message(
+    filters.command(["admin", "report"], prefixes=["/", "@"]) & filters.group
+)
 async def admintag_with_reporting(client, message):
     """Tag all admins or report a user to admins."""
     chat_id = message.chat.id
@@ -109,7 +125,9 @@ async def admintag_with_reporting(client, message):
 
     admins = [
         admin.user.id
-        async for admin in client.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS)
+        async for admin in client.get_chat_members(
+            chat_id, filter=ChatMembersFilter.ADMINISTRATORS
+        )
     ]
 
     if message.command[0] == "report":
@@ -149,7 +167,9 @@ async def tag_all_admins(_, message):
     SPAM_CHATS.append(message.chat.id)
 
     try:
-        async for admin in app.get_chat_members(message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS):
+        async for admin in app.get_chat_members(
+            message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS
+        ):
             if message.chat.id not in SPAM_CHATS:
                 break
             if admin.user.is_deleted or admin.user.is_bot:
@@ -158,9 +178,13 @@ async def tag_all_admins(_, message):
             mention_text += f"[{admin.user.first_name}](tg://user?id={admin.user.id})  "
             if admin_count == 7:
                 if replied:
-                    await replied.reply_text(mention_text, disable_web_page_preview=True)
+                    await replied.reply_text(
+                        mention_text, disable_web_page_preview=True
+                    )
                 else:
-                    await message.reply_text(f"{text}\n\n{mention_text}", disable_web_page_preview=True)
+                    await message.reply_text(
+                        f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                    )
                 await asyncio.sleep(2)
                 admin_count = 0
                 mention_text = ""
@@ -169,7 +193,9 @@ async def tag_all_admins(_, message):
             if replied:
                 await replied.reply_text(mention_text, disable_web_page_preview=True)
             else:
-                await message.reply_text(f"{text}\n\n{mention_text}", disable_web_page_preview=True)
+                await message.reply_text(
+                    f"{text}\n\n{mention_text}", disable_web_page_preview=True
+                )
     except FloodWait as e:
         print(f"FloodWait: Sleeping for {e.value} seconds")
         await asyncio.sleep(e.value)
