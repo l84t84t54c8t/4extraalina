@@ -7,7 +7,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 forced_channels = []
 join_required = True
 
-
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
     global join_required
@@ -22,9 +21,6 @@ async def handle_commands(client: Client, message: Message):
     text = message.text.strip().lower()
 
     if text in ["اضافه کردن جوین", "add join"]:
-        await message.reply(
-            "لینک یا آیدی عددی کانال را ارسال کنید:\nSend the link or numeric ID of the channel:"
-        )
         reply = await message.chat.ask(
             "کانال را وارد کنید:\nEnter the channel:",
             filters=filters.text & filters.user(message.from_user.id),
@@ -66,9 +62,6 @@ async def handle_commands(client: Client, message: Message):
             )
 
     elif text in ["حذف جوین", "remove join"]:
-        await message.reply(
-            "لینک یا آیدی کانالی که می‌خواهید حذف کنید را ارسال کنید:\nSend the link or ID of the channel to remove:"
-        )
         reply = await message.chat.ask(
             "کانالی که می‌خواهید حذف کنید را وارد کنید:\nEnter the channel to remove:",
             filters=filters.text & filters.user(message.from_user.id),
@@ -93,7 +86,6 @@ async def handle_commands(client: Client, message: Message):
     elif text in ["جوین خاموش", "disable join"]:
         join_required = False
         await message.reply("جوین اجباری غیرفعال شد.\nForced join has been disabled.")
-
 
 @app.on_callback_query(filters.regex("check_join"))
 async def check_user_join(client: Client, callback_query):
