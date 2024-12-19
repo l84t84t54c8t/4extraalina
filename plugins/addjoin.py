@@ -12,13 +12,14 @@ join_required = True
 async def handle_commands(client: Client, message: Message):
     global join_required
 
-    # Skip deletion if the user is in SUDOERS
-    if message.from_user.id in SUDOERS:
+    # Restrict access to SUDOERS only
+    if message.from_user.id not in SUDOERS:
+        await message.reply("⛔ این دستور فقط برای مدیران مجاز است.\n⛔ This command is restricted to SUDOERS.")
         return
 
     text = message.text.strip().lower()
 
-    if text in ["اضافه کردن جوین", "add join"]:
+    if text in ["زیادکردنی جۆین", "add join"]:
         await message.reply(
             "لینک یا آیدی عددی کانال را ارسال کنید:\nSend the link or numeric ID of the channel:"
         )
@@ -35,7 +36,7 @@ async def handle_commands(client: Client, message: Message):
                 "این کانال قبلاً در لیست وجود دارد.\nThis channel is already in the list."
             )
 
-    elif text in ["نمایش لیست جوین", "show join list"]:
+    elif text in ["جۆینن", "show join list"]:
         if forced_channels:
             buttons = [
                 [
