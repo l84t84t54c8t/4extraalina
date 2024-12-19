@@ -58,9 +58,7 @@ async def handle_commands(client: Client, message: Message):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
         else:
-            await message.reply(
-                "هیچ کەناڵێکە نیە.\nNo channels in the list."
-            )
+            await message.reply("هیچ کەناڵێکە نیە.\nNo channels in the list.")
 
     elif text in ["سڕینەوەی جۆین", "remove join"]:
         reply = await message.chat.ask(
@@ -86,7 +84,9 @@ async def handle_commands(client: Client, message: Message):
 
     elif text in ["ناچالاککردنی جۆین", "disable join"]:
         join_required = False
-        await message.reply("جوین ئەجباری تەواو نەبووە.\nForced join has been disabled.")
+        await message.reply(
+            "جوین ئەجباری تەواو نەبووە.\nForced join has been disabled."
+        )
 
 
 @app.on_callback_query(filters.regex("check_join"))
