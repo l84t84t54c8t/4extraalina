@@ -10,6 +10,11 @@ join_required = True
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
     global join_required
+
+    # Skip deletion if the user is in SUDOERS
+    if message.from_user.id in SUDOERS:
+        return
+        
     text = message.text.strip().lower()
 
     if text in ["اضافه کردن جوین", "add join"]:
