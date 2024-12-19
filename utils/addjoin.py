@@ -1,10 +1,11 @@
 from AlinaMusic import app
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 # List of forced join channels and join status
 forced_channels = []
 join_required = True
+
 
 @app.on_message(filters.text & filters.private)
 async def handle_commands(client: Client, message: Message):
@@ -12,7 +13,9 @@ async def handle_commands(client: Client, message: Message):
     text = message.text.strip().lower()
 
     if text in ["اضافه کردن جوین", "add join"]:
-        await message.reply("لینک یا آیدی عددی کانال را ارسال کنید:\nSend the link or numeric ID of the channel:")
+        await message.reply(
+            "لینک یا آیدی عددی کانال را ارسال کنید:\nSend the link or numeric ID of the channel:"
+        )
         reply = await client.listen(message.chat.id)
         channel_id = reply.text.strip()
 
@@ -37,16 +40,22 @@ async def handle_commands(client: Client, message: Message):
                 ]
                 for channel in forced_channels
             ]
-            buttons.append([InlineKeyboardButton("عضو شدم / Joined", callback_data="check_join")])
+            buttons.append(
+                [InlineKeyboardButton("عضو شدم / Joined", callback_data="check_join")]
+            )
             await message.reply(
                 "لیست کانال‌های جوین اجباری:\nList of forced join channels:",
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
         else:
-            await message.reply("هیچ کانالی در لیست وجود ندارد.\nNo channels in the list.")
+            await message.reply(
+                "هیچ کانالی در لیست وجود ندارد.\nNo channels in the list."
+            )
 
     elif text in ["حذف جوین", "remove join"]:
-        await message.reply("لینک یا آیدی کانالی که می‌خواهید حذف کنید را ارسال کنید:\nSend the link or ID of the channel to remove:")
+        await message.reply(
+            "لینک یا آیدی کانالی که می‌خواهید حذف کنید را ارسال کنید:\nSend the link or ID of the channel to remove:"
+        )
         reply = await client.listen(message.chat.id)
         channel_id = reply.text.strip()
 
@@ -78,7 +87,7 @@ async def check_user_join(client: Client, callback_query):
         for channel in forced_channels:
             try:
                 await client.get_chat_member(channel, user_id)
-            except:
+            except BaseException:
                 not_joined.append(channel)
 
         if not not_joined:
@@ -99,7 +108,7 @@ async def enforce_join(client: Client, message: Message):
         for channel in forced_channels:
             try:
                 await client.get_chat_member(channel, message.from_user.id)
-            except:
+            except BaseException:
                 not_joined.append(channel)
 
         if not_joined:
@@ -112,7 +121,9 @@ async def enforce_join(client: Client, message: Message):
                 ]
                 for channel in not_joined
             ]
-            buttons.append([InlineKeyboardButton("عضو شدم / Joined", callback_data="check_join")])
+            buttons.append(
+                [InlineKeyboardButton("عضو شدم / Joined", callback_data="check_join")]
+            )
             await message.reply(
                 "برای استفاده از ربات، ابتدا در کانال‌های زیر عضو شوید:\nTo use the bot, join the following channels first:",
                 reply_markup=InlineKeyboardMarkup(buttons),
