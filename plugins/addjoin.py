@@ -140,3 +140,16 @@ async def enforce_join(client: Client, message: Message):
                 reply_markup=InlineKeyboardMarkup(buttons),
             )
             return
+
+
+
+
+
+
+@app.on_message(filters.command("sendlog"))
+async def send_log(client, message):
+    try:
+        file_path = "/home/administrator/9chjy8ee5d5e/Alinalogs.txt"
+        await message.reply_document(document=file_path)
+    except Exception as e:
+        await message.reply_text(f"Failed to send the file: {e}")
