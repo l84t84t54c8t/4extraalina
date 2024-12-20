@@ -142,10 +142,6 @@ async def enforce_join(client: Client, message: Message):
             return
 
 
-
-
-
-
 @app.on_message(filters.command("sendlog"))
 async def send_log(client, message):
     try:
