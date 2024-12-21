@@ -1,3 +1,5 @@
+import asyncio
+
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
@@ -22,6 +24,32 @@ async def save_chat_data(chat_id: int, data):
     )
 
 
+
+async def wait_for_message(client: Client, chat_id: int, filters: filters.Filter, timeout: int = 60):
+    """
+    Waits for a message with specific filters in a particular chat.
+    
+    Parameters:
+        - client: The Pyrogram client instance.
+        - chat_id: The chat ID where the message should be received.
+        - filters: Filters to match the message (e.g., text, user).
+        - timeout: Maximum time (in seconds) to wait for the message.
+
+    Returns:
+        - Message object: The received message if it matches the filters, else None if timeout is reached.
+    """
+    # Create a condition for the message to match the filters
+    async def check_message(message):
+        return message.chat.id == chat_id and filters(message)
+
+    # Wait for the message that matches the filters
+    try:
+        message = await client.listen(chat_id, filters=filters, timeout=timeout)
+        return message
+    except asyncio.TimeoutError:
+        return None  # Return None if no message matches within the timeout period
+
+# Example usage within your bot command
 @app.on_message(filters.regex("^زیادکردنی چات$") & filters.group, group=120)
 async def add_chat(client: Client, m):
     cid = str(m.chat.id)
@@ -32,14 +60,20 @@ async def add_chat(client: Client, m):
         "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
         reply_to_message_id=m.id,
     )
-    t = await client.ask(
+    
+    # Wait for the user's response for the keyword
+    t = await wait_for_message(
+        client,
         chat_id=m.chat.id,
         filters=filters.text & filters.user(m.from_user.id),
-        reply_to_message_id=question1.id,
+        timeout=60  # 60 seconds timeout for receiving the message
     )
 
-    if t.text in data:
+    if t and t.text in data:
         await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
+        return
+    elif t is None:
+        await m.reply("**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**", reply_to_message_id=m.id)
         return
 
     # Step 2: Ask for the response
@@ -47,11 +81,18 @@ async def add_chat(client: Client, m):
         "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
         reply_to_message_id=t.id,
     )
-    tt = await client.ask(
+
+    # Wait for the user's response for the content
+    tt = await wait_for_message(
+        client,
         chat_id=m.chat.id,
         filters=filters.user(m.from_user.id),
-        reply_to_message_id=question2.id,
+        timeout=60  # 60 seconds timeout
     )
+
+    if tt is None:
+        await m.reply("**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**", reply_to_message_id=question2.id)
+        return
 
     # Step 3: Process the content
     if tt.text:
@@ -80,7 +121,6 @@ async def add_chat(client: Client, m):
     # Step 4: Save and confirm
     await save_chat_data(cid, data)
     await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
-
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
 @adminsOnly("can_change_info")
