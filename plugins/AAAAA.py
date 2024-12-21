@@ -159,11 +159,9 @@ async def robot(client, message: Message):
             if res == 0:
                 steps[user_id] = 3
                 await message.reply("**✧¦ دڵنیایت کە ئه‌كاونتت بسڕیته‌وه‌؟**",
-                reply_markup=ReplyKeyboardMarkup([
-                [KeyboardButton("• بەڵێ •")],
-                [KeyboardButton("• نا •")]
-                ], resize_keyboard=True))
-
+                                     reply_markup=ReplyKeyboardMarkup([
+                                         [KeyboardButton("• بەڵێ •"), KeyboardButton("• نا •")]
+                                     ], resize_keyboard=True))
             elif res == 1:
                 await message.reply("**✧¦ ئەم ژمارەیە سنووردار کراوە، تکایە چەند کاتژمێرێکی تر هەوڵبدەوە♥️•**")
             elif res == 4:
