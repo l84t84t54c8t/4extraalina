@@ -23,7 +23,6 @@ async def save_chat_data(chat_id: int, data):
 
 
 @app.on_message(filters.regex("^زیادکردنی چات$") & filters.group, group=120)
-@adminsOnly("can_change_info")
 async def add_chat(client: Client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
