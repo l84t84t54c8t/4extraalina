@@ -22,65 +22,50 @@ async def save_chat_data(chat_id: int, data):
     )
 
 
-@app.on_message(filters.regex("^زیادکردنی چات$") & filters.group, group=120)
+@app.on_message(filters.regex("^زیادکردنی چات$"), group=120)
 @adminsOnly("can_change_info")
 async def add_chat(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
 
-    # Step 1: Ask for the keyword
-    question1 = await m.reply(
+    t = await m.chat.ask(
         "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
+        filters=filters.text & filters.user(m.from_user.id),
         reply_to_message_id=m.id,
     )
-    t = await client.ask(
-        chat_id=m.chat.id,
-        filters=filters.text & filters.user(m.from_user.id),
-        reply_to_message_id=question1.id,
-    )
-
     if t.text in data:
         await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
-        return
-
-    # Step 2: Ask for the response
-    question2 = await m.reply(
-        "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
-        reply_to_message_id=t.id,
-    )
-    tt = await client.ask(
-        chat_id=m.chat.id,
-        filters=filters.user(m.from_user.id),
-        reply_to_message_id=question2.id,
-    )
-
-    # Step 3: Process the content
-    if tt.text:
-        data[t.text] = f"text&{tt.text}"
-    elif tt.photo:
-        data[t.text] = f"photo&{tt.photo.file_id}"
-    elif tt.video:
-        data[t.text] = f"video&{tt.video.file_id}"
-    elif tt.animation:
-        data[t.text] = f"animation&{tt.animation.file_id}"
-    elif tt.voice:
-        data[t.text] = f"voice&{tt.voice.file_id}"
-    elif tt.audio:
-        data[t.text] = f"audio&{tt.audio.file_id}"
-    elif tt.document:
-        data[t.text] = f"document&{tt.document.file_id}"
-    elif tt.sticker:
-        data[t.text] = f"sticker&{tt.sticker.file_id}"
     else:
-        await tt.reply(
-            f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
-            quote=True,
+        tt = await m.chat.ask(
+            "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
+            filters=filters.user(t.from_user.id),
+            reply_to_message_id=t.id,
         )
-        return
+        if tt.text:
+            data[t.text] = f"text&{tt.text}"
+        elif tt.photo:
+            data[t.text] = f"photo&{tt.photo.file_id}"
+        elif tt.video:
+            data[t.text] = f"video&{tt.video.file_id}"
+        elif tt.animation:
+            data[t.text] = f"animation&{tt.animation.file_id}"
+        elif tt.voice:
+            data[t.text] = f"voice&{tt.voice.file_id}"
+        elif tt.audio:
+            data[t.text] = f"audio&{tt.audio.file_id}"
+        elif tt.document:
+            data[t.text] = f"document&{tt.document.file_id}"
+        elif tt.sticker:
+            data[t.text] = f"sticker&{tt.sticker.file_id}"
+        else:
+            await tt.reply(
+                f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
+                quote=True,
+            )
+            return
 
-    # Step 4: Save and confirm
-    await save_chat_data(cid, data)
-    await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
+        await save_chat_data(cid, data)
+        await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
