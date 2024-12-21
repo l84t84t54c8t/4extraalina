@@ -29,58 +29,56 @@ async def add_chat(client, m):
     data = await get_chat_data(cid)
 
     # Step 1: Ask for the keyword
-    question1 = await m.reply(
-        "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
-        reply_to_message_id=m.id,
-    )
-    t = await client.ask(
-        chat_id=m.chat.id,
-        filters=filters.text & filters.user(m.from_user.id),
-        reply_to_message_id=question1.id,
-    )
+    await m.reply("**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**", reply_to_message_id=m.id)
 
-    if t.text in data:
-        await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
+    # Function to wait for a specific user's message
+    async def wait_for_user_message(user_id, chat_id):
+        while True:
+            response = await client.listen(chat_id)
+            if response.from_user.id == user_id:
+                return response
+
+    # Wait for the user's keyword
+    keyword_response = await wait_for_user_message(m.from_user.id, m.chat.id)
+
+    keyword = keyword_response.text
+    if keyword in data:
+        await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=keyword_response.id)
         return
 
-    # Step 2: Ask for the response
-    question2 = await m.reply(
-        "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
-        reply_to_message_id=t.id,
-    )
-    tt = await client.ask(
-        chat_id=m.chat.id,
-        filters=filters.user(m.from_user.id),
-        reply_to_message_id=question2.id,
-    )
+    # Step 2: Ask for the response to the keyword
+    await m.reply("**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**", reply_to_message_id=keyword_response.id)
 
-    # Step 3: Process the content
-    if tt.text:
-        data[t.text] = f"text&{tt.text}"
-    elif tt.photo:
-        data[t.text] = f"photo&{tt.photo.file_id}"
-    elif tt.video:
-        data[t.text] = f"video&{tt.video.file_id}"
-    elif tt.animation:
-        data[t.text] = f"animation&{tt.animation.file_id}"
-    elif tt.voice:
-        data[t.text] = f"voice&{tt.voice.file_id}"
-    elif tt.audio:
-        data[t.text] = f"audio&{tt.audio.file_id}"
-    elif tt.document:
-        data[t.text] = f"document&{tt.document.file_id}"
-    elif tt.sticker:
-        data[t.text] = f"sticker&{tt.sticker.file_id}"
+    # Wait for the user's response content
+    content_response = await wait_for_user_message(m.from_user.id, m.chat.id)
+
+    # Process the response content
+    if content_response.text:
+        data[keyword] = f"text&{content_response.text}"
+    elif content_response.photo:
+        data[keyword] = f"photo&{content_response.photo.file_id}"
+    elif content_response.video:
+        data[keyword] = f"video&{content_response.video.file_id}"
+    elif content_response.animation:
+        data[keyword] = f"animation&{content_response.animation.file_id}"
+    elif content_response.voice:
+        data[keyword] = f"voice&{content_response.voice.file_id}"
+    elif content_response.audio:
+        data[keyword] = f"audio&{content_response.audio.file_id}"
+    elif content_response.document:
+        data[keyword] = f"document&{content_response.document.file_id}"
+    elif content_response.sticker:
+        data[keyword] = f"sticker&{content_response.sticker.file_id}"
     else:
-        await tt.reply(
+        await content_response.reply(
             f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
             quote=True,
         )
         return
 
-    # Step 4: Save and confirm
+    # Save the updated data
     await save_chat_data(cid, data)
-    await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
+    await content_response.reply(f"**چات زیادکرا بە ناوی ↤︎ ({keyword}) ♥•**", quote=True)
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
