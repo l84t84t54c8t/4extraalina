@@ -23,6 +23,36 @@ async def save_chat_data(chat_id: int, data):
         {"chat_id": chat_id}, {"$set": {"data": data}}, upsert=True
     )
 
+from pyrogram import filters
+import asyncio
+
+# Function to wait for a specific user's message
+async def wait_for_user_message(client, user_id, chat_id, timeout=60):
+    user_message = None
+
+    # Define a filter for messages from the specific user in the same chat
+    def filter_func(_, __, message):
+        return message.from_user.id == user_id and message.chat.id == chat_id
+
+    # Set up a future to capture the user's message
+    future = asyncio.Future()
+
+    @client.on_message(filters.create(filter_func))
+    async def capture_message(client, message):
+        if not future.done():
+            future.set_result(message)
+
+    try:
+        # Wait for the user's message or timeout
+        user_message = await asyncio.wait_for(future, timeout=timeout)
+    except asyncio.TimeoutError:
+        pass  # Handle timeout in the calling function
+    finally:
+        # Remove the handler once the message is captured
+        client.remove_handler(capture_message, group=0)
+
+    return user_message
+
 
 @app.on_message(filters.regex("^زیادکردنی چات$"), group=120)
 @adminsOnly("can_change_info")
@@ -36,19 +66,9 @@ async def add_chat(client, m):
         reply_to_message_id=m.id,
     )
 
-    # Function to wait for a specific user's message
-    async def wait_for_user_message(user_id, chat_id, timeout=60):
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            response = await client.listen(chat_id)
-            if response.from_user.id == user_id:
-                return response
-        raise TimeoutError
-
-    try:
-        # Wait for the user's keyword
-        keyword_response = await wait_for_user_message(m.from_user.id, m.chat.id)
-    except TimeoutError:
+    # Wait for the user's keyword
+    keyword_response = await wait_for_user_message(client, m.from_user.id, m.chat.id)
+    if not keyword_response:
         await m.reply("**کاتەکەت تەواو بوو، دووبارە هەوڵبدەرەوە♥**")
         return
 
@@ -66,10 +86,9 @@ async def add_chat(client, m):
         reply_to_message_id=keyword_response.id,
     )
 
-    try:
-        # Wait for the user's response content
-        content_response = await wait_for_user_message(m.from_user.id, m.chat.id)
-    except TimeoutError:
+    # Wait for the user's response content
+    content_response = await wait_for_user_message(client, m.from_user.id, m.chat.id)
+    if not content_response:
         await m.reply("**کاتەکەت تەواو بوو، دووبارە هەوڵبدەرەوە♥**")
         return
 
