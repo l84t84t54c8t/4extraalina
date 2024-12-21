@@ -1,5 +1,3 @@
-import asyncio
-
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
@@ -31,11 +29,14 @@ async def add_chat(client, m):
     data = await get_chat_data(cid)
 
     # Step 1: Ask for the keyword
-    question1 = await m.reply("**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**", reply_to_message_id=m.id)
+    question1 = await m.reply(
+        "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
+        reply_to_message_id=m.id,
+    )
     t = await client.ask(
         chat_id=m.chat.id,
         filters=filters.text & filters.user(m.from_user.id),
-        reply_to_message_id=question1.id
+        reply_to_message_id=question1.id,
     )
 
     if t.text in data:
@@ -45,12 +46,12 @@ async def add_chat(client, m):
     # Step 2: Ask for the response
     question2 = await m.reply(
         "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
-        reply_to_message_id=t.id
+        reply_to_message_id=t.id,
     )
     tt = await client.ask(
         chat_id=m.chat.id,
         filters=filters.user(m.from_user.id),
-        reply_to_message_id=question2.id
+        reply_to_message_id=question2.id,
     )
 
     # Step 3: Process the content
@@ -80,6 +81,7 @@ async def add_chat(client, m):
     # Step 4: Save and confirm
     await save_chat_data(cid, data)
     await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
+
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
 @adminsOnly("can_change_info")
