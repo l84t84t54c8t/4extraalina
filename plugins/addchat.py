@@ -1,9 +1,7 @@
-import asyncio
-
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -24,130 +22,50 @@ async def save_chat_data(chat_id: int, data):
     )
 
 
-async def wait_for_message(
-    client: Client, chat_id: int, message_filter: filters.Filter, timeout: int = 60
-):
-    """
-    Waits for a message with specific filters in a particular chat.
-
-    Parameters:
-        - client: The Pyrogram client instance.
-        - chat_id: The chat ID where the message should be received.
-        - message_filter: Filters to match the message (e.g., text, user).
-        - timeout: Maximum time (in seconds) to wait for the message.
-
-    Returns:
-        - Message object: The received message if it matches the filters, else None if timeout is reached.
-    """
-    event = asyncio.Event()
-
-    # Variable to store the matched message
-    matched_message = None
-
-    # Define the handler to set the matched message when a message is received
-    async def on_message(client, message):
-        nonlocal matched_message
-        if message.chat.id == chat_id and message_filter(message):
-            matched_message = message
-            event.set()  # Set the event when the message is received
-
-    # Add the handler for on_message
-    client.add_handler(
-        filters.create(lambda _, m: message.chat.id == chat_id and message_filter(m)),
-        on_message,
-    )
-
-    try:
-        # Wait for the message or timeout
-        await asyncio.wait_for(event.wait(), timeout=timeout)
-        return matched_message
-    except asyncio.TimeoutError:
-        return None  # Return None if no message matches within the timeout period
-    finally:
-        # Remove the handler to prevent memory leaks
-        client.remove_handler(on_message)
-
-
-# Usage Example within your bot
-
-
-@app.on_message(filters.regex("^زیادکردنی چات$") & filters.group, group=120)
-async def add_chat(client: Client, m):
+@app.on_message(filters.regex("^زیادکردنی چات$"), group=120)
+@adminsOnly("can_change_info")
+async def add_chat(client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
 
-    # Step 1: Ask for the keyword
-    question1 = await m.reply(
+    t = await m.chat.ask(
         "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
+        filters=filters.text & filters.user(m.from_user.id),
         reply_to_message_id=m.id,
     )
-
-    # Wait for the user's response for the keyword
-    t = await wait_for_message(
-        client,
-        chat_id=m.chat.id,
-        message_filter=filters.text & filters.user(m.from_user.id),
-        timeout=60,  # 60 seconds timeout for receiving the message
-    )
-
-    if t and t.text in data:
+    if t.text in data:
         await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
-        return
-    elif t is None:
-        await m.reply(
-            "**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**",
-            reply_to_message_id=m.id,
-        )
-        return
-
-    # Step 2: Ask for the response
-    question2 = await m.reply(
-        "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
-        reply_to_message_id=t.id,
-    )
-
-    # Wait for the user's response for the content
-    tt = await wait_for_message(
-        client,
-        chat_id=m.chat.id,
-        message_filter=filters.user(m.from_user.id),
-        timeout=60,  # 60 seconds timeout
-    )
-
-    if tt is None:
-        await m.reply(
-            "**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**",
-            reply_to_message_id=question2.id,
-        )
-        return
-
-    # Step 3: Process the content
-    if tt.text:
-        data[t.text] = f"text&{tt.text}"
-    elif tt.photo:
-        data[t.text] = f"photo&{tt.photo.file_id}"
-    elif tt.video:
-        data[t.text] = f"video&{tt.video.file_id}"
-    elif tt.animation:
-        data[t.text] = f"animation&{tt.animation.file_id}"
-    elif tt.voice:
-        data[t.text] = f"voice&{tt.voice.file_id}"
-    elif tt.audio:
-        data[t.text] = f"audio&{tt.audio.file_id}"
-    elif tt.document:
-        data[t.text] = f"document&{tt.document.file_id}"
-    elif tt.sticker:
-        data[t.text] = f"sticker&{tt.sticker.file_id}"
     else:
-        await tt.reply(
-            f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
-            quote=True,
+        tt = await m.chat.ask(
+            "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
+            filters=filters.user(t.from_user.id),
+            reply_to_message_id=t.id,
         )
-        return
+        if tt.text:
+            data[t.text] = f"text&{tt.text}"
+        elif tt.photo:
+            data[t.text] = f"photo&{tt.photo.file_id}"
+        elif tt.video:
+            data[t.text] = f"video&{tt.video.file_id}"
+        elif tt.animation:
+            data[t.text] = f"animation&{tt.animation.file_id}"
+        elif tt.voice:
+            data[t.text] = f"voice&{tt.voice.file_id}"
+        elif tt.audio:
+            data[t.text] = f"audio&{tt.audio.file_id}"
+        elif tt.document:
+            data[t.text] = f"document&{tt.document.file_id}"
+        elif tt.sticker:
+            data[t.text] = f"sticker&{tt.sticker.file_id}"
+        else:
+            await tt.reply(
+                f"**تەنیا دەتوانی ئەمانە بنێریت\n(وشە، وێنە، گیف، ڤیدیۆ، ڤۆیس، دەنگ، گۆرانی، فایل، ستیکەر) ♥⚡**",
+                quote=True,
+            )
+            return
 
-    # Step 4: Save and confirm
-    await save_chat_data(cid, data)
-    await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
+        await save_chat_data(cid, data)
+        await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
