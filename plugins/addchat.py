@@ -24,13 +24,12 @@ async def save_chat_data(chat_id: int, data):
     )
 
 
-import asyncio
-from pyrogram import Client, filters
-
-async def wait_for_message(client: Client, chat_id: int, message_filter: filters.Filter, timeout: int = 60):
+async def wait_for_message(
+    client: Client, chat_id: int, message_filter: filters.Filter, timeout: int = 60
+):
     """
     Waits for a message with specific filters in a particular chat.
-    
+
     Parameters:
         - client: The Pyrogram client instance.
         - chat_id: The chat ID where the message should be received.
@@ -53,7 +52,10 @@ async def wait_for_message(client: Client, chat_id: int, message_filter: filters
             event.set()  # Set the event when the message is received
 
     # Add the handler for on_message
-    client.add_handler(filters.create(lambda _, m: message.chat.id == chat_id and message_filter(m)), on_message)
+    client.add_handler(
+        filters.create(lambda _, m: message.chat.id == chat_id and message_filter(m)),
+        on_message,
+    )
 
     try:
         # Wait for the message or timeout
@@ -65,7 +67,10 @@ async def wait_for_message(client: Client, chat_id: int, message_filter: filters
         # Remove the handler to prevent memory leaks
         client.remove_handler(on_message)
 
+
 # Usage Example within your bot
+
+
 @app.on_message(filters.regex("^زیادکردنی چات$") & filters.group, group=120)
 async def add_chat(client: Client, m):
     cid = str(m.chat.id)
@@ -82,14 +87,17 @@ async def add_chat(client: Client, m):
         client,
         chat_id=m.chat.id,
         message_filter=filters.text & filters.user(m.from_user.id),
-        timeout=60  # 60 seconds timeout for receiving the message
+        timeout=60,  # 60 seconds timeout for receiving the message
     )
 
     if t and t.text in data:
         await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=t.id)
         return
     elif t is None:
-        await m.reply("**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**", reply_to_message_id=m.id)
+        await m.reply(
+            "**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**",
+            reply_to_message_id=m.id,
+        )
         return
 
     # Step 2: Ask for the response
@@ -103,11 +111,14 @@ async def add_chat(client: Client, m):
         client,
         chat_id=m.chat.id,
         message_filter=filters.user(m.from_user.id),
-        timeout=60  # 60 seconds timeout
+        timeout=60,  # 60 seconds timeout
     )
 
     if tt is None:
-        await m.reply("**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**", reply_to_message_id=question2.id)
+        await m.reply(
+            "**ببورە، کاتی ئەم پەیامە تێپەڕیە. تکایە دابەزەری ئەم کاتەیە.**",
+            reply_to_message_id=question2.id,
+        )
         return
 
     # Step 3: Process the content
@@ -137,7 +148,6 @@ async def add_chat(client: Client, m):
     # Step 4: Save and confirm
     await save_chat_data(cid, data)
     await tt.reply(f"**چات زیادکرا بە ناوی ↤︎ ({t.text}) ♥•**", quote=True)
-
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
