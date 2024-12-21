@@ -1,25 +1,28 @@
 # Coded by @IQ7amo
 # Source @MGIMT
 
-from telethon.sync import TelegramClient, events, Button
-from requests import get, post
-from re import findall
 from random import randint
+from re import findall
 from sqlite3 import connect
 from time import sleep
 
+from requests import get, post
+from telethon.sync import Button, TelegramClient, events
+
 #################################
 # Your Telegram API credentials
-api_id = '12962251'
-api_hash = 'b51499523800add51e4530c6f552dbc8'
-bot_token = '6445743078:AAHjIaJh2I0bhp4EkCIeVDmfc3e3RUVZYW8'
+api_id = "12962251"
+api_hash = "b51499523800add51e4530c6f552dbc8"
+bot_token = "6445743078:AAHjIaJh2I0bhp4EkCIeVDmfc3e3RUVZYW8"
 #################################
+
 
 class DeleteAccount:
     def __init__(self, connection=None):
         self.conn = connection
         cursor = self.conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS data(
                 id TEXT PRIMARY KEY,
                 phone TEXT,
@@ -27,7 +30,8 @@ class DeleteAccount:
                 hash TEXT,
                 cookie TEXT
             )
-        """)
+        """
+        )
         cursor.close()
 
     def send_code(self, user_id, phone):
@@ -40,11 +44,16 @@ class DeleteAccount:
 
             for _ in range(2):
                 try:
-                    res = post("https://my.telegram.org/auth/send_password", data=f"phone={phone}")
-                    if 'random_hash' in res.text:
+                    res = post(
+                        "https://my.telegram.org/auth/send_password",
+                        data=f"phone={phone}",
+                    )
+                    if "random_hash" in res.text:
                         res_data = res.json()
-                        exe("INSERT INTO data(id, phone, random_hash) VALUES (?, ?, ?)", 
-                            (user_id, phone, res_data['random_hash']))
+                        exe(
+                            "INSERT INTO data(id, phone, random_hash) VALUES (?, ?, ?)",
+                            (user_id, phone, res_data["random_hash"]),
+                        )
                         return 0  # Code sent successfully
                     elif "too many tries" in res.text:
                         return 1  # Limit reached
@@ -59,22 +68,28 @@ class DeleteAccount:
         try:
             cursor = self.conn.cursor()
             exe = cursor.execute
-            row = exe("SELECT phone, random_hash FROM data WHERE id = ?", (user_id,)).fetchone()
+            row = exe(
+                "SELECT phone, random_hash FROM data WHERE id = ?", (user_id,)
+            ).fetchone()
             if not row:
                 return 3  # No data for user
-            
+
             phone, random_hash = row
             for _ in range(2):
                 try:
-                    res = post("https://my.telegram.org/auth/login", 
-                               data=f"phone={phone}&random_hash={random_hash}&password={code}")
+                    res = post(
+                        "https://my.telegram.org/auth/login",
+                        data=f"phone={phone}&random_hash={random_hash}&password={code}",
+                    )
                     if res.text == "true":
                         cookies = res.cookies.get_dict()
                         req = get("https://my.telegram.org/delete", cookies=cookies)
                         if "Delete Your Account" in req.text:
-                            _hash = findall("hash: '(\w+)'", req.text)[0]
-                            exe("UPDATE data SET hash = ?, cookie = ? WHERE id = ?", 
-                                (_hash, cookies['stel_token'], user_id))
+                            _hash = findall("hash: '(\\w+)'", req.text)[0]
+                            exe(
+                                "UPDATE data SET hash = ?, cookie = ? WHERE id = ?",
+                                (_hash, cookies["stel_token"], user_id),
+                            )
                             return 0  # Account ready for deletion
                     elif "too many tries" in res.text:
                         return 1  # Limit reached
@@ -91,16 +106,20 @@ class DeleteAccount:
         try:
             cursor = self.conn.cursor()
             exe = cursor.execute
-            row = exe("SELECT hash, cookie FROM data WHERE id = ?", (user_id,)).fetchone()
+            row = exe(
+                "SELECT hash, cookie FROM data WHERE id = ?", (user_id,)
+            ).fetchone()
             if not row:
                 return 3  # No data for user
 
             _hash, cookie = row
             for _ in range(2):
                 try:
-                    res = post("https://my.telegram.org/delete/do_delete", 
-                               cookies={'stel_token': cookie}, 
-                               data=f"hash={_hash}&message=goodbye").text
+                    res = post(
+                        "https://my.telegram.org/delete/do_delete",
+                        cookies={"stel_token": cookie},
+                        data=f"hash={_hash}&message=goodbye",
+                    ).text
                     if res == "true":
                         return 0  # Account deleted successfully
                 except Exception as e:
@@ -120,11 +139,12 @@ class DeleteAccount:
 
 
 # Initialize bot
-bot = TelegramClient('bot', api_id, api_hash).start(bot_token=bot_token)
+bot = TelegramClient("bot", api_id, api_hash).start(bot_token=bot_token)
 print("Bot is running! Developed by @IQ7amo")
 conn = connect("dataa.db")
 delete_service = DeleteAccount(connection=conn)
 steps = {}
+
 
 @bot.on(events.NewMessage(func=lambda e: e.is_private))
 async def robot(event):
@@ -134,26 +154,41 @@ async def robot(event):
     try:
         if id not in steps:
             steps[id] = 1
-            return await event.reply("**بەخێربێی ئەزیزم بۆ بۆتی سەرچاوەی زیرەك بۆ سڕینەوە،سووتاندنی ئەکاونتی تێلەگرام\n\n دەتوانی لەڕێگایی ئەم دووگمەی خوارەوە ژمارەکەت بینێریت🖤⚡️•**", buttons=[[Button.request_phone("• ژمارەکەت بنێرە •", resize=True)]])
+            return await event.reply(
+                "**بەخێربێی ئەزیزم بۆ بۆتی سەرچاوەی زیرەك بۆ سڕینەوە،سووتاندنی ئەکاونتی تێلەگرام\n\n دەتوانی لەڕێگایی ئەم دووگمەی خوارەوە ژمارەکەت بینێریت🖤⚡️•**",
+                buttons=[[Button.request_phone("• ژمارەکەت بنێرە •", resize=True)]],
+            )
         elif "start" in text or text == "• هەڵوەشاندنەوە •":
             steps[id] = 1
-            await event.reply("**بەخێربێی ئەزیزم بۆ بۆتی سەرچاوەی زیرەك بۆ سڕینەوە،سووتاندنی ئەکاونتی تێلەگرام\n\n دەتوانی لەڕێگایی ئەم دووگمەی خوارەوە ژمارەکەت بینێریت🖤⚡️•**", buttons=[[Button.request_phone("• ژمارەکەت بنێرە •", resize=True)]])
+            await event.reply(
+                "**بەخێربێی ئەزیزم بۆ بۆتی سەرچاوەی زیرەك بۆ سڕینەوە،سووتاندنی ئەکاونتی تێلەگرام\n\n دەتوانی لەڕێگایی ئەم دووگمەی خوارەوە ژمارەکەت بینێریت🖤⚡️•**",
+                buttons=[[Button.request_phone("• ژمارەکەت بنێرە •", resize=True)]],
+            )
             delete.remove(id)
             return
         step = steps[id]
         if step == 1:
             if event.contact:
-                phone = "+" + event.contact.to_dict()['phone_number']
+                phone = "+" + event.contact.to_dict()["phone_number"]
                 res = delete.send_code(id, phone)
                 if not res:
                     steps[id] = 2
-                    return await event.reply("**✧¦ بە سەرکەوتوویی کۆد نێردرا بۆ تۆ، تکایە ئەو نامەیە فۆروارد بکە بۆ بۆت کە کۆدەکەی تێدایە♥️•**", buttons=[[Button.text("• هەڵوەشاندنەوە •", resize=True)]])
+                    return await event.reply(
+                        "**✧¦ بە سەرکەوتوویی کۆد نێردرا بۆ تۆ، تکایە ئەو نامەیە فۆروارد بکە بۆ بۆت کە کۆدەکەی تێدایە♥️•**",
+                        buttons=[[Button.text("• هەڵوەشاندنەوە •", resize=True)]],
+                    )
                 elif res == 1:
-                    return await event.reply("**✧¦ ئەم ژمارەیە سنووردار کراوە ناتوانی ئەکاونت بسڕێتەوە لە ئێستادا چەند کاتژمێرێکی تر هەوڵبدەوە♥️•**")
+                    return await event.reply(
+                        "**✧¦ ئەم ژمارەیە سنووردار کراوە ناتوانی ئەکاونت بسڕێتەوە لە ئێستادا چەند کاتژمێرێکی تر هەوڵبدەوە♥️•**"
+                    )
                 elif res == 2:
-                    return await event.reply("**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**")
+                    return await event.reply(
+                        "**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**"
+                    )
                 else:
-                    return await event.reply("**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**")
+                    return await event.reply(
+                        "**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**"
+                    )
             else:
                 return await event.reply("**✧¦ تکایە تەنیا دووگمە بەکاربێنە ♥️•**")
         elif step == 2:
@@ -164,21 +199,26 @@ async def robot(event):
                     steps[id] = 3  # Proceed to confirmation step
                     return await event.reply(
                         "**✧¦ دڵنیایت کە ئه‌كاونتت بسڕیته‌وه‌؟**",
-                        buttons=[
-                            [Button.text("• بەڵێ •")],
-                            [Button.text("• نا •")]
-                        ]
-                  )
+                        buttons=[[Button.text("• بەڵێ •")], [Button.text("• نا •")]],
+                    )
                 elif res == 1:
-                    return await event.reply("**✧¦ ئەم ژمارەیە سنووردار کراوە ناتوانی ئەکاونت بسڕێتەوە لە ئێستادا چەند کاتژمێرێکی تر هەوڵبدەوە♥️•**")
+                    return await event.reply(
+                        "**✧¦ ئەم ژمارەیە سنووردار کراوە ناتوانی ئەکاونت بسڕێتەوە لە ئێستادا چەند کاتژمێرێکی تر هەوڵبدەوە♥️•**"
+                    )
                 elif res == 2:
-                    return await event.reply("**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**")
+                    return await event.reply(
+                        "**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**"
+                    )
                 elif res == 4:
                     return await event.reply("**✧¦ کۆدە نا دروستە یان بە سەرچووە♥️•**")
                 else:
-                    return await event.reply("**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**")
+                    return await event.reply(
+                        "**✧¦ هەڵەیەکی دیارینەکراو ڕوویدا تکایە لە چەند خولەکێکی تر دووبارە هەوڵ بدەرەوە♥️•**"
+                    )
             else:
-                return await event.reply("**✧¦ تکایە تەنیا نامەکە فۆروارد بکە بۆ بۆت♥️•**")
+                return await event.reply(
+                    "**✧¦ تکایە تەنیا نامەکە فۆروارد بکە بۆ بۆت♥️•**"
+                )
         elif step == 3:  # Confirmation step
             if "بەڵێ" in text:
                 del steps[id]
@@ -190,6 +230,7 @@ async def robot(event):
                 await event.reply("**✧¦ سڕینەوە هەڵوەشایەوە ♥️•**")
     except Exception as e:
         print(type(e), e)
+
 
 bot.run_until_disconnected()
 
