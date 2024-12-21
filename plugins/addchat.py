@@ -1,7 +1,7 @@
 from AlinaMusic import app
 from AlinaMusic.core.mongo import mongodb
 from AlinaMusic.misc import SUDOERS
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -24,7 +24,7 @@ async def save_chat_data(chat_id: int, data):
 
 @app.on_message(filters.regex("^زیادکردنی چات$") & filters.group, group=120)
 @adminsOnly("can_change_info")
-async def add_chat(client, m):
+async def add_chat(client: Client, m):
     cid = str(m.chat.id)
     data = await get_chat_data(cid)
 
