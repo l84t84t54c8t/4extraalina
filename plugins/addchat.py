@@ -29,7 +29,10 @@ async def add_chat(client, m):
     data = await get_chat_data(cid)
 
     # Step 1: Ask for the keyword
-    await m.reply("**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**", reply_to_message_id=m.id)
+    await m.reply(
+        "**ئێستا ئەو وشەیە بنێرە کە دەتەوێت زیادی بکەیت ئەزیزم🖤•**",
+        reply_to_message_id=m.id,
+    )
 
     # Function to wait for a specific user's message
     async def wait_for_user_message(user_id, chat_id):
@@ -43,11 +46,17 @@ async def add_chat(client, m):
 
     keyword = keyword_response.text
     if keyword in data:
-        await m.reply("**ببورە ئەم وشەیە پێشتر زیادکراوە💔**", reply_to_message_id=keyword_response.id)
+        await m.reply(
+            "**ببورە ئەم وشەیە پێشتر زیادکراوە💔**",
+            reply_to_message_id=keyword_response.id,
+        )
         return
 
     # Step 2: Ask for the response to the keyword
-    await m.reply("**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**", reply_to_message_id=keyword_response.id)
+    await m.reply(
+        "**ئێستا دەتوانیت یەکێك لەمانە زیادبکەیت بۆ وڵامدانەوە💘\n( دەق، وێنە، گیف، ڤیدیۆ، ڤۆیس، گۆرانی، دەنگ، فایل، ستیکەر)**",
+        reply_to_message_id=keyword_response.id,
+    )
 
     # Wait for the user's response content
     content_response = await wait_for_user_message(m.from_user.id, m.chat.id)
@@ -78,7 +87,9 @@ async def add_chat(client, m):
 
     # Save the updated data
     await save_chat_data(cid, data)
-    await content_response.reply(f"**چات زیادکرا بە ناوی ↤︎ ({keyword}) ♥•**", quote=True)
+    await content_response.reply(
+        f"**چات زیادکرا بە ناوی ↤︎ ({keyword}) ♥•**", quote=True
+    )
 
 
 @app.on_message(filters.regex("^چاتەکان$"), group=121)
