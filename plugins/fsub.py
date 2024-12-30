@@ -272,6 +272,7 @@ async def set_custom_caption(client: Client, message: Message):
 
     await t.reply("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
 
+
 @app.on_message(
     filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
 )
