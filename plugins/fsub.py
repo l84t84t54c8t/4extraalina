@@ -73,8 +73,8 @@ async def set_forcesub(client: Client, message: Message):
 
         # Ask the user for the channel
         t = await message.chat.ask(
-            "**• تکایە یوزەری کەناڵ یان لینکەکە دابنێ:**\n\n"
-            "- نمونە: @ChannelUsername یان https://t.me/ChannelUsername",
+            "**• تکایە یوزەری کەناڵ یان لینک بنێرە:**\n\n"
+            "- نمونە: @Username یان https://t.me/ChannelUsername",
             filters=filters.text & filters.user(user_id),
             reply_to_message_id=message.id,
         )
