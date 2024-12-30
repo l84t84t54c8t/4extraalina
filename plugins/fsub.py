@@ -248,21 +248,29 @@ async def set_custom_caption(client: Client, message: Message):
                 ]
             ),
         )
-    # Check if a caption is provided
-    if len(message.command) < 2:
-        return await message.reply_text(
-            "**• نامەکە لەگەڵ فەرمان بینووسە یان ڕیپلەی بکە**\n\n- وشەی {name} بۆ نووسینی ناوی کەسەکە\n- وشەی {mention} یوزەری کەناڵەکە\n-دەتوانی ئەم نامەیە بەکاربھێنیت :\n\n- سڵاو {name}\n- نامەکانت دەسڕدرێتەوە بەهۆی جۆین نەکردنت لە کەناڵی گرووپ\n- جۆینی کەناڵ بکە تاوەکو نامەکانت نەسڕدرێتەوە\n- کەناڵ : @{mention}"
-        )
 
-    caption = message.text.split(None, 1)[1]  # Extract the caption
+    # Ask the user for the custom caption
+    t = await message.chat.ask(
+        "**• تکایە نامەی جۆین بنێرە:**\n\n"
+        "- وشەی {name} بۆ نووسینی ناوی کەسەکە\n"
+        "- وشەی {mention} یوزەری کەناڵەکە\n"
+        "- ئەم نامەیە دەتوانیت بەکاربھێنیت :\n\n"
+        "- سڵاو {name}\n"
+        "- نامەکانت دەسڕدرێتەوە بەهۆی جۆین نەکردنت لە کەناڵی گرووپ\n"
+        "- جۆینی کەناڵ بکە تاوەکو نامەکانت نەسڕدرێتەوە\n"
+        "- کەناڵ : @{mention}",
+        filters=filters.text & filters.user(user_id),
+        reply_to_message_id=message.id,
+    )
+
+    caption = t.text  # Get the caption text from the user's reply
 
     # Store the custom caption in MongoDB
     forcesub_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"custom_caption": caption}}, upsert=True
     )
 
-    await message.reply_text("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
-
+    await t.reply("**بە سەرکەوتوویی نامەی جۆین گۆڕا -🖱️**")
 
 @app.on_message(
     filters.command(["/setphoto", "دانانی وێنە", "گۆڕینی وێنە", "گۆرینی وێنە"], "")
