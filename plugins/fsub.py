@@ -21,6 +21,7 @@ logging.basicConfig(
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
+
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     if await joinch(message):
