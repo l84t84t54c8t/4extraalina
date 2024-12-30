@@ -21,7 +21,6 @@ logging.basicConfig(
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
-
 @app.on_message(filters.command(["/fsub", "/join", "on.iq", "/on"], "") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     if await joinch(message):
@@ -71,39 +70,15 @@ async def set_forcesub(client: Client, message: Message):
                 ),
             )
 
-        # Check if force subscription is already enabled
-        existing_fsub = forcesub_collection.find_one({"chat_id": chat_id})
-        if existing_fsub:
-            # If already enabled, send a message and return
-            return await message.reply_text(
-                "**• جۆینی ناچاری چالاککراوە ✅.**\n- دەتوانی کەناڵی جۆین بگؤڕیت بۆ کەناڵێکی تر\n- سەرەتا ناچالاکی بکە :\n- بەم شێوەیە :\n- /join یان /on + off\n\n- دواتر دووبارە جۆینی ناچاری چالاکبکە\n- /join یان /on + یوزەری کەناڵ\n\n**• بۆتی گۆرانی : @IQMCBOT**",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
-                    ]
-                ),
-            )
+        # Ask the user for the channel
+        t = await message.chat.ask(
+            "**• تکایە یوزەری کەناڵ یان لینکەکە دابنێ:**\n\n"
+            "- نمونە: @ChannelUsername یان https://t.me/ChannelUsername",
+            filters=filters.text & filters.user(user_id),
+            reply_to_message_id=message.id,
+        )
 
-        if len(message.command) != 2:
-            return await message.reply_text(
-                "**• جۆین چالاك نەکراوە لەم گرووپە**\n- بۆ چالاککردنی /fsub یان /join + @یوزەری کەناڵ\n- بۆ ناچالاکردنی جۆینی ناچاری /join off\n\n**• بۆ هەرکێشەیەك سەردانی گرووپی ئەلینا بکە**",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "𓆩⌁ 𝗚𝗥𝗢𝗨𝗣 𝗔𝗟𝗜𝗡𝗔 ⌁𓆪", url=f"https://t.me/GroupAlina"
-                            )
-                        ]
-                    ]
-                ),
-            )
-
-        # Extract channel input
-        channel_input = message.command[1]
+        channel_input = t.text
 
         try:
             channel_info = await client.get_chat(channel_input)
@@ -126,7 +101,7 @@ async def set_forcesub(client: Client, message: Message):
 
             if not bot_is_admin:
                 await asyncio.sleep(1)
-                return await message.reply_photo(
+                return await t.reply_photo(
                     photo=botphoto,
                     caption=(
                         "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
@@ -163,7 +138,7 @@ async def set_forcesub(client: Client, message: Message):
                 if message.from_user.username
                 else message.from_user.first_name
             )
-            await message.reply_photo(
+            await t.reply_photo(
                 photo=botphoto,
                 caption=(
                     f"**🎉 جۆینی ناچاری بۆ [{channel_title}]({channel_username}) چالاککرا**\n\n"
@@ -186,7 +161,7 @@ async def set_forcesub(client: Client, message: Message):
             await asyncio.sleep(1)
         except Exception as e:
             logging.error(f"Error processing channel information: {e}")
-            await message.reply_photo(
+            await t.reply_photo(
                 photo=botphoto,
                 caption=(
                     "**• ئەدمین نیم لەو کەناڵە 🚫.**\n\n"
@@ -301,21 +276,23 @@ async def set_custom_photo(client: Client, message: Message):
             ),
         )
 
-    # Check if the command is a reply to a message with a photo
-    if not message.reply_to_message or not message.reply_to_message.photo:
-        return await message.reply_text(
-            "**• تکایە ڕیپلەی وێنەی نوێ بکە**\n\n- وێنەکە لە گرووپ دابنێ\n- ڕیپلەی بکە و بنووسە گۆڕینی وێنە"
-        )
+    # Ask the user for a new photo
+    prompt = await message.chat.ask(
+        "**• ئێستا وێنەی جۆین بنێرە**\n\n",
+        filters=filters.photo & filters.user(user_id),
+        reply_to_message_id=message.id,
+    )
 
-    # Get the file ID of the photo from the replied message
-    photo_id = message.reply_to_message.photo.file_id
+    # Get the photo file ID from the user's reply
+    photo = prompt.photo
+    photo_id = photo.file_id
 
     # Store the custom photo ID in MongoDB
     forcesub_collection.update_one(
         {"chat_id": chat_id}, {"$set": {"custom_photo_id": photo_id}}, upsert=True
     )
 
-    await message.reply_text("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
+    await prompt.reply("**بە سەرکەوتوویی وێنەی جۆین گۆڕا -📸**")
 
 
 @app.on_message(filters.command(["/fsubs", "جۆینی ناچاری"], "") & SUDOERS)
