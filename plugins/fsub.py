@@ -467,7 +467,7 @@ async def check_forcesub(client: Client, message: Message):
                 photo=custom_photo_id,
                 caption=final_caption.format(
                     name=message.from_user.mention,
-                    mention=channel_username or "Channel",
+                    mention=channel_username,
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -489,7 +489,7 @@ async def check_forcesub(client: Client, message: Message):
             await message.reply_text(
                 final_caption.format(
                     name=message.from_user.mention,
-                    mention=channel_username or "Channel",
+                    mention=channel_username,
                 ),
                 reply_markup=InlineKeyboardMarkup(
                     [
